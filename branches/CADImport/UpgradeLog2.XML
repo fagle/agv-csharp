@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="DXFImporter">
+</Property><Property Name="解决方案文件" Value="F:\project\csprj\DXFImportecscode\DXFImporter\DXFImporter.sln">
+</Property><Property Name="用户选项文件" Value="F:\project\csprj\DXFImportecscode\DXFImporter\DXFImporter.suo">
+</Property><Property Name="Date" Value="2013年10月19日 星期六">
+</Property><Property Name="Time" Value="下午 21:48">
+</Property><Property Name="日志号" Value="2">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="DXFImporter.sln" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\DXFImporter.sln">
+</Event><Event ErrorLevel="0" Project="" Source="DXFImporter.suo" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\DXFImporter.suo">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="DXFImporter.csproj" Description="项目文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\DXFImporter.csproj">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="DXFImporter.csproj.user" Description="项目用户文件成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\DXFImporter.csproj.user">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="AssemblyInfo.cs" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="Canvas.cs" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\Canvas.cs">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="DrawingObject.cs" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\DrawingObject.cs">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="Form1.cs" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\Form1.cs">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="Form1.Designer.cs" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\Form1.Designer.cs">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="MainGUI.cs" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\MainGUI.cs">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="Shapes.cs" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\Shapes.cs">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="App.ico" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\App.ico">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="Icon1.ico" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\Icon1.ico">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="Canvas.resx" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\Canvas.resx">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="Form1.resx" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\Form1.resx">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="MainGUI.resx" Description="文件已成功备份为 F:\project\csprj\DXFImportecscode\DXFImporter\Backup1\MainGUI.resx">
+</Event><Event ErrorLevel="1" Project="DXFImporter" Source="DXFImporter.csproj" Description="您的项目以 .NET Framework 2.0 或 3.0 为目标。如果您的项目使用的程序集需要更新的 .NET Framework，则项目生成将失败。通过单击项目菜单上的“属性”，然后在“.NET Framework”下拉框中选择一个新版本，可以更改 .NET Framework 的版本。(在 Visual Basic 中，可在单击“高级编辑器选项...”按钮时显示的“编译”选项卡上找到此下拉框。)">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="DXFImporter.csproj" Description="项目已成功转换">
+</Event><Event ErrorLevel="3" Project="DXFImporter" Source="DXFImporter.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="DXFImporter.sln" Description="成功转换解决方案">
+</Event><Event ErrorLevel="3" Project="" Source="DXFImporter.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="DXFImporter" Source="DXFImporter.csproj" Description="扫描完成: 项目文件不需要升级。">
+</Event></UpgradeLog>
