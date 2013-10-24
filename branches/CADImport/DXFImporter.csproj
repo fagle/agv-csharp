@@ -105,6 +105,12 @@
   <ItemGroup>
     <Content Include="App.ico" />
     <Content Include="Icon1.ico" />
+    <Compile Include="ArcEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ArcEdit.Designer.cs">
+      <DependentUpon>ArcEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -114,14 +120,26 @@
     <Compile Include="DrawingObject.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="LineEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LineEdit.Designer.cs">
+      <DependentUpon>LineEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainGUI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Shapes.cs">
       <SubType>Code</SubType>
     </Compile>
+    <EmbeddedResource Include="ArcEdit.resx">
+      <DependentUpon>ArcEdit.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Canvas.resx">
       <DependentUpon>Canvas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LineEdit.resx">
+      <DependentUpon>LineEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainGUI.resx">
       <DependentUpon>MainGUI.cs</DependentUpon>

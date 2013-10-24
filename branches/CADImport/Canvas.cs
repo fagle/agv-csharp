@@ -24,8 +24,10 @@ namespace DXFImporter
 	public class Canvas : System.Windows.Forms.Form
 	{
 		private bool multipleSelect = false;
-		private bool clicked = false;
-				
+        private bool clicked = false;
+
+        private Point dragStartPoint;
+        private Point dragEndPoint;
 		private double XMax, XMin;
 		private double YMax, YMin;
 
@@ -49,6 +51,7 @@ namespace DXFImporter
 		
 		private bool polyLineStarting = true;
 		private bool CanIDraw = false;
+        private int objNumSelect = -1;
 
 		private FileInfo theSourceFile;
 
@@ -128,26 +131,31 @@ namespace DXFImporter
             this.pictureBox1.BackColor = System.Drawing.Color.SteelBlue;
             this.pictureBox1.Location = new System.Drawing.Point(10, 9);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(324, 303);
+            this.pictureBox1.Size = new System.Drawing.Size(4980, 785);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Visible = false;
             // 
             // Canvas
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            this.AutoScroll = true;
+            this.AutoScrollMinSize = new System.Drawing.Size(5000, 800);
             this.BackColor = System.Drawing.Color.SteelBlue;
-            this.ClientSize = new System.Drawing.Size(344, 318);
+            this.ClientSize = new System.Drawing.Size(1244, 762);
             this.Controls.Add(this.pictureBox1);
-            this.MinimumSize = new System.Drawing.Size(360, 162);
+            this.MinimumSize = new System.Drawing.Size(1260, 800);
             this.Name = "Canvas";
             this.ShowInTaskbar = false;
             this.Text = "Canvas";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Canvas_Scroll);
             this.SizeChanged += new System.EventHandler(this.OnSizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CanvasRenewed_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CanvasRenewed_KeyUp);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MouseMoveCanvas);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseUp);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
@@ -160,8 +168,9 @@ namespace DXFImporter
 		{
             int xOffSet = 0;
 			Pen lePen = new Pen(Color.White, 3);
-			
-			g.TranslateTransform(this.pictureBox1.Location.X + 1 + xOffSet, this.pictureBox1.Location.Y + this.pictureBox1.Size.Height - 1);
+            Size scrollOffset = new Size(this.AutoScrollPosition);
+       
+			g.TranslateTransform(this.pictureBox1.Location.X + 1 + scrollOffset.Width, this.pictureBox1.Location.Y + this.pictureBox1.Size.Height - 1 + scrollOffset.Height);
 
 			if (YMin < 0)
 				g.TranslateTransform(0, - (int)Math.Abs(YMin) );			//transforms point-of-origin to the lower left corner of the canvas.
@@ -264,15 +273,14 @@ namespace DXFImporter
 		{
 			Graphics daGe = this.CreateGraphics();
 
-
+            objNumSelect = -1;
 			foreach (DrawingObject obj in objectIdentifier)			//iterates through the objects and send the relevant info to the checkLineProximity(...) module
 			{
 				if (checkLineProximity(obj.indexNo, obj.shapeType, daGe) == true)		
 				{
-					this.Cursor = Cursors.Cross;
-
+					this.Cursor = Cursors.Cross;                    
 					CanIDraw = true;
-
+                    objNumSelect = obj.indexNo;
 					if (multipleSelect == false)
 						return true;
 				}
@@ -288,10 +296,10 @@ namespace DXFImporter
 		{
 			Graphics g = daGe;
 			Pen lePen = new Pen(Color.Yellow, 1);
-		
+
 			g = pictureBox1.CreateGraphics();
 			
-			g.TranslateTransform(this.pictureBox1.Left+8, this.pictureBox1.Size.Height+8);	//transforms point-of-origin to the lower left corner of the canvas.
+			g.TranslateTransform(this.pictureBox1.Left+8 , this.pictureBox1.Size.Height+8 );	//transforms point-of-origin to the lower left corner of the canvas.
 
 			g.SmoothingMode = SmoothingMode.HighQuality; 
 
@@ -420,7 +428,7 @@ namespace DXFImporter
 				case WM_NCLBUTTONDOWN:
 				{
 
-					clicked = true;
+					//clicked = true;
 					break;
 				}
                 case WM_NCMOUSEMOVE:
@@ -935,12 +943,12 @@ namespace DXFImporter
 
 			if (this.WindowState == FormWindowState.Minimized)
 				return;
+            
+            this.pictureBox1.Location = new Point(10,8);
+			Graphics g = e.Graphics;
 
             
-			Graphics g = e.Graphics;
-		
-			Rectangle rect = new Rectangle(this.pictureBox1.Location, this.pictureBox1.Size);
-			
+			Rectangle rect = new Rectangle(this.pictureBox1.Location, this.pictureBox1.Size);            
 
 			System.Drawing.Drawing2D.LinearGradientBrush brush = new System.Drawing.Drawing2D.LinearGradientBrush(
 																											rect, 
@@ -992,7 +1000,7 @@ namespace DXFImporter
 		
 		}
 
-		private void CanvasRenewed_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+		public void CanvasRenewed_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
 			multipleSelect = false;
 		
@@ -1007,12 +1015,14 @@ namespace DXFImporter
 
 		private void MouseMoveCanvas(object sender, System.Windows.Forms.MouseEventArgs e)		//mousemove event...while the "shift" button is pressed down, the shapes can be highlighted...
 		{
-			aPoint.X = e.X - this.pictureBox1.Location.X - (int) Math.Abs(XMin) - 1 ;
-			aPoint.Y = e.Y - this.pictureBox1.Location.Y - this.pictureBox1.Size.Height + (int) Math.Abs(YMin) + 1;
-
+            Size scrollOffset = new Size(this.AutoScrollPosition);
+            aPoint.X = e.X - this.pictureBox1.Location.X - (int) Math.Abs(XMin) - 1 - scrollOffset.Width;
+			aPoint.Y = e.Y - this.pictureBox1.Location.Y - this.pictureBox1.Size.Height + (int) Math.Abs(YMin) + 1 - scrollOffset.Height;
+           
+            
 			Rectangle rect = this.pictureBox1.ClientRectangle;
         
-			if (rect.Contains(new Point(e.X - this.pictureBox1.Location.X, e.Y - this.pictureBox1.Location.Y)))
+			if (rect.Contains(new Point(e.X - this.pictureBox1.Location.X , e.Y - this.pictureBox1.Location.Y )))
 			{
                 this.Cursor = Cursors.Cross;              
 				onCanvas = true;
@@ -1023,18 +1033,64 @@ namespace DXFImporter
 				onCanvas = false;
 			}
 
+            if (clicked)
+            {
+                dragEndPoint = e.Location;
+                int dragOffset = dragEndPoint.X - dragStartPoint.X;
+                dragStartPoint = dragEndPoint;
+                int x = -this.AutoScrollPosition.X - dragOffset;
+                this.AutoScrollPosition = new Point(x,0);             
+            }
+
 			if (onCanvas == true)
 			{
 				if (multipleSelect)
 					HiglightObject();
 				
-				Refresh();
-				
-                	
-			}
+				Refresh();			                	
+			}            
 		}
 
 
 		#endregion
+
+        private void Canvas_Scroll(object sender, ScrollEventArgs e)
+        {
+            Refresh();
+        }
+
+
+
+        private void Canvas_MouseDown(object sender, MouseEventArgs e)
+        {
+            clicked = true;
+            dragStartPoint = e.Location;
+            //dragStartPoint.X = dragStartPoint.X - this.AutoScrollPosition.X;
+        }
+        private LineEdit dlgLineEdit;
+        private ArcEdit dlgArcEdit;
+        private void Canvas_MouseUp(object sender, MouseEventArgs e)
+        {
+            clicked = false;
+            if (objNumSelect >= 0) { 
+                DrawingObject obj = (DrawingObject)objectIdentifier[objNumSelect];
+                if (obj.shapeType == 2) { 
+                    Line line = (Line)(drawingList[obj.indexNo]);             
+                    Point startPoint = new Point((int)(line.GetStartPoint.X * mainScale),(int)(line.GetStartPoint.Y * (-mainScale)));
+                    Point endPoint = new Point((int)(line.GetEndPoint.X * mainScale), (int)(line.GetEndPoint.Y * (-mainScale)));
+                    dlgLineEdit = new LineEdit(startPoint,endPoint);
+                    dlgLineEdit.Owner = this;
+                    dlgLineEdit.Show();
+                    dlgLineEdit.Activate();
+                    dlgLineEdit.Focus();
+                }
+                else if (obj.shapeType == 6) {
+                    MessageBox.Show("ObjNumSelect" + objNumSelect);
+                }
+                multipleSelect = false;               
+            }
+            objNumSelect = -1;
+               
+        }
 	}
 }

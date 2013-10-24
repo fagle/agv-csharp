@@ -7,3 +7,14 @@ F:\project\csprj\DXFImportecscode\DXFImporter\obj\Debug\GenerateResource-ResGen.
 F:\project\csprj\DXFImportecscode\DXFImporter\obj\Debug\GenerateResource-ResGen.write.1.tlog
 F:\project\csprj\DXFImportecscode\DXFImporter\bin\Debug\DXFImporter.exe
 F:\project\csprj\DXFImportecscode\DXFImporter\bin\Debug\DXFImporter.pdb
+F:\project\csprj\agv\branches\CADImport\obj\Debug\DXFImporter.exe
+F:\project\csprj\agv\branches\CADImport\obj\Debug\DXFImporter.pdb
+F:\project\csprj\agv\branches\CADImport\bin\Debug\DXFImporter.exe
+F:\project\csprj\agv\branches\CADImport\bin\Debug\DXFImporter.pdb
+F:\project\csprj\agv\branches\CADImport\obj\Debug\ResolveAssemblyReference.cache
+F:\project\csprj\agv\branches\CADImport\obj\Debug\DXFImporter.Canvas.resources
+F:\project\csprj\agv\branches\CADImport\obj\Debug\DXFImporter.MainGUI.resources
+F:\project\csprj\agv\branches\CADImport\obj\Debug\GenerateResource-ResGen.read.1.tlog
+F:\project\csprj\agv\branches\CADImport\obj\Debug\GenerateResource-ResGen.write.1.tlog
+F:\project\csprj\agv\branches\CADImport\obj\Debug\DXFImporter.ArcEdit.resources
+F:\project\csprj\agv\branches\CADImport\obj\Debug\DXFImporter.LineEdit.resources
