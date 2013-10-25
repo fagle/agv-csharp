@@ -124,8 +124,7 @@ namespace DXFImporter
             this.menuItem5.Text = "Window";
             // 
             // openFileDialog1
-            // 
-            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
+            //            
             // 
             // MainGUI
             // 
@@ -204,12 +203,6 @@ namespace DXFImporter
         {
             this.Close();
         }
-
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
-
-        }
-
 
     }
 

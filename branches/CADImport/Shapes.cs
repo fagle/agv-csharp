@@ -1156,7 +1156,7 @@ namespace DXFImporter
 				highlighted = false;
 			}
 
-			g.DrawArc (pen, (float)centerPoint.X - (float) radius, (float)centerPoint.Y - (float)radius, (float)radius*2, (float)radius*2, - (float) startAngle, -360 + (float) startAngle - (float)sweepAngle);
+			g.DrawArc (pen, (float)centerPoint.X - (float) radius, (float)centerPoint.Y - (float)radius, (float)radius*2, (float)radius*2, - (float) startAngle, -360 - (float)sweepAngle);
 		}
 
 		public void Draw (Pen pen, Graphics g, double scale)
@@ -1174,19 +1174,23 @@ namespace DXFImporter
 		
 
 			
-			if (sweepAngle < startAngle)
-			{
-				tempAngle = -360 + (float) startAngle - (float) sweepAngle;
+			//if (sweepAngle < startAngle)
+			//{
+			//	tempAngle = -360 - (float) sweepAngle;
 
-			}
+			//}
 				/*else if (startAngle > 180 && sweepAngle > 180)
 				{
 					tempAngle = startAngle - sweepAngle;
 				
 				
 				}*/
-			else
-				tempAngle = (float) startAngle - (float) sweepAngle;
+			//else
+            if (sweepAngle > 0)
+                tempAngle = -(float)sweepAngle;
+            else {
+                tempAngle = -360 - (float)sweepAngle;
+            }
 
 			
 

@@ -25,7 +25,7 @@ namespace DXFImporter
 	{
 		private bool multipleSelect = false;
         private bool clicked = false;
-
+        private MapDataBase mapDB;
         private Point dragStartPoint;
         private Point dragEndPoint;
 		private double XMax, XMin;
@@ -34,12 +34,13 @@ namespace DXFImporter
 		private double scaleX = 1;
 		private double scaleY = 1;
 		private double mainScale = 1;
+        private double importScale = 0.04;
 
 		private Point aPoint;
-		private bool sizeChanged = false;
+		//private bool sizeChanged = false;
 		
-		private Point startPoint;
-		private Point endPoint;
+		/*private Point startPoint;
+		private Point endPoint;*/
 
 		private static Point exPoint;
 
@@ -49,8 +50,8 @@ namespace DXFImporter
 		public bool onCanvas = false;
 		private polyline thePolyLine = null;
 		
-		private bool polyLineStarting = true;
-		private bool CanIDraw = false;
+		//private bool polyLineStarting = true;
+		//private bool CanIDraw = false;
         private int objNumSelect = -1;
 
 		private FileInfo theSourceFile;
@@ -67,13 +68,13 @@ namespace DXFImporter
 		public Canvas()
 		{
 
-			startPoint = new Point (0, 0);
-			endPoint = new Point (0, 0);
+			//startPoint = new Point (0, 0);
+			//endPoint = new Point (0, 0);
 			exPoint = new Point (0, 0);
 
 			InitializeComponent();
-
-			
+            mapDB = new MapDataBase("geli_agv");
+            //mapDB.addMap("geli_agv");
 
 			XMax = this.pictureBox1.Size.Width;
 			YMax = this.pictureBox1.Size.Height /2;
@@ -166,7 +167,7 @@ namespace DXFImporter
 
 		public void Draw (Graphics g)
 		{
-            int xOffSet = 0;
+           //int xOffSet = 0;
 			Pen lePen = new Pen(Color.White, 3);
             Size scrollOffset = new Size(this.AutoScrollPosition);
        
@@ -279,7 +280,7 @@ namespace DXFImporter
 				if (checkLineProximity(obj.indexNo, obj.shapeType, daGe) == true)		
 				{
 					this.Cursor = Cursors.Cross;                    
-					CanIDraw = true;
+					//CanIDraw = true;
                     objNumSelect = obj.indexNo;
 					if (multipleSelect == false)
 						return true;
@@ -394,11 +395,11 @@ namespace DXFImporter
 		#region Helper Methods
 
 
-		private double CalculateRadius()		//this helper function is used to calculate the radius for the circle-drawing mode.
+		/*private double CalculateRadius()		//this helper function is used to calculate the radius for the circle-drawing mode.
 		{
 			double circleRadius = Math.Sqrt( (endPoint.X - startPoint.X)*(endPoint.X - startPoint.X) + (endPoint.Y - startPoint.Y)*(endPoint.Y - startPoint.Y) );
 			return circleRadius;
-		}
+		}*/
 
 
 		public void RecalculateScale()
@@ -445,10 +446,10 @@ namespace DXFImporter
 
 
 		#endregion
+        
+        #region DXF Data Extraction and Interpretation
 
-		#region DXF Data Extraction and Interpretation
-
-		public void ReadFromFile (string textFile)			//Reads a text file (in fact a DXF file) for importing an Autocad drawing.
+        public void ReadFromFile (string textFile)			//Reads a text file (in fact a DXF file) for importing an Autocad drawing.
 															//In the DXF File structure, data is stored in two-line groupings ( or bi-line, coupling line ...whatever you call it)
 															//in this grouping the first line defines the data, the second line contains the data value.
 															//..as a result there is always even number of lines in the DXF file..
@@ -570,7 +571,7 @@ namespace DXFImporter
 				scaleY = 1;
 
 			//mainScale = Math.Min(scaleX, scaleY);
-            mainScale = 0.04;
+            mainScale = 1;
         }
 
 		private void LineModule (StreamReader reader)		//Interpretes line objects in the DXF file
@@ -645,10 +646,12 @@ namespace DXFImporter
 
             adjViewScale();
 
-
-			int ix = drawingList.Add(new Line (new Point((int)x1, (int) -y1), new Point((int)x2, (int)-y2) , Color.White, 1));
+            Point startPoint1 = new Point((int)(x1*importScale), (int) -(y1*importScale));
+            Point endPoint1 = new Point((int)(x2*importScale), (int)-(y2*importScale));
+			int ix = drawingList.Add(new Line (startPoint1, endPoint1 , Color.White, 1));
 			objectIdentifier.Add (new DrawingObject (2, ix));
-
+            mapDB.addLine(startPoint1, endPoint1, ix);
+            //mapDB.modifyLine(startPoint1,endPoint1,ix);
 			///////////////////////////////////////////////////////////////////////////////////////////////////////
 			///////////////////////////////////////////////////////////////////////////////////////////////////////
 			
@@ -709,7 +712,7 @@ namespace DXFImporter
 					if (y1 < YMin)
 						YMin = y1;
 
-					pointList.Add(new Point((int)x1, (int)-y1));
+					pointList.Add(new Point((int)(x1*importScale), (int)-(y1*importScale)));
 					counter++;
 				}
 
@@ -828,7 +831,7 @@ namespace DXFImporter
 			mainScale = Math.Min(scaleX, scaleY);
 
 
-			int ix = drawingList.Add(new circle (new Point ((int)x1, (int)-y1), radius, Color.White, Color.Red, 1));
+			int ix = drawingList.Add(new circle (new Point ((int)(x1*importScale), (int)-(y1*importScale)), (int)(radius*importScale), Color.White, Color.Red, 1));
 			objectIdentifier.Add (new DrawingObject (4, ix));
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -910,10 +913,11 @@ namespace DXFImporter
 
             adjViewScale();
 
-
-			int ix = drawingList.Add(new arc (new Point ((int)x1, (int)-y1), radius, angle1, angle2, Color.White, Color.Red, 1));
+            Point center = new Point((int)(x1*importScale), (int)-(y1*importScale));  
+			int ix = drawingList.Add(new arc (center, (int) (radius*importScale), angle1, angle2 - angle1, Color.White, Color.Red, 1));
 			objectIdentifier.Add (new DrawingObject (6, ix));
-
+            mapDB.addArc(center, (int) (radius*importScale),(int)angle1,(int)(angle2 - angle1),ix);
+            //mapDB.modifyArc(center,(int)(radius*importScale),(int)angle1,(int)(angle2 - angle1),ix);
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -931,7 +935,7 @@ namespace DXFImporter
 			
 			Refresh();
 			
-			sizeChanged = true;
+			//sizeChanged = true;
 
 			
 		}
@@ -1080,12 +1084,20 @@ namespace DXFImporter
                     Point endPoint = new Point((int)(line.GetEndPoint.X * mainScale), (int)(line.GetEndPoint.Y * (-mainScale)));
                     dlgLineEdit = new LineEdit(startPoint,endPoint);
                     dlgLineEdit.Owner = this;
-                    dlgLineEdit.Show();
-                    dlgLineEdit.Activate();
-                    dlgLineEdit.Focus();
+                    if (dlgLineEdit.ShowDialog()==  DialogResult.OK) { 
+                    }
+                    dlgLineEdit.Dispose();
+                    //dlgLineEdit.Activate();
+                    //dlgLineEdit.Focus();
                 }
                 else if (obj.shapeType == 6) {
-                    MessageBox.Show("ObjNumSelect" + objNumSelect);
+                    arc arc1 = (arc)(drawingList[obj.indexNo]);
+                    Point o = arc1.AccessCenterPoint;
+                    dlgArcEdit = new ArcEdit((int)(o.X * mainScale),-(int)(o.Y * mainScale),(int)(arc1.AccessRadius * mainScale),(int)arc1.AccessStartAngle,(int)(arc1.AccessSweepAngle));
+                    dlgArcEdit.Owner = this;
+                    if (dlgArcEdit.ShowDialog() == DialogResult.OK) { 
+                    }
+                    dlgArcEdit.Dispose();
                 }
                 multipleSelect = false;               
             }
