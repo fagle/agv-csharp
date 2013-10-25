@@ -1,0 +1,5 @@
+F:\project\csprj\agv\branches\sqLiteTest\obj\x86\Debug\ResolveAssemblyReference.cache
+F:\project\csprj\agv\branches\sqLiteTest\bin\Debug\sqLiteTest.exe
+F:\project\csprj\agv\branches\sqLiteTest\bin\Debug\sqLiteTest.pdb
+F:\project\csprj\agv\branches\sqLiteTest\obj\x86\Debug\sqLiteTest.exe
+F:\project\csprj\agv\branches\sqLiteTest\obj\x86\Debug\sqLiteTest.pdb
