@@ -1,0 +1,11 @@
+D:\AGV\Avg\Avg\bin\Debug\Avg.exe
+D:\AGV\Avg\Avg\bin\Debug\Avg.pdb
+D:\AGV\Avg\Avg\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\AGV\Avg\Avg\obj\x86\Debug\Avg.Form1.resources
+D:\AGV\Avg\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+D:\AGV\Avg\Avg\obj\x86\Debug\GenerateResource.read.1.tlog
+D:\AGV\Avg\Avg\obj\x86\Debug\GenerateResource.write.1.tlog
+D:\AGV\Avg\Avg\obj\x86\Debug\Avg.exe
+D:\AGV\Avg\Avg\obj\x86\Debug\Avg.pdb
+C:\Documents and Settings\Administrator\桌面\AGV\Avg\Avg\obj\x86\Debug\Avg.exe
+C:\Documents and Settings\Administrator\桌面\AGV\Avg\Avg\obj\x86\Debug\Avg.pdb
