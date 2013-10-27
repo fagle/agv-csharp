@@ -12,7 +12,7 @@ using System.Collections;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace DXFImporter
+namespace AGV
 {
 	#region Shape class - abstract
 	public abstract class Shape
@@ -56,7 +56,7 @@ namespace DXFImporter
 	#endregion
 
 	#region Line class
-	public class Line : DXFImporter.Shape
+	public class Line : AGV.Shape
 	{
 		protected Point startPoint;
 		protected Point endPoint;
@@ -250,7 +250,7 @@ namespace DXFImporter
 	#endregion
 
 	#region Rectangle class
-	public class rectangle : DXFImporter.Line
+	public class rectangle : AGV.Line
 	{
 		public rectangle (Point start, Point end, Color color, Color fill, int w, int angle)
 		{
@@ -611,7 +611,7 @@ namespace DXFImporter
 	#endregion 
 
 	#region Circle Class
-	public class circle : DXFImporter.Shape
+	public class circle : AGV.Shape
 	{
 		private Point centerPoint;
 		private double radius;
@@ -818,7 +818,7 @@ namespace DXFImporter
 	#endregion
 
 	#region Freehand Class - Not Completed Yet
-	public class FreehandTool : DXFImporter.Shape
+	public class FreehandTool : AGV.Shape
 	{
 		private ArrayList linePoint;
 
@@ -899,7 +899,7 @@ namespace DXFImporter
 
 	#region Polyline Class
 
-	public class polyline : DXFImporter.Shape
+	public class polyline : AGV.Shape
 	{
 		private ArrayList listOfLines;
 
@@ -1040,7 +1040,7 @@ namespace DXFImporter
 
 	#region Arc Class
 
-	public class arc : DXFImporter.Shape
+	public class Arc : AGV.Shape
 	{
 		private Point centerPoint;
 		private double radius;
@@ -1048,7 +1048,7 @@ namespace DXFImporter
 		private double startAngle;
 		private double sweepAngle;
 
-		public arc (Point center, double r, double startangle, double sweepangle,Color color1, Color color2, int w)
+		public Arc (Point center, double r, double startangle, double sweepangle,Color color1, Color color2, int w)
 		{
 			centerPoint = center;
 			radius = r;

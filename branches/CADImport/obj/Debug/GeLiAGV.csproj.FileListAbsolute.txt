@@ -1,0 +1,16 @@
+F:\project\csprj\agv\branches\CADImport\obj\Debug\ResolveAssemblyReference.cache
+F:\project\csprj\agv\branches\CADImport\obj\Debug\AGV.ArcEdit.resources
+F:\project\csprj\agv\branches\CADImport\obj\Debug\AGV.Canvas.resources
+F:\project\csprj\agv\branches\CADImport\obj\Debug\AGV.LineEdit.resources
+F:\project\csprj\agv\branches\CADImport\obj\Debug\AGV.MainGUI.resources
+F:\project\csprj\agv\branches\CADImport\obj\Debug\GenerateResource-ResGen.read.1.tlog
+F:\project\csprj\agv\branches\CADImport\obj\Debug\GenerateResource.read.1.tlog
+F:\project\csprj\agv\branches\CADImport\obj\Debug\GenerateResource-ResGen.write.1.tlog
+F:\project\csprj\agv\branches\CADImport\obj\Debug\GenerateResource.write.1.tlog
+F:\project\csprj\agv\branches\CADImport\obj\Debug\AGV.Form1.resources
+F:\project\csprj\agv\branches\CADImport\bin\Debug\AGV.exe.config
+F:\project\csprj\agv\branches\CADImport\obj\Debug\AGV.Properties.Resources.resources
+F:\project\csprj\agv\branches\CADImport\bin\Debug\AGV.exe
+F:\project\csprj\agv\branches\CADImport\bin\Debug\AGV.pdb
+F:\project\csprj\agv\branches\CADImport\obj\Debug\AGV.exe
+F:\project\csprj\agv\branches\CADImport\obj\Debug\AGV.pdb

@@ -16,7 +16,7 @@ using System.Drawing.Drawing2D;
 using System.Data;
 using System.Windows.Forms;
 
-namespace DXFImporter
+namespace AGV
 {
 	/// <summary>
 	/// Summary description for Canvas.
@@ -46,6 +46,7 @@ namespace DXFImporter
 
 		private ArrayList drawingList;
 		private ArrayList objectIdentifier;
+        private CarScheduler scheduler = new CarScheduler();
 
 		public bool onCanvas = false;
 		private polyline thePolyLine = null;
@@ -59,7 +60,10 @@ namespace DXFImporter
 		private Rectangle highlightedRegion = new Rectangle (0,0,0,0);
 
 
-		private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private Button button2;
+        private Button button1;
+        private Label label1;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -83,8 +87,8 @@ namespace DXFImporter
 			
 			drawingList = new ArrayList ();
 			objectIdentifier = new ArrayList ();
-
-
+            mapDB.loadMapFromDataBase(drawingList,objectIdentifier);
+            scheduler.addCar(new Car("Car1"));
 			//.Net Style Double Buffering/////////////////
 			this.SetStyle(ControlStyles.DoubleBuffer, true);
 			this.SetStyle(ControlStyles.UserPaint, true);
@@ -121,6 +125,9 @@ namespace DXFImporter
 		private void InitializeComponent()
 		{
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -132,10 +139,46 @@ namespace DXFImporter
             this.pictureBox1.BackColor = System.Drawing.Color.SteelBlue;
             this.pictureBox1.Location = new System.Drawing.Point(10, 9);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(4980, 785);
+            this.pictureBox1.Size = new System.Drawing.Size(1500, 800);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Visible = false;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.Blue;
+            this.button1.CausesValidation = false;
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.Yes;
+            this.button1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.button1.Location = new System.Drawing.Point(354, 92);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(28, 28);
+            this.button1.TabIndex = 1;
+            this.button1.TabStop = false;
+            this.button1.Text = "S1";
+            this.button1.UseVisualStyleBackColor = false;
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.Color.Blue;
+            this.button2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.button2.Location = new System.Drawing.Point(479, 92);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(28, 28);
+            this.button2.TabIndex = 2;
+            this.button2.TabStop = false;
+            this.button2.Text = "S2";
+            this.button2.UseVisualStyleBackColor = false;
+            // 
+            // label1
+            // 
+            this.label1.BackColor = System.Drawing.Color.Lime;
+            this.label1.Font = new System.Drawing.Font("ËÎÌו", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(252, 190);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(16, 16);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "1";
             // 
             // Canvas
             // 
@@ -144,11 +187,16 @@ namespace DXFImporter
             this.AutoScrollMinSize = new System.Drawing.Size(5000, 800);
             this.BackColor = System.Drawing.Color.SteelBlue;
             this.ClientSize = new System.Drawing.Size(1244, 762);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
+            this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(1260, 800);
             this.Name = "Canvas";
             this.ShowInTaskbar = false;
             this.Text = "Canvas";
+            this.TopMost = true;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Canvas_Scroll);
             this.SizeChanged += new System.EventHandler(this.OnSizeChanged);
@@ -249,7 +297,7 @@ namespace DXFImporter
 					}
 					case 6:				//arc
 					{
-						arc temp = (arc) drawingList[obj.indexNo];
+						Arc temp = (Arc) drawingList[obj.indexNo];
 
 						lePen.Color = temp.AccessContourColor;
 						lePen.Width = temp.AccessLineWidth;
@@ -369,7 +417,7 @@ namespace DXFImporter
 				}
 				case 6:		//arc
 				{
-					arc tempArc = (arc) drawingList[indexno];
+					Arc tempArc = (Arc) drawingList[indexno];
 
 					if (mainScale == 0)
 						mainScale = 1;
@@ -650,7 +698,8 @@ namespace DXFImporter
             Point endPoint1 = new Point((int)(x2*importScale), (int)-(y2*importScale));
 			int ix = drawingList.Add(new Line (startPoint1, endPoint1 , Color.White, 1));
 			objectIdentifier.Add (new DrawingObject (2, ix));
-            mapDB.addLine(startPoint1, endPoint1, ix);
+            //mapDB.addLine(startPoint1, endPoint1, ix);
+            //mapDB.addShapeInfo(ix, "line");
             //mapDB.modifyLine(startPoint1,endPoint1,ix);
 			///////////////////////////////////////////////////////////////////////////////////////////////////////
 			///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -914,9 +963,10 @@ namespace DXFImporter
             adjViewScale();
 
             Point center = new Point((int)(x1*importScale), (int)-(y1*importScale));  
-			int ix = drawingList.Add(new arc (center, (int) (radius*importScale), angle1, angle2 - angle1, Color.White, Color.Red, 1));
+			int ix = drawingList.Add(new Arc (center, (int) (radius*importScale), angle1, angle2 - angle1, Color.White, Color.Red, 1));
 			objectIdentifier.Add (new DrawingObject (6, ix));
-            mapDB.addArc(center, (int) (radius*importScale),(int)angle1,(int)(angle2 - angle1),ix);
+            //mapDB.addArc(center, (int) (radius*importScale),(int)angle1,(int)(angle2 - angle1),ix);
+            //mapDB.addShapeInfo(ix, "arc");
             //mapDB.modifyArc(center,(int)(radius*importScale),(int)angle1,(int)(angle2 - angle1),ix);
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -948,7 +998,7 @@ namespace DXFImporter
 			if (this.WindowState == FormWindowState.Minimized)
 				return;
             
-            this.pictureBox1.Location = new Point(10,8);
+            this.pictureBox1.Location = new Point(0,0);
 			Graphics g = e.Graphics;
 
             
@@ -1091,7 +1141,7 @@ namespace DXFImporter
                     //dlgLineEdit.Focus();
                 }
                 else if (obj.shapeType == 6) {
-                    arc arc1 = (arc)(drawingList[obj.indexNo]);
+                    Arc arc1 = (Arc)(drawingList[obj.indexNo]);
                     Point o = arc1.AccessCenterPoint;
                     dlgArcEdit = new ArcEdit((int)(o.X * mainScale),-(int)(o.Y * mainScale),(int)(arc1.AccessRadius * mainScale),(int)arc1.AccessStartAngle,(int)(arc1.AccessSweepAngle));
                     dlgArcEdit.Owner = this;

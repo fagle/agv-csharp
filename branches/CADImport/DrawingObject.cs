@@ -1,6 +1,6 @@
 using System;
 
-namespace DXFImporter
+namespace AGV
 {
 	/// <summary>
 	/// Summary description for DrawingObject.

@@ -21,3 +21,4 @@ F:\project\csprj\agv\branches\CADImport\obj\Debug\DXFImporter.LineEdit.resources
 F:\project\csprj\agv\branches\CADImport\bin\Debug\DXFImporter.exe.config
 F:\project\csprj\agv\branches\CADImport\obj\Debug\GenerateResource.read.1.tlog
 F:\project\csprj\agv\branches\CADImport\obj\Debug\GenerateResource.write.1.tlog
+F:\project\csprj\agv\branches\CADImport\obj\Debug\DXFImporter.Properties.Resources.resources

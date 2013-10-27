@@ -1,4 +1,4 @@
-﻿namespace DXFImporter
+﻿namespace AGV
 {
     partial class ArcEdit
     {

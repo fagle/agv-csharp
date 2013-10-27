@@ -14,7 +14,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 
-namespace DXFImporter
+namespace AGV
 {
     /// <summary>
     /// Summary description for Form1.
@@ -39,6 +39,9 @@ namespace DXFImporter
         private System.Windows.Forms.MenuItem menuItem4;
         private System.Windows.Forms.MenuItem menuItem5;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private MenuItem menuItem6;
+        private MenuItem menuItem7;
+        private MenuItem menuItem8;
         private IContainer components;
 
         public MainGUI()
@@ -76,13 +79,15 @@ namespace DXFImporter
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainGUI));
             this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
+            this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.menuItem7 = new System.Windows.Forms.MenuItem();
+            this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
@@ -90,7 +95,10 @@ namespace DXFImporter
             // 
             this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem1,
-            this.menuItem5});
+            this.menuItem5,
+            this.menuItem6,
+            this.menuItem7,
+            this.menuItem8});
             // 
             // menuItem1
             // 
@@ -103,6 +111,7 @@ namespace DXFImporter
             // 
             // menuItem2
             // 
+            this.menuItem2.Enabled = false;
             this.menuItem2.Index = 0;
             this.menuItem2.Text = "Open";
             this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
@@ -123,14 +132,25 @@ namespace DXFImporter
             this.menuItem5.MdiList = true;
             this.menuItem5.Text = "Window";
             // 
-            // openFileDialog1
-            //            
+            // menuItem6
+            // 
+            this.menuItem6.Index = 2;
+            this.menuItem6.Text = "添加一个站点";
+            // 
+            // menuItem7
+            // 
+            this.menuItem7.Index = 3;
+            this.menuItem7.Text = "删除一个站点";
+            // 
+            // menuItem8
+            // 
+            this.menuItem8.Index = 4;
+            this.menuItem8.Text = "指定相邻两个站点的路径";
             // 
             // MainGUI
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.ClientSize = new System.Drawing.Size(736, 566);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.Menu = this.mainMenu1;
             this.Name = "MainGUI";
@@ -153,7 +173,13 @@ namespace DXFImporter
 
         private void Form1_Load(object sender, System.EventArgs e)
         {
+            newCanvas = new Canvas();			//a new canvas is created...
 
+            newCanvas.MdiParent = this;			//...its mdiparent is set...           
+
+            newCanvas.Show();							//the canvas is displayed...
+            newCanvas.Activate();
+            newCanvas.Focus();
         }
 
         private void menuItem2_Click(object sender, System.EventArgs e)		//Opens openfile dialog to select a DXF file
