@@ -145,7 +145,7 @@ namespace AGV
 
         private void carPositionChange(object sender, CarEventArgs e)
         {
-            setCarPosition(e.BingdingLabel,e.Position.X,e.Position.Y);
+            setCarPosition(e.BingdingLabel,e.Position.X + AutoScrollPosition.X,canvasHeight - e.Position.Y);
         }
 
 		protected override void Dispose( bool disposing )
