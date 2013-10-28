@@ -57,16 +57,16 @@ namespace AGV
 
 		private FileInfo theSourceFile;
 
-		private Rectangle highlightedRegion = new Rectangle (0,0,0,0);
-
-
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private Rectangle highlightedRegion = new Rectangle(0, 0, 0, 0);
         private Button button2;
         private Button button1;
         private Label label1;
         private Button button3;
         private Button button4;
         private Button button5;
+        private Car car1;
+        private int canvasHeight = 800;
+        private int canvasWidth = 1280;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -83,15 +83,19 @@ namespace AGV
             mapDB = new MapDataBase("geli_agv");
             //mapDB.addMap("geli_agv");
 
-			XMax = this.pictureBox1.Size.Width;
-			YMax = this.pictureBox1.Size.Height /2;
+			XMax = canvasWidth;
+			YMax = canvasHeight /2;
 
 
 			
 			drawingList = new ArrayList ();
 			objectIdentifier = new ArrayList ();
             mapDB.loadMapFromDataBase(drawingList,objectIdentifier);
-            scheduler.addCar(new Car("Car1"));
+            car1 = new Car("Car1",label1);
+            car1.carPosEvent += carPositionChange;
+            scheduler.demo(car1);
+            addDrawingListToTrack(drawingList,objectIdentifier,scheduler.TrackToGo);
+            scheduler.run();
 			//.Net Style Double Buffering/////////////////
 			this.SetStyle(ControlStyles.DoubleBuffer, true);
 			this.SetStyle(ControlStyles.UserPaint, true);
@@ -101,6 +105,48 @@ namespace AGV
 			//////////////////////////////////////////////
 
 		}
+
+        private void addDrawingListToTrack(ArrayList drawingList,ArrayList objIdentifier,Track t) 
+        {
+            foreach (DrawingObject obj in objectIdentifier)						//iterates through the objects
+            {
+                switch (obj.shapeType)
+                {
+                    case 2:				//line
+                        {
+                            Line temp = (Line)drawingList[obj.indexNo];
+                            t.AddLine(temp);
+                            break;
+                        }                   
+                    case 6:				//arc
+                        {
+                            Arc temp = (Arc)drawingList[obj.indexNo];
+                            t.AddArc(temp);
+                            break;
+                        }
+                }
+            }
+        }
+
+        private delegate void SetPosCallBack(Label label,int x, int y);
+        private void setCarPosition(Label label,int x, int y)
+        {
+            if (label.InvokeRequired)
+            {
+                SetPosCallBack d = new SetPosCallBack(setCarPosition);
+                if(!this.IsDisposed)
+                    Invoke(d, new object[] { label,x, y });
+            }
+            else
+            {
+                label.Location = new Point(x, y);
+            }
+        }
+
+        private void carPositionChange(object sender, CarEventArgs e)
+        {
+            setCarPosition(e.BingdingLabel,e.Position.X,e.Position.Y);
+        }
 
 		protected override void Dispose( bool disposing )
 		{
@@ -116,6 +162,7 @@ namespace AGV
             drawingList = null;
 			objectIdentifier = null;
 			base.Dispose(disposing);
+            scheduler.stop();
 		}
 
 
@@ -127,28 +174,13 @@ namespace AGV
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.BackColor = System.Drawing.Color.SteelBlue;
-            this.pictureBox1.Location = new System.Drawing.Point(10, 9);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1500, 800);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Visible = false;
             // 
             // button1
             // 
@@ -190,7 +222,7 @@ namespace AGV
             // 
             this.button3.BackColor = System.Drawing.Color.Blue;
             this.button3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button3.Location = new System.Drawing.Point(595, 299);
+            this.button3.Location = new System.Drawing.Point(795, 296);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(28, 28);
             this.button3.TabIndex = 4;
@@ -214,7 +246,7 @@ namespace AGV
             // 
             this.button5.BackColor = System.Drawing.Color.Blue;
             this.button5.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button5.Location = new System.Drawing.Point(389, 273);
+            this.button5.Location = new System.Drawing.Point(2208, 365);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(28, 28);
             this.button5.TabIndex = 6;
@@ -227,7 +259,7 @@ namespace AGV
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoScroll = true;
             this.AutoScrollMinSize = new System.Drawing.Size(5000, 800);
-            this.BackColor = System.Drawing.Color.SteelBlue;
+            this.BackColor = System.Drawing.Color.Teal;
             this.ClientSize = new System.Drawing.Size(1244, 762);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
@@ -235,14 +267,13 @@ namespace AGV
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.pictureBox1);
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(1260, 800);
             this.Name = "Canvas";
             this.ShowInTaskbar = false;
             this.Text = "Canvas";
             this.TopMost = true;
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;          
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Canvas_Scroll);
             this.SizeChanged += new System.EventHandler(this.OnSizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CanvasRenewed_KeyDown);
@@ -250,7 +281,6 @@ namespace AGV
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MouseMoveCanvas);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseUp);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
 		}
@@ -264,7 +294,7 @@ namespace AGV
 			Pen lePen = new Pen(Color.White, 3);
             Size scrollOffset = new Size(this.AutoScrollPosition);
        
-			g.TranslateTransform(this.pictureBox1.Location.X + 1 + scrollOffset.Width, this.pictureBox1.Location.Y + this.pictureBox1.Size.Height - 1 + scrollOffset.Height);
+			g.TranslateTransform( 1 + scrollOffset.Width, canvasHeight - 1 + scrollOffset.Height);
 
 			if (YMin < 0)
 				g.TranslateTransform(0, - (int)Math.Abs(YMin) );			//transforms point-of-origin to the lower left corner of the canvas.
@@ -391,9 +421,9 @@ namespace AGV
 			Graphics g = daGe;
 			Pen lePen = new Pen(Color.Yellow, 1);
 
-			g = pictureBox1.CreateGraphics();
+			g = this.CreateGraphics();
 			
-			g.TranslateTransform(this.pictureBox1.Left+8 , this.pictureBox1.Size.Height+8 );	//transforms point-of-origin to the lower left corner of the canvas.
+			g.TranslateTransform(8 , canvasHeight+8 );	//transforms point-of-origin to the lower left corner of the canvas.
 
 			g.SmoothingMode = SmoothingMode.HighQuality; 
 
@@ -648,17 +678,17 @@ namespace AGV
 
         private void adjViewScale() 
         { 
-            if ((Math.Abs(XMax-XMin)) > this.pictureBox1.Size.Width)
+            if ((Math.Abs(XMax-XMin)) > canvasWidth)
 			{
-				scaleX = (double) (this.pictureBox1.Size.Width) / (double) (Math.Abs(XMax-XMin));
+				scaleX = (double) (canvasWidth) / (double) (Math.Abs(XMax-XMin));
 			}
 			else
 				scaleX = 1;
 
 
-			if ((Math.Abs(YMax-YMin)) > this.pictureBox1.Size.Height)
+			if ((Math.Abs(YMax-YMin)) > canvasHeight)
 			{
-				scaleY = (double) (this.pictureBox1.Size.Height) / (double) (Math.Abs(YMax-YMin));
+				scaleY = (double) (canvasHeight) / (double) (Math.Abs(YMax-YMin));
 			}
 			else
 				scaleY = 1;
@@ -826,17 +856,17 @@ namespace AGV
 			if (openOrClosed == 1)
 				thePolyLine.AppendLine (new Line ( (Point)pointList[numberOfVertices-1], (Point)pointList[0],Color.White, 1));
 
-			if ((Math.Abs(XMax-XMin)) > this.pictureBox1.Size.Width)
+			if ((Math.Abs(XMax-XMin)) > canvasWidth)
 			{
-				scaleX = (double) (this.pictureBox1.Size.Width) / (double) (Math.Abs(XMax-XMin));
+				scaleX = (double) (canvasWidth) / (double) (Math.Abs(XMax-XMin));
 			}
 			else
 				scaleX = 1;
 
 
-			if ((Math.Abs(YMax-YMin)) > this.pictureBox1.Size.Height)
+			if ((Math.Abs(YMax-YMin)) > canvasHeight)
 			{
-				scaleY = (double) (this.pictureBox1.Size.Height) / (double) (Math.Abs(YMax-YMin));
+				scaleY = (double) (canvasHeight) / (double) (Math.Abs(YMax-YMin));
 			}
 			else
 				scaleY = 1;
@@ -907,17 +937,17 @@ namespace AGV
 			//***************is interpreted hereinafter***********************************************************//
 
 
-			if ((Math.Abs(XMax-XMin)) > this.pictureBox1.Size.Width)
+			if ((Math.Abs(XMax-XMin)) > canvasWidth)
 			{
-				scaleX = (double) (this.pictureBox1.Size.Width) / (double) (Math.Abs(XMax-XMin));
+				scaleX = (double) (canvasWidth) / (double) (Math.Abs(XMax-XMin));
 			}
 			else
 				scaleX = 1;
 
 
-			if ((Math.Abs(YMax-YMin)) > this.pictureBox1.Size.Height)
+			if ((Math.Abs(YMax-YMin)) > canvasHeight)
 			{
-				scaleY = (double) (this.pictureBox1.Size.Height) / (double) (Math.Abs(YMax-YMin));
+				scaleY = (double) (canvasHeight) / (double) (Math.Abs(YMax-YMin));
 			}
 			else
 				scaleY = 1;
@@ -1043,28 +1073,27 @@ namespace AGV
 			if (this.WindowState == FormWindowState.Minimized)
 				return;
             
-            this.pictureBox1.Location = new Point(0,0);
+            //this.pictureBox1.Location = new Point(0,0);
 			Graphics g = e.Graphics;
 
             
-			Rectangle rect = new Rectangle(this.pictureBox1.Location, this.pictureBox1.Size);            
+			//Rectangle rect = new Rectangle(new Point(0,0), new Size(canvasWidth,canvasHeight));            
 
-			System.Drawing.Drawing2D.LinearGradientBrush brush = new System.Drawing.Drawing2D.LinearGradientBrush(
+			/*System.Drawing.Drawing2D.LinearGradientBrush brush = new System.Drawing.Drawing2D.LinearGradientBrush(
 																											rect, 
 																											Color.SteelBlue, 
 																											Color.Black, 
-																											System.Drawing.Drawing2D.LinearGradientMode.ForwardDiagonal);
-
-
-			if (this.WindowState != FormWindowState.Minimized)
+																											System.Drawing.Drawing2D.LinearGradientMode.ForwardDiagonal);		
+             */
+            if (this.WindowState != FormWindowState.Minimized)
 			{
-				e.Graphics.FillRectangle(brush, rect);
+				//e.Graphics.FillRectangle(brush, rect);
 				
 				Draw(g);				//All drawing is made here...
 			}
 		
 			g = null;
-			brush.Dispose();
+			//brush.Dispose();
 		}
 
 
@@ -1115,13 +1144,13 @@ namespace AGV
 		private void MouseMoveCanvas(object sender, System.Windows.Forms.MouseEventArgs e)		//mousemove event...while the "shift" button is pressed down, the shapes can be highlighted...
 		{
             Size scrollOffset = new Size(this.AutoScrollPosition);
-            aPoint.X = e.X - this.pictureBox1.Location.X - (int) Math.Abs(XMin) - 1 - scrollOffset.Width;
-			aPoint.Y = e.Y - this.pictureBox1.Location.Y - this.pictureBox1.Size.Height + (int) Math.Abs(YMin) + 1 - scrollOffset.Height;
+            aPoint.X = e.X  - (int) Math.Abs(XMin) - 1 - scrollOffset.Width;
+			aPoint.Y = e.Y  - canvasHeight + (int) Math.Abs(YMin) + 1 - scrollOffset.Height;
            
             
-			Rectangle rect = this.pictureBox1.ClientRectangle;
+			Rectangle rect = this.ClientRectangle;
         
-			if (rect.Contains(new Point(e.X - this.pictureBox1.Location.X , e.Y - this.pictureBox1.Location.Y )))
+			if (rect.Contains(new Point(e.X , e.Y)))
 			{
                 this.Cursor = Cursors.Cross;              
 				onCanvas = true;
@@ -1199,5 +1228,6 @@ namespace AGV
             objNumSelect = -1;
                
         }
+
 	}
 }

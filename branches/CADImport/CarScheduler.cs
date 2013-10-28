@@ -11,6 +11,8 @@ namespace AGV
         private List<Car> carsRun = new List<Car>(20);
         private Track trackTogo = new Track();
         private List<Car> carsStandby = new List<Car>(20);
+        private Thread thread;
+        private bool onLine = false;
 
         public Track TrackToGo 
         {
@@ -39,18 +41,25 @@ namespace AGV
 
         public void run() 
         {
-            Thread thread = new Thread(scheduleThread);
+            onLine = true;
+            thread = new Thread(scheduleThread);
+            thread.Start();
         }
 
         private void scheduleThread ()
         {
-            while (true)
+            while (onLine)
             {
                 foreach(Car car in carsRun)
                 {
                     car.run(trackTogo);
                 }
             }
+        }
+        public void stop()
+        {
+            onLine = false;
+            thread.Abort();
         }
     }
 }
