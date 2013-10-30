@@ -1227,6 +1227,10 @@ namespace AGV
                 return trackPoints.Count;
             }//轨迹点的个数
         }
+        public void clear()
+        {
+            trackPoints.Clear();
+        }
         public bool AddLine(int x1, int y1, int x2, int y2)
         {
             Point curPoint = new Point(0, 400);
@@ -1278,11 +1282,11 @@ namespace AGV
         }
         public void AddArc(Arc arc)
         {
-            int radius = (int)arc.AccessRadius;
-            Point center = arc.AccessCenterPoint;
+            int radius = (int)arc.Radius;
+            Point center = arc.CenterPoint;
             int left = center.X - radius;
             int top = center.Y - radius;
-            AddArc(left,top,2*radius,2*radius,(int)arc.AccessStartAngle,(int)arc.AccessSweepAngle);
+            AddArc(left,top,2*radius,2*radius,(int)arc.StartAngle,(int)arc.SweepAngle);
         }
         /*public bool AddLine(Point p1, Point p2)
        {

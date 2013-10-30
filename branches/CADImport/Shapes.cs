@@ -25,25 +25,25 @@ namespace AGV
 		public int rotation;
 		public bool highlighted;
 
-		public abstract Color AccessContourColor
+		public abstract Color ContourColor
 		{
 			get;
 			set;
 		}
 
-		public abstract Color AccessFillColor
+		public abstract Color FillColor
 		{
 			get;
 			set;
 		}
 
-		public abstract int AccessLineWidth
+		public abstract int LineWidth
 		{
 			get;
 			set;
 		}
 
-		public abstract int AccessRotation
+		public abstract int Rotation
 		{
 			get;
 			set;
@@ -72,13 +72,19 @@ namespace AGV
 			
 		}
 
-		public Line()
-		{
+        public Line()
+        { }
 
+		public Line(Line line)
+		{
+            this.startPoint = line.startPoint;
+            this.endPoint = line.endPoint;
+            this.contourColor = line.contourColor;
+            this.lineWidth = line.lineWidth;
 		}
 
 
-		public override Color AccessContourColor
+		public override Color ContourColor
 		{
 			get
 			{
@@ -90,7 +96,7 @@ namespace AGV
 			}
 		}
 
-		public override Color AccessFillColor
+		public override Color FillColor
 		{
 			get
 			{
@@ -102,7 +108,7 @@ namespace AGV
 			}
 		}
 
-		public override int AccessLineWidth
+		public override int LineWidth
 		{
 			get
 			{
@@ -115,7 +121,7 @@ namespace AGV
 
 		}
 
-		public override int AccessRotation
+		public override int Rotation
 		{
 			get
 			{
@@ -212,11 +218,16 @@ namespace AGV
 			// for easy mouse selection
 			areaPath = new GraphicsPath();
 			areaPen = new Pen(Color.Red, 7);
-
-			areaPath.AddLine((float)GetStartPoint.X* (float)scale, (float)GetStartPoint.Y * (float)scale, (float)GetEndPoint.X* (float)scale, (float)GetEndPoint.Y* (float)scale);
-			// startPoint and EndPoint are class members of type Point
-			areaPath.Widen(areaPen);
-
+            try
+            {
+                areaPath.AddLine((float)GetStartPoint.X * (float)scale, (float)GetStartPoint.Y * (float)scale, (float)GetEndPoint.X * (float)scale, (float)GetEndPoint.Y * (float)scale);
+                // startPoint and EndPoint are class members of type Point
+                areaPath.Widen(areaPen);
+            }
+            catch (Exception x)
+            {
+                Console.WriteLine(x.Message);
+            }
 			// Create region from the path
 			try
 			{
@@ -272,7 +283,7 @@ namespace AGV
 				highlighted = false;
 			}
 
-			if (AccessRotation != 0)
+			if (Rotation != 0)
 			{
 				DrawRotatedRectangle (pen, g);
 				return;
@@ -303,7 +314,7 @@ namespace AGV
 
 			Point center = new Point ( P1.X + (P3.X - P1.X)/2, P1.Y + (P4.Y - P1.Y)/2);
 
-			int angle = AccessRotation;
+			int angle = Rotation;
 
 			if (angle != 0)
 			{
@@ -372,13 +383,13 @@ namespace AGV
 
 					Point center = new Point ( check1.X + (check1a.X - check1.X)/2, check1.Y + (check2a.Y - check1.Y)/2);
 
-					check1 = CalculateRotatedNewPoint (check1, center, AccessRotation);
+					check1 = CalculateRotatedNewPoint (check1, center, Rotation);
 
-					check2 = CalculateRotatedNewPoint (check2, center, AccessRotation);
+					check2 = CalculateRotatedNewPoint (check2, center, Rotation);
 					
-					check1a = CalculateRotatedNewPoint (check1a, center, AccessRotation);
+					check1a = CalculateRotatedNewPoint (check1a, center, Rotation);
 
-					check2a = CalculateRotatedNewPoint (check2a, center, AccessRotation);
+					check2a = CalculateRotatedNewPoint (check2a, center, Rotation);
 
 
 					GraphicsPath areaPath;
@@ -433,14 +444,14 @@ namespace AGV
 					Point P3 = new Point (P2.X, P1.Y);
 					Point P4 = new Point (P1.X, P2.Y);
 
-					if (AccessRotation != 0)
+					if (Rotation != 0)
 					{
 						Point center = new Point ( P1.X + (P3.X - P1.X)/2, P1.Y + (P4.Y - P1.Y)/2);
 
-						P1 = CalculateRotatedNewPoint(P1, center, AccessRotation);
-						P2 = CalculateRotatedNewPoint(P2, center, AccessRotation);
-						P3 = CalculateRotatedNewPoint(P3, center, AccessRotation);
-						P4 = CalculateRotatedNewPoint(P4, center, AccessRotation);
+						P1 = CalculateRotatedNewPoint(P1, center, Rotation);
+						P2 = CalculateRotatedNewPoint(P2, center, Rotation);
+						P3 = CalculateRotatedNewPoint(P3, center, Rotation);
+						P4 = CalculateRotatedNewPoint(P4, center, Rotation);
 					}
 
 					int maxX = Math.Max(P1.X, P2.X);
@@ -481,7 +492,7 @@ namespace AGV
 			Point P3 = new Point (P2.X, P1.Y);
 			Point P4 = new Point (P1.X, P2.Y);
 
-			if (AccessRotation != 0)
+			if (Rotation != 0)
 			{
 				Point bottom = new Point (0, 0);
 				Point top = new Point (0, 0);
@@ -490,10 +501,10 @@ namespace AGV
 
 				Point center = new Point ( P1.X + (P3.X - P1.X)/2, P1.Y + (P4.Y - P1.Y)/2);
 
-				P1 = CalculateRotatedNewPoint(P1, center, AccessRotation);
-				P2 = CalculateRotatedNewPoint(P2, center, AccessRotation);
-				P3 = CalculateRotatedNewPoint(P3, center, AccessRotation);
-				P4 = CalculateRotatedNewPoint(P4, center, AccessRotation);
+				P1 = CalculateRotatedNewPoint(P1, center, Rotation);
+				P2 = CalculateRotatedNewPoint(P2, center, Rotation);
+				P3 = CalculateRotatedNewPoint(P3, center, Rotation);
+				P4 = CalculateRotatedNewPoint(P4, center, Rotation);
 
 				int maxX = Math.Max(P1.X, P2.X);
 				maxX = Math.Max(maxX, P3.X);
@@ -627,7 +638,7 @@ namespace AGV
 			rotation= 0;
 		}
 
-		public override Color AccessContourColor
+		public override Color ContourColor
 		{
 			get
 			{
@@ -639,7 +650,7 @@ namespace AGV
 			}
 		}
 
-		public override Color AccessFillColor
+		public override Color FillColor
 		{
 			get
 			{
@@ -651,7 +662,7 @@ namespace AGV
 			}
 		}
 
-		public override int AccessLineWidth
+		public override int LineWidth
 		{
 			get
 			{
@@ -664,7 +675,7 @@ namespace AGV
 
 		}
 
-		public override int AccessRotation
+		public override int Rotation
 		{
 			get
 			{
@@ -677,7 +688,7 @@ namespace AGV
 		}
 
 
-		public Point AccessCenterPoint
+		public Point CenterPoint
 		{
 			get
 			{
@@ -689,7 +700,7 @@ namespace AGV
 			}
 		}
 
-		public double AccessRadius
+		public double Radius
 		{
 			get
 			{
@@ -721,8 +732,8 @@ namespace AGV
 
 		/*		public override bool Highlight(Pen pen, Graphics g, Point point)
 				{
-					Point circular = AccessCenterPoint;
-					int abc = (int) AccessRadius;
+					Point circular = CenterPoint;
+					int abc = (int) Radius;
 	
 					GraphicsPath areaPath;
 					Pen areaPen;
@@ -762,8 +773,8 @@ namespace AGV
 
 		public override bool Highlight(Pen pen, Graphics g, Point point)
 		{
-			Point center = AccessCenterPoint;
-			int rad = (int) AccessRadius;
+			Point center = CenterPoint;
+			int rad = (int) Radius;
 
 			int check1y = center.Y - rad;
 			int check2y = center.Y + rad;
@@ -789,8 +800,8 @@ namespace AGV
 
 		public bool Highlight(Pen pen, Graphics g, Point point, double scale)
 		{
-			Point center = AccessCenterPoint;
-			int rad = (int) AccessRadius;
+			Point center = CenterPoint;
+			int rad = (int) Radius;
 
 			int check1y = center.Y - rad;
 			int check2y = center.Y + rad;
@@ -833,7 +844,7 @@ namespace AGV
 
 		}
 
-		public override Color AccessContourColor
+		public override Color ContourColor
 		{
 			get
 			{
@@ -846,7 +857,7 @@ namespace AGV
 			
 		}
 
-		public override Color AccessFillColor
+		public override Color FillColor
 		{
 			get
 			{
@@ -859,7 +870,7 @@ namespace AGV
 		}
 
 
-		public override int AccessLineWidth
+		public override int LineWidth
 		{
 			get
 			{
@@ -871,7 +882,7 @@ namespace AGV
 			}
 		}
 
-		public override int AccessRotation
+		public override int Rotation
 		{
 			get
 			{
@@ -911,7 +922,7 @@ namespace AGV
 			lineWidth = w;
 		}
 
-		public override Color AccessContourColor
+		public override Color ContourColor
 		{
 			get
 			{
@@ -923,7 +934,7 @@ namespace AGV
 			}
 		}
 
-		public override Color AccessFillColor
+		public override Color FillColor
 		{
 			get
 			{
@@ -936,7 +947,7 @@ namespace AGV
 		}
 
 
-		public override int AccessLineWidth
+		public override int LineWidth
 		{
 			get
 			{
@@ -949,7 +960,7 @@ namespace AGV
 
 		}
 
-		public override int AccessRotation
+		public override int Rotation
 		{
 			get
 			{
@@ -1060,8 +1071,17 @@ namespace AGV
 			shapeIdentifier = 3;
 			rotation= 0;
 		}
-
-		public double AccessStartAngle
+        public Arc(Arc arc)
+        {
+            this.centerPoint = arc.centerPoint;
+            this.radius = arc.radius;
+            this.startAngle = arc.startAngle;
+            this.sweepAngle = arc.sweepAngle;
+            this.contourColor = arc.contourColor;
+            this.fillColor = arc.fillColor;
+            this.lineWidth = arc.lineWidth;
+        }
+		public double StartAngle
 		{
 			get
 			{
@@ -1070,7 +1090,7 @@ namespace AGV
 			
 		}
 
-		public double AccessSweepAngle
+		public double SweepAngle
 		{
 			get
 			{
@@ -1078,7 +1098,7 @@ namespace AGV
 			}
 		}
 
-		public override Color AccessContourColor
+		public override Color ContourColor
 		{
 			get
 			{
@@ -1090,7 +1110,7 @@ namespace AGV
 			}
 		}
 
-		public override Color AccessFillColor
+		public override Color FillColor
 		{
 			get
 			{
@@ -1102,7 +1122,7 @@ namespace AGV
 			}
 		}
 
-		public override int AccessLineWidth
+		public override int LineWidth
 		{
 			get
 			{
@@ -1115,7 +1135,7 @@ namespace AGV
 
 		}
 
-		public override int AccessRotation
+		public override int Rotation
 		{
 			get
 			{
@@ -1128,7 +1148,7 @@ namespace AGV
 		}
 
 
-		public Point AccessCenterPoint
+		public Point CenterPoint
 		{
 			get
 			{
@@ -1140,7 +1160,7 @@ namespace AGV
 			}
 		}
 
-		public double AccessRadius
+		public double Radius
 		{
 			get
 			{
@@ -1185,22 +1205,16 @@ namespace AGV
 				
 				
 				}*/
-			//else
-            if (sweepAngle > 0)
-                tempAngle = -(float)sweepAngle;
-            else {
-                tempAngle = -360 - (float)sweepAngle;
-            }
-
+			//else            
+                tempAngle = -(float)sweepAngle;            
 			
-
 			g.DrawArc (pen, (float)centerPoint.X* (float)scale - (float) radius* (float)scale, (float)centerPoint.Y* (float)scale - (float)radius* (float)scale, (float)radius*2* (float)scale, (float)radius*2* (float)scale, -(float) startAngle, tempAngle);
 		}
 		
 		public override bool Highlight(Pen pen, Graphics g, Point point)
 		{
-			Point center = AccessCenterPoint;
-			int rad = (int) AccessRadius;
+			Point center = CenterPoint;
+			int rad = (int) Radius;
 
 			int check1y = center.Y - rad;
 			int check2y = center.Y + rad;
@@ -1224,8 +1238,8 @@ namespace AGV
 
 		public bool Highlight(Pen pen, Graphics g, Point point, double scale)
 		{
-			Point center = AccessCenterPoint;
-			int rad = (int) AccessRadius;
+			Point center = CenterPoint;
+			int rad = (int) Radius;
 
 			int check1y = center.Y - rad;
 			int check2y = center.Y + rad;

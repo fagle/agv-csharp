@@ -40,7 +40,7 @@ namespace AGV
     {
         private string name;
         private int speed = 0;
-        private int defaultSpeed = 90;
+        private int defaultSpeed = 60;
         private Point position=new Point(300,300); 
         private Track trackToGo=new Track();
         private Label bindingLabel;
@@ -69,10 +69,12 @@ namespace AGV
                 {
                     speed = 100;
                 }
-                else
+                else if (value < 0)
                 {
-                    speed = value;
+                    speed = 0;
                 }
+                else
+                    speed = value;
             }
         }
 
@@ -90,21 +92,30 @@ namespace AGV
         {
             speed = 0;
         }
-        private void run()
+        private void run(int speed)
         {
-            speed = defaultSpeed;
-            foreach (Point p in trackToGo.TrackPointList)
+            this.speed = speed;
+            if (trackToGo.TrackPointList.Count == 0)
+                return;
+            for (int i=0;i<trackToGo.TrackPointList.Count;i++)
             {
+                Point p = trackToGo.TrackPointList[i];
                 position = new Point(p.X,-p.Y);
                 if (carPosEvent != null)
                     carPosEvent(this,new CarEventArgs(name,position,bindingLabel));               
-                if (speed == 0)
+                if (this.speed == 0)
                     break;
                 else
-                    Thread.Sleep(1000 - 900 - speed);
+                    Thread.Sleep(1000 - 900 - this.speed);
+                if (trackToGo.TrackPointList.Count == 0)
+                    break;
             }
         }
         
+        private void run()
+        {
+            run(defaultSpeed);
+        }
 
         public void run(Track track) 
         {

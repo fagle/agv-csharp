@@ -58,12 +58,12 @@ namespace AGV
 		private FileInfo theSourceFile;
 
         private Rectangle highlightedRegion = new Rectangle(0, 0, 0, 0);
-        private Button button2;
-        private Button button1;
+        //private Button button2;
+        //private Button button1;
         private Label label1;
-        private Button button3;
-        private Button button4;
-        private Button button5;
+        //private Button button3;
+        //private Button button4;
+        //private Button button5;
         private Car car1;
         private int canvasHeight = 800;
         private int canvasWidth = 1280;
@@ -96,6 +96,7 @@ namespace AGV
             scheduler.demo(car1);
             addDrawingListToTrack(drawingList,objectIdentifier,scheduler.TrackToGo);
             scheduler.run();
+            //focusCar(car1);
 			//.Net Style Double Buffering/////////////////
 			this.SetStyle(ControlStyles.DoubleBuffer, true);
 			this.SetStyle(ControlStyles.UserPaint, true);
@@ -104,8 +105,48 @@ namespace AGV
 			//////////////////////////////////////////////
 			//////////////////////////////////////////////
 
+            loadStations();
+
 		}
 
+        private void btnClicked(object sender, EventArgs e) 
+        {
+            Button fromButton = (Button)sender;
+            //Console.WriteLine(e.ToString());
+            //Console.WriteLine(sender.ToString());
+        }
+
+        private void initButton(Button btn, string  name, System.EventHandler eh)
+        {
+            btn.BackColor = System.Drawing.Color.Blue;
+            btn.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            btn.Location = new System.Drawing.Point(354, 92);
+            btn.Name = name;
+            btn.Size = new System.Drawing.Size(28, 28);
+            btn.TabIndex = 1;
+            btn.TabStop = false;
+            btn.Text = name;
+            btn.UseVisualStyleBackColor = false;
+            btn.Click += new System.EventHandler(eh);
+            this.Controls.Add(btn);
+        }
+
+        private void creatStation(string name, int shapeIndex, int xOffset, int yOffset) 
+        {
+            Point p = ((Line)drawingList[shapeIndex]).GetEndPoint;
+            p.X = p.X + xOffset;
+            p.Y = canvasHeight + p.Y + yOffset;
+            Button btn = new Button();
+            initButton(btn, name, btnClicked);
+            btn.Location = p;
+        }
+
+        private void loadStations() 
+        {
+            creatStation("S0",0,-50,0);
+            creatStation("S1",3,0,-40);
+            creatStation("S2",14,0,-40);
+        }
         private void addDrawingListToTrack(ArrayList drawingList,ArrayList objIdentifier,Track t) 
         {
             foreach (DrawingObject obj in objectIdentifier)						//iterates through the objects
@@ -114,14 +155,22 @@ namespace AGV
                 {
                     case 2:				//line
                         {
-                            Line temp = (Line)drawingList[obj.indexNo];
+                            Line temp = new Line( (Line)drawingList[obj.indexNo]);
                             t.AddLine(temp);
                             break;
                         }                   
                     case 6:				//arc
                         {
-                            Arc temp = (Arc)drawingList[obj.indexNo];
-                            t.AddArc(temp);
+                            Arc temp = new Arc( (Arc)drawingList[obj.indexNo]);                            
+                            int startAngle = -(int)temp.StartAngle;
+                            
+                            int sweepAngle = (int) temp.SweepAngle;
+                            //if (sweepAngle > 0)
+                            sweepAngle = -(int)sweepAngle;
+                            //else {
+                            //    sweepAngle = -360 - (int)sweepAngle;
+                            //}
+                            t.AddArc((int)(temp.CenterPoint.X - temp.Radius),  (int)(temp.CenterPoint.Y - temp.Radius), 2 * (int)(temp.Radius), 2 * (int)(temp.Radius),startAngle,sweepAngle);
                             break;
                         }
                 }
@@ -129,6 +178,7 @@ namespace AGV
         }
 
         private delegate void SetPosCallBack(Label label,int x, int y);
+        private int lastPosX;
         private void setCarPosition(Label label,int x, int y)
         {
             if (label.InvokeRequired)
@@ -139,13 +189,19 @@ namespace AGV
             }
             else
             {
+               lastPosX = label.Location.X;
                 label.Location = new Point(x, y);
+                if (carFocus != null)
+                {
+                    AutoScrollPosition = new Point( -(AutoScrollPosition.X - label.Location.X + lastPosX),0);
+                }
             }
         }
 
         private void carPositionChange(object sender, CarEventArgs e)
         {
-            setCarPosition(e.BingdingLabel,e.Position.X + AutoScrollPosition.X,canvasHeight - e.Position.Y);
+            int x = AutoScrollPosition.X;
+            setCarPosition(e.BingdingLabel,e.Position.X + x,canvasHeight - e.Position.Y);
         }
 
 		protected override void Dispose( bool disposing )
@@ -174,40 +230,11 @@ namespace AGV
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            
             this.label1 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
+            
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.Blue;
-            this.button1.CausesValidation = false;
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this.button1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button1.Location = new System.Drawing.Point(354, 92);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(28, 28);
-            this.button1.TabIndex = 1;
-            this.button1.TabStop = false;
-            this.button1.Text = "S1";
-            this.button1.UseVisualStyleBackColor = false;
-            // 
-            // button2
-            // 
-            this.button2.BackColor = System.Drawing.Color.Blue;
-            this.button2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button2.Location = new System.Drawing.Point(479, 92);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(28, 28);
-            this.button2.TabIndex = 2;
-            this.button2.TabStop = false;
-            this.button2.Text = "S2";
-            this.button2.UseVisualStyleBackColor = false;
-            // 
+            
             // label1
             // 
             this.label1.BackColor = System.Drawing.Color.Lime;
@@ -217,43 +244,7 @@ namespace AGV
             this.label1.Size = new System.Drawing.Size(16, 16);
             this.label1.TabIndex = 3;
             this.label1.Text = "1";
-            // 
-            // button3
-            // 
-            this.button3.BackColor = System.Drawing.Color.Blue;
-            this.button3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button3.Location = new System.Drawing.Point(795, 296);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(28, 28);
-            this.button3.TabIndex = 4;
-            this.button3.TabStop = false;
-            this.button3.Text = "S3";
-            this.button3.UseVisualStyleBackColor = false;
-            // 
-            // button4
-            // 
-            this.button4.BackColor = System.Drawing.Color.Blue;
-            this.button4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button4.Location = new System.Drawing.Point(490, 220);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(28, 28);
-            this.button4.TabIndex = 5;
-            this.button4.TabStop = false;
-            this.button4.Text = "S4";
-            this.button4.UseVisualStyleBackColor = false;
-            // 
-            // button5
-            // 
-            this.button5.BackColor = System.Drawing.Color.Blue;
-            this.button5.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.button5.Location = new System.Drawing.Point(2208, 365);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(28, 28);
-            this.button5.TabIndex = 6;
-            this.button5.TabStop = false;
-            this.button5.Text = "S5";
-            this.button5.UseVisualStyleBackColor = false;
-            // 
+            
             // Canvas
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -261,22 +252,15 @@ namespace AGV
             this.AutoScrollMinSize = new System.Drawing.Size(5000, 800);
             this.BackColor = System.Drawing.Color.Teal;
             this.ClientSize = new System.Drawing.Size(1244, 762);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.KeyPreview = true;
+            this.Controls.Add(this.label1);            
             this.MinimumSize = new System.Drawing.Size(1260, 800);
             this.Name = "Canvas";
             this.ShowInTaskbar = false;
             this.Text = "Canvas";
             this.TopMost = true;
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;          
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Canvas_Scroll);
             this.SizeChanged += new System.EventHandler(this.OnSizeChanged);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CanvasRenewed_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CanvasRenewed_KeyUp);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MouseMoveCanvas);
@@ -312,19 +296,21 @@ namespace AGV
 					{
 						Line temp = (Line) drawingList[obj.indexNo];
 
-						lePen.Color = temp.AccessContourColor;
-						lePen.Width = temp.AccessLineWidth;
+						lePen.Color = temp.ContourColor;
+						lePen.Width = temp.LineWidth;
 
 						
 						highlightedRegion.Location = temp.GetStartPoint;
 
 						highlightedRegion.Width = temp.GetStartPoint.X - temp.GetEndPoint.X;
 						highlightedRegion.Height = temp.GetStartPoint.Y - temp.GetEndPoint.Y;
-
+                        int centerX = (temp.GetStartPoint.X + temp.GetEndPoint.X)/2;
+                        int centerY = (temp.GetStartPoint.Y + temp.GetEndPoint.Y)/2;
 						if (mainScale == 0)
 							mainScale = 1;
 
-						temp.Draw(lePen, g, mainScale);
+						temp.Draw(lePen, g, mainScale);                        
+                        g.DrawString("L"+obj.indexNo,new Font("宋体",10),lePen.Brush,centerX,centerY);
 
 						break;
 					}
@@ -333,8 +319,8 @@ namespace AGV
 						
 						rectangle temp = (rectangle) drawingList[obj.indexNo];
 
-						lePen.Color = temp.AccessContourColor;
-						lePen.Width = temp.AccessLineWidth;
+						lePen.Color = temp.ContourColor;
+						lePen.Width = temp.LineWidth;
 
 
 						temp.Draw(lePen, g);
@@ -346,8 +332,8 @@ namespace AGV
 
 						circle temp = (circle) drawingList[obj.indexNo];
 					
-						lePen.Color = temp.AccessContourColor;
-						lePen.Width = temp.AccessLineWidth;
+						lePen.Color = temp.ContourColor;
+						lePen.Width = temp.LineWidth;
 
 						if (mainScale == 0)
 							mainScale = 1;
@@ -360,8 +346,8 @@ namespace AGV
 					{
 						polyline temp = (polyline) drawingList[obj.indexNo];
 					
-						lePen.Color = temp.AccessContourColor;
-						lePen.Width = temp.AccessLineWidth;
+						lePen.Color = temp.ContourColor;
+						lePen.Width = temp.LineWidth;
 
 						if (mainScale == 0)
 							mainScale = 1;
@@ -374,14 +360,14 @@ namespace AGV
 					{
 						Arc temp = (Arc) drawingList[obj.indexNo];
 
-						lePen.Color = temp.AccessContourColor;
-						lePen.Width = temp.AccessLineWidth;
+						lePen.Color = temp.ContourColor;
+						lePen.Width = temp.LineWidth;
 
 						if (mainScale == 0)
 							mainScale = 1;
 
 						temp.Draw(lePen, g, mainScale);
-
+                        g.DrawString("A"+obj.indexNo,new Font("宋体",10),lePen.Brush,temp.CenterPoint);
 						break;
 					}
 				}				
@@ -421,7 +407,7 @@ namespace AGV
 			Graphics g = daGe;
 			Pen lePen = new Pen(Color.Yellow, 1);
 
-			g = this.CreateGraphics();
+			//g = this.CreateGraphics();
 			
 			g.TranslateTransform(8 , canvasHeight+8 );	//transforms point-of-origin to the lower left corner of the canvas.
 
@@ -572,10 +558,11 @@ namespace AGV
         
         #region DXF Data Extraction and Interpretation
 
-        public void ReadFromFile (string textFile)			//Reads a text file (in fact a DXF file) for importing an Autocad drawing.
-															//In the DXF File structure, data is stored in two-line groupings ( or bi-line, coupling line ...whatever you call it)
-															//in this grouping the first line defines the data, the second line contains the data value.
-															//..as a result there is always even number of lines in the DXF file..
+        //Reads a text file (in fact a DXF file) for importing an Autocad drawing.
+        //In the DXF File structure, data is stored in two-line groupings ( or bi-line, coupling line ...whatever you call it)
+        //in this grouping the first line defines the data, the second line contains the data value.
+        //..as a result there is always even number of lines in the DXF file..
+        public void ReadFromFile (string textFile)																		
 		{
 			string line1, line2;							//these line1 and line2 is used for getting the a/m data groups...
 
@@ -1037,8 +1024,11 @@ namespace AGV
 
             adjViewScale();
 
-            Point center = new Point((int)(x1*importScale), (int)-(y1*importScale));  
-			int ix = drawingList.Add(new Arc (center, (int) (radius*importScale), angle1, angle2 - angle1, Color.White, Color.Red, 1));
+            Point center = new Point((int)(x1*importScale), (int)-(y1*importScale));
+            int sweepAngle = (int)(angle2 - angle1);
+            if (sweepAngle < 0)
+                sweepAngle += 360;
+			int ix = drawingList.Add(new Arc (center, (int) (radius*importScale), angle1, sweepAngle, Color.White, Color.Red, 1));
 			objectIdentifier.Add (new DrawingObject (6, ix));
             //mapDB.addArc(center, (int) (radius*importScale),(int)angle1,(int)(angle2 - angle1),ix);
             //mapDB.addShapeInfo(ix, "arc");
@@ -1112,35 +1102,56 @@ namespace AGV
 			}
 			
             
-			base.OnResize(e);
-            
+			base.OnResize(e);            
+
 		}
 
+        //这个函数好流弊啊,用了以后腰不酸腿不痛
+        protected override Point ScrollToControl(Control activeControl)
+        {
+            return this.AutoScrollPosition;
+        }  
 
-
-
-
-		private void CanvasRenewed_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
-		{
-			if (e.Shift)
-				multipleSelect = true;
-
-		
-		}
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Left:
+                    // 处理代码
+                    break;
+                case Keys.Right:
+                    // 处理代码
+                    break;
+                case Keys.Up:
+                    car1.Speed++;
+                    break;
+                case Keys.Down:
+                    car1.Speed--;
+                    break;
+                case Keys.Shift | Keys.ShiftKey:
+                    multipleSelect = true;
+                    break;
+            }
+            return base.ProcessDialogKey(keyData);
+        }
 
 		public void CanvasRenewed_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
-			multipleSelect = false;
-		
+			multipleSelect = false;		
 		}
 
 
 		#endregion
 
+        private Car carFocus = null;
+        private void focusCar(Car car)
+        {
+            carFocus = car;
+        }
+
 		#region Mouse Events
 
-
-
+       
 		private void MouseMoveCanvas(object sender, System.Windows.Forms.MouseEventArgs e)		//mousemove event...while the "shift" button is pressed down, the shapes can be highlighted...
 		{
             Size scrollOffset = new Size(this.AutoScrollPosition);
@@ -1166,8 +1177,8 @@ namespace AGV
                 dragEndPoint = e.Location;
                 int dragOffset = dragEndPoint.X - dragStartPoint.X;
                 dragStartPoint = dragEndPoint;
-                int x = -this.AutoScrollPosition.X - dragOffset;
-                this.AutoScrollPosition = new Point(x,0);             
+                int x = -(AutoScrollPosition.X + dragOffset);
+                this.AutoScrollPosition = new Point(x, 0);                
             }
 
 			if (onCanvas == true)
@@ -1206,9 +1217,28 @@ namespace AGV
                     Line line = (Line)(drawingList[obj.indexNo]);             
                     Point startPoint = new Point((int)(line.GetStartPoint.X * mainScale),(int)(line.GetStartPoint.Y * (-mainScale)));
                     Point endPoint = new Point((int)(line.GetEndPoint.X * mainScale), (int)(line.GetEndPoint.Y * (-mainScale)));
-                    dlgLineEdit = new LineEdit(startPoint,endPoint);
+                    dlgLineEdit = new LineEdit(startPoint,endPoint,obj.indexNo);
                     dlgLineEdit.Owner = this;
-                    if (dlgLineEdit.ShowDialog()==  DialogResult.OK) { 
+                    DialogResult res = dlgLineEdit.ShowDialog();
+                    if (res ==  DialogResult.OK) {                        
+                        mapDB.modifyLine(dlgLineEdit.StartPoint,dlgLineEdit.EndPoint,obj.indexNo);
+                    }
+                    else if (res == DialogResult.Yes)
+                    {
+                        int ix = drawingList.Add(new Line(dlgLineEdit.StartPoint, dlgLineEdit.EndPoint, Color.White, 1));
+                        objectIdentifier.Add(new DrawingObject(2, ix));
+                        mapDB.addLine(dlgLineEdit.StartPoint, dlgLineEdit.EndPoint, ix);
+                        mapDB.addShapeInfo(ix, "line");
+                    }
+                    else if (res == DialogResult.No)
+                    {
+                        int centerX = (dlgLineEdit.StartPoint.X + dlgLineEdit.EndPoint.X)/2;
+                        int centerY = (dlgLineEdit.StartPoint.Y + dlgLineEdit.EndPoint.Y)/2;                        
+                        mapDB.modifyLine(dlgLineEdit.StartPoint, new Point( centerX, centerY), obj.indexNo);
+                        int ix = drawingList.Add(new Line(new Point(centerX,centerY), dlgLineEdit.EndPoint, Color.White, 1));
+                        objectIdentifier.Add(new DrawingObject(2, ix));
+                        mapDB.addLine(new Point(centerX, centerY), dlgLineEdit.EndPoint, ix);
+                        mapDB.addShapeInfo(ix, "line");
                     }
                     dlgLineEdit.Dispose();
                     //dlgLineEdit.Activate();
@@ -1216,18 +1246,44 @@ namespace AGV
                 }
                 else if (obj.shapeType == 6) {
                     Arc arc1 = (Arc)(drawingList[obj.indexNo]);
-                    Point o = arc1.AccessCenterPoint;
-                    dlgArcEdit = new ArcEdit((int)(o.X * mainScale),-(int)(o.Y * mainScale),(int)(arc1.AccessRadius * mainScale),(int)arc1.AccessStartAngle,(int)(arc1.AccessSweepAngle));
+                    Point o = arc1.CenterPoint;
+                    dlgArcEdit = new ArcEdit((int)(o.X * mainScale),-(int)(o.Y * mainScale),(int)(arc1.Radius * mainScale),(int)arc1.StartAngle,(int)(arc1.SweepAngle),obj.indexNo);
                     dlgArcEdit.Owner = this;
                     if (dlgArcEdit.ShowDialog() == DialogResult.OK) { 
-                    }
+                        mapDB.modifyArc(dlgArcEdit.Center,dlgArcEdit.Radius,dlgArcEdit.StartAngle,dlgArcEdit.SweepAngle,obj.indexNo);
+                    }                    
                     dlgArcEdit.Dispose();
                 }
-                multipleSelect = false;               
+                multipleSelect = false;
+                drawingList.Clear();
+                objectIdentifier.Clear();
+                scheduler.TrackToGo.clear();                
+                mapDB.loadMapFromDataBase(drawingList,objectIdentifier);
+                addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
             }
             objNumSelect = -1;
                
         }
 
+        private bool focus = false;
+        /*private void button2_Click(object sender, EventArgs e)
+        {
+            focus = !focus;
+            if (focus)
+                focusCar(car1);
+            else
+                focusCar(null);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            car1.Speed = 90;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            car1.Speed = 60;
+        }
+        */
 	}
 }

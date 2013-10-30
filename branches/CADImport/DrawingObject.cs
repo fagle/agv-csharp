@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 
 namespace AGV
 {
@@ -17,4 +18,16 @@ namespace AGV
 			
 		}
 	}
+
+    class ShapeInfoPack
+    {
+        public int indexNo;
+        public string shape;
+        public Point center;
+        public ShapeInfoPack(int ix, string shape)
+        {
+            indexNo = ix;
+            this.shape = shape;
+        }
+    }
 }
