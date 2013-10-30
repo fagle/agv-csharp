@@ -42,6 +42,7 @@ namespace AGV
         private MenuItem menuItem6;
         private MenuItem menuItem7;
         private MenuItem menuItem8;
+        private Panel panel1;
         private IContainer components;
 
         public MainGUI()
@@ -89,6 +90,7 @@ namespace AGV
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // mainMenu1
@@ -147,17 +149,27 @@ namespace AGV
             this.menuItem8.Index = 4;
             this.menuItem8.Text = "指定相邻两个站点的路径";
             // 
+            // panel1
+            // 
+            this.panel1.AutoSize = true;
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(736, 0);
+            this.panel1.TabIndex = 0;
+            // 
             // MainGUI
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.ClientSize = new System.Drawing.Size(736, 566);
-            this.IsMdiContainer = true;
+            this.Controls.Add(this.panel1);
             this.Menu = this.mainMenu1;
             this.Name = "MainGUI";
             this.Text = "DXF Reader";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
         #endregion
@@ -175,8 +187,9 @@ namespace AGV
         {
             newCanvas = new Canvas();			//a new canvas is created...
 
-            newCanvas.MdiParent = this;			//...its mdiparent is set...           
-
+            newCanvas.TopLevel = false;
+            //newCanvas.MdiParent = this.panel1;			//...its mdiparent is set...           
+            panel1.Controls.Add(newCanvas);
             newCanvas.Show();							//the canvas is displayed...
             newCanvas.Activate();
             newCanvas.Focus();

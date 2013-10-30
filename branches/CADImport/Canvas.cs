@@ -15,6 +15,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace AGV
 {
@@ -44,6 +45,8 @@ namespace AGV
 
 		private static Point exPoint;
 
+        private AdjacencyList adjList = new AdjacencyList(100);
+        private List<Station> stationList= new List<Station>(100);
 		private ArrayList drawingList;
 		private ArrayList objectIdentifier;
         private CarScheduler scheduler = new CarScheduler();
@@ -122,7 +125,7 @@ namespace AGV
             btn.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             btn.Location = new System.Drawing.Point(354, 92);
             btn.Name = name;
-            btn.Size = new System.Drawing.Size(28, 28);
+            btn.Size = new System.Drawing.Size(32, 32);            
             btn.TabIndex = 1;
             btn.TabStop = false;
             btn.Text = name;
@@ -132,8 +135,11 @@ namespace AGV
         }
 
         private void creatStation(string name, int shapeIndex, int xOffset, int yOffset) 
-        {
+        {            
             Point p = ((Line)drawingList[shapeIndex]).GetEndPoint;
+            Station s = new Station(name, p.X, p.Y);
+            stationList.Add(s);
+            adjList.AddVertex(s);
             p.X = p.X + xOffset;
             p.Y = canvasHeight + p.Y + yOffset;
             Button btn = new Button();
@@ -141,12 +147,82 @@ namespace AGV
             btn.Location = p;
         }
 
+        private void creatFork(string name, int shapeIndex) 
+        {
+            Point p = ((Line)drawingList[shapeIndex]).GetEndPoint;
+            Station s = new Station(name, p.X, p.Y);
+            stationList.Add(s);
+            adjList.AddVertex(s);
+        }
+
         private void loadStations() 
         {
             creatStation("S0",0,-50,0);
             creatStation("S1",3,0,-40);
             creatStation("S2",14,0,-40);
+            creatStation("S3", 22, 0, -40);
+            creatStation("S4", 27, 0, -40);
+            creatStation("S5", 32, 0, -40);
+            creatStation("S6", 37, 0, -40);
+            creatStation("S7", 78, 0, 20);
+            creatStation("S8", 86, 0, 20);
+            creatStation("S9", 94, 0, 20);
+            creatStation("S10", 99, 0, 20);
+            creatStation("S11", 104, 0, 20);
+            creatStation("S12", 109, 0, 20);
+            creatStation("S13", 73, 0, -40);
+            creatStation("S14", 68, 0, -40);
+            creatStation("S15", 63, 0, -40);
+            creatStation("S16", 58, 0, -40);
+            creatStation("S17", 50, 0, -40);
+            creatStation("S18", 43, 0, -40);
+            creatStation("S19", 144, 0, 20);
+            creatStation("S20", 139, 0, 20);
+            creatStation("S21", 134, 0, 20);
+            creatStation("S22", 129, 0, 20);
+            creatStation("S23", 121, 0, 20);
+            creatStation("S24", 114, 0, 20);
+            creatFork("F0", 6);
+            creatFork("F1", 17);
+            creatFork("F2", 18);
+            creatFork("F3", 181);
+            creatFork("F4", 200);
+            creatFork("F5", 202);
+            creatFork("F6", 204);
+            creatFork("F7", 206);
+            creatFork("F8", 208);
+            creatFork("F9", 210);
+            creatFork("F10", 213);
+            creatFork("F11", 54);
+            creatFork("F12", 53);
+            creatFork("F13", 117);
+            creatFork("F14", 124);
+            creatFork("F15", 125);
+            creatFork("F16", 183);
+            creatFork("F17", 184);
+            creatFork("F18", 186);
+            creatFork("F19", 189);
+            creatFork("F20", 188);
+            creatFork("F21", 191);
+            creatFork("F22", 192);
+            creatFork("F23", 195);
+            creatFork("F24", 90);
+            creatFork("F25", 89);
         }
+         
+        private void showForks(Graphics g, Brush b)
+        {
+            Pen redPen = new Pen(Color.Red,6);
+            foreach( Station s in stationList)
+            {
+                if (s.name[0] == 'F')
+                {
+                    g.DrawString(s.name, new Font("ËÎÌו", 10), b, s.X, s.Y);
+                    g.DrawLine(redPen, s.X-3, s.Y, s.X+3, s.Y);
+                }
+            }
+        }
+
         private void addDrawingListToTrack(ArrayList drawingList,ArrayList objIdentifier,Track t) 
         {
             foreach (DrawingObject obj in objectIdentifier)						//iterates through the objects
@@ -230,11 +306,9 @@ namespace AGV
 		/// </summary>
 		private void InitializeComponent()
 		{
-            
             this.label1 = new System.Windows.Forms.Label();
-            
             this.SuspendLayout();
-            
+            // 
             // label1
             // 
             this.label1.BackColor = System.Drawing.Color.Lime;
@@ -244,20 +318,21 @@ namespace AGV
             this.label1.Size = new System.Drawing.Size(16, 16);
             this.label1.TabIndex = 3;
             this.label1.Text = "1";
-            
+            // 
             // Canvas
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoScroll = true;
-            this.AutoScrollMinSize = new System.Drawing.Size(5000, 800);
+            this.AutoScrollMinSize = new System.Drawing.Size(5000, 768);
             this.BackColor = System.Drawing.Color.Teal;
-            this.ClientSize = new System.Drawing.Size(1244, 762);
-            this.Controls.Add(this.label1);            
+            this.ClientSize = new System.Drawing.Size(1278, 779);
+            this.ControlBox = false;
+            this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MinimumSize = new System.Drawing.Size(1260, 800);
             this.Name = "Canvas";
             this.ShowInTaskbar = false;
             this.Text = "Canvas";
-            this.TopMost = true;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Canvas_Scroll);
             this.SizeChanged += new System.EventHandler(this.OnSizeChanged);
@@ -287,6 +362,8 @@ namespace AGV
 				g.TranslateTransform((int) Math.Abs(XMin), 0);
 			
 			//	g.SmoothingMode = SmoothingMode.AntiAlias; 
+            
+            showForks(g,lePen.Brush);
 
 			foreach (DrawingObject obj in objectIdentifier)						//iterates through the objects
 			{
@@ -1265,7 +1342,7 @@ namespace AGV
                
         }
 
-        private bool focus = false;
+        //private bool focus = false;
         /*private void button2_Click(object sender, EventArgs e)
         {
             focus = !focus;
