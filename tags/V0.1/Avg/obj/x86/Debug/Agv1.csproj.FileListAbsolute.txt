@@ -1,0 +1,93 @@
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\obj\x86\Debug\Avg.Form1.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\obj\x86\Debug\Avg.Form2.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\obj\x86\Debug\Agv1.csproj.GenerateResource.Cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\obj\x86\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\obj\x86\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\bin\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\bin\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\Avg\Avg\obj\x86\Debug\Agv1.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\obj\x86\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\obj\x86\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\bin\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\bin\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\obj\x86\Debug\Agv1.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\obj\x86\Debug\Avg.Form1.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\obj\x86\Debug\Avg.Form2.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate\Avg\obj\x86\Debug\Agv1.csproj.GenerateResource.Cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\obj\x86\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\obj\x86\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\bin\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\bin\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\obj\x86\Debug\Agv1.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\obj\x86\Debug\Avg.Form1.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\obj\x86\Debug\Avg.Form2.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate1\Avg\obj\x86\Debug\Agv1.csproj.GenerateResource.Cache
+E:\C#\AvgUpdate1\Avg\obj\x86\Debug\Avg.exe
+E:\C#\AvgUpdate1\Avg\obj\x86\Debug\Avg.pdb
+E:\C#\AvgUpdate1\Avg\bin\Debug\Avg.exe
+E:\C#\AvgUpdate1\Avg\bin\Debug\Avg.pdb
+E:\C#\AvgUpdate1\Avg\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\C#\AvgUpdate1\Avg\obj\x86\Debug\Avg.Form1.resources
+E:\C#\AvgUpdate1\Avg\obj\x86\Debug\Avg.Form2.resources
+E:\C#\AvgUpdate1\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+E:\C#\AvgUpdate1\Avg\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\C#\AvgUpdate1\Avg\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\obj\x86\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\obj\x86\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\bin\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\bin\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\obj\x86\Debug\Agv1.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\obj\x86\Debug\Avg.Form1.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\obj\x86\Debug\Avg.Form2.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate2\Avg\obj\x86\Debug\Agv1.csproj.GenerateResource.Cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\obj\x86\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\obj\x86\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\bin\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\bin\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\obj\x86\Debug\Agv1.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\obj\x86\Debug\Avg.Form1.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\obj\x86\Debug\Avg.Form2.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\AvgUpdate3\Avg\obj\x86\Debug\Agv1.csproj.GenerateResource.Cache
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\obj\x86\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\obj\x86\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\bin\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\bin\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\obj\x86\Debug\Agv1.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\obj\x86\Debug\Avg.Form1.resources
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\obj\x86\Debug\Avg.Form2.resources
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+C:\Users\Administrator\Documents\Visual Studio 2012\Projects\GeLiTest\Avg\obj\x86\Debug\Agv1.csproj.GenerateResource.Cache
+D:\project\cSharpPrj\GeLiTest\Avg\obj\x86\Debug\Avg.exe
+D:\project\cSharpPrj\GeLiTest\Avg\obj\x86\Debug\Avg.pdb
+D:\project\cSharpPrj\GeLiTest\Avg\bin\Debug\Avg.exe
+D:\project\cSharpPrj\GeLiTest\Avg\bin\Debug\Avg.pdb
+D:\project\cSharpPrj\GeLiTest\Avg\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\project\cSharpPrj\GeLiTest\Avg\obj\x86\Debug\Avg.Form1.resources
+D:\project\cSharpPrj\GeLiTest\Avg\obj\x86\Debug\Avg.Form2.resources
+D:\project\cSharpPrj\GeLiTest\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+D:\project\cSharpPrj\GeLiTest\Avg\obj\x86\Debug\GenerateResource.read.1.tlog
+D:\project\cSharpPrj\GeLiTest\Avg\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\obj\x86\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\obj\x86\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\bin\Debug\Avg.exe
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\bin\Debug\Avg.pdb
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\obj\x86\Debug\Agv1.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\obj\x86\Debug\Avg.Form1.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\obj\x86\Debug\Avg.Form2.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+C:\Users\Administrator\Documents\Visual Studio 2010\Projects\GeLiTestTuanzhang\Avg\obj\x86\Debug\Agv1.csproj.GenerateResource.Cache
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\obj\x86\Debug\Avg.exe
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\obj\x86\Debug\Avg.pdb
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\bin\Debug\Avg.exe
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\bin\Debug\Avg.pdb
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\obj\x86\Debug\Avg.Form1.resources
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\obj\x86\Debug\Avg.Form2.resources
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\obj\x86\Debug\Avg.Properties.Resources.resources
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\obj\x86\Debug\GenerateResource.read.1.tlog
+D:\project\cSharpPrj\GeLiTestTuanzhangTerminal\Avg\obj\x86\Debug\GenerateResource.write.1.tlog
