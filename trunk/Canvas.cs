@@ -46,7 +46,7 @@ namespace AGV
 		private static Point exPoint;
 
         private AdjacencyList adjList = new AdjacencyList(100);
-        private List<Station> stationList= new List<Station>(100);
+        private Dictionary<string,Station> stationDic= new Dictionary<string,Station>(100);
 		private ArrayList drawingList;
 		private ArrayList objectIdentifier;
         private CarScheduler scheduler = new CarScheduler();
@@ -138,7 +138,7 @@ namespace AGV
         {            
             Point p = ((Line)drawingList[shapeIndex]).GetEndPoint;
             Station s = new Station(name, p.X, p.Y);
-            stationList.Add(s);
+            stationDic.Add(name,s);
             adjList.AddVertex(s);
             p.X = p.X + xOffset;
             p.Y = canvasHeight + p.Y + yOffset;
@@ -151,7 +151,7 @@ namespace AGV
         {
             Point p = ((Line)drawingList[shapeIndex]).GetEndPoint;
             Station s = new Station(name, p.X, p.Y);
-            stationList.Add(s);
+            stationDic.Add(name,s);
             adjList.AddVertex(s);
         }
 
@@ -164,24 +164,24 @@ namespace AGV
             creatStation("S4", 27, 0, -40);
             creatStation("S5", 32, 0, -40);
             creatStation("S6", 37, 0, -40);
-            creatStation("S7", 78, 0, 20);
-            creatStation("S8", 86, 0, 20);
-            creatStation("S9", 94, 0, 20);
-            creatStation("S10", 99, 0, 20);
-            creatStation("S11", 104, 0, 20);
-            creatStation("S12", 109, 0, 20);
+            creatStation("S12", 78, 0, 20);
+            creatStation("S11", 86, 0, 20);
+            creatStation("S10", 94, 0, 20);
+            creatStation("S9", 99, 0, 20);
+            creatStation("S8", 104, 0, 20);
+            creatStation("S7", 109, 0, 20);
             creatStation("S13", 73, 0, -40);
             creatStation("S14", 68, 0, -40);
             creatStation("S15", 63, 0, -40);
             creatStation("S16", 58, 0, -40);
             creatStation("S17", 50, 0, -40);
             creatStation("S18", 43, 0, -40);
-            creatStation("S19", 144, 0, 20);
-            creatStation("S20", 139, 0, 20);
-            creatStation("S21", 134, 0, 20);
-            creatStation("S22", 129, 0, 20);
-            creatStation("S23", 121, 0, 20);
-            creatStation("S24", 114, 0, 20);
+            creatStation("S24", 144, 0, 20);
+            creatStation("S23", 139, 0, 20);
+            creatStation("S22", 134, 0, 20);
+            creatStation("S21", 129, 0, 20);
+            creatStation("S20", 121, 0, 20);
+            creatStation("S19", 114, 0, 20);
             creatFork("F0", 6);
             creatFork("F1", 17);
             creatFork("F2", 18);
@@ -208,17 +208,97 @@ namespace AGV
             creatFork("F23", 195);
             creatFork("F24", 90);
             creatFork("F25", 89);
+            creatFork("F26", 198);
+            creatFork("F27", 211);
+            addDirectedEdges();
+            
+        }
+
+        private void addDirectedEdge(string name1, string name2) 
+        {
+            adjList.AddDirectedEdge(adjList.Find(stationDic[name1]), adjList.Find(stationDic[name2]));
+        }
+        private void addDirectedEdges() 
+        {
+            for (int i = 0; i <= 5; i++)
+            {
+                if (i == 3)
+                {
+                    addDirectedEdge("S3","F3");
+                    addDirectedEdge("F3","F26");
+                    addDirectedEdge("F26", "F4");
+                    addDirectedEdge("F26", "F23");
+                }
+                else
+                {
+                    adjList.AddDirectedEdge(adjList.Find(stationDic["S" + i]), adjList.Find(stationDic["F" + i]));
+                    adjList.AddDirectedEdge(adjList.Find(stationDic["F" + i]), adjList.Find(stationDic["S" + (i + 1)]));
+                    adjList.AddDirectedEdge(adjList.Find(stationDic["F" + i]), adjList.Find(stationDic["F" + (i + 1)]));
+                }
+            }
+                
+            #region 
+            /* 
+            adjList.AddDirectedEdge(adjList.Find(stationDic["S1"]), adjList.Find(stationDic["F1"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F1"]), adjList.Find(stationDic["S2"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F1"]), adjList.Find(stationDic["F2"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["S2"]), adjList.Find(stationDic["F2"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F2"]), adjList.Find(stationDic["S3"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F2"]), adjList.Find(stationDic["F3"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["S3"]), adjList.Find(stationDic["F3"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F3"]), adjList.Find(stationDic["S4"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F3"]), adjList.Find(stationDic["F4"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["S4"]), adjList.Find(stationDic["F4"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F4"]), adjList.Find(stationDic["S5"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F4"]), adjList.Find(stationDic["F5"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["S5"]), adjList.Find(stationDic["F5"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F5"]), adjList.Find(stationDic["S6"]));
+            adjList.AddDirectedEdge(adjList.Find(stationDic["F5"]), adjList.Find(stationDic["F6"]));
+            */
+            #endregion
+
+            addDirectedEdge("S6", "F6");
+            addDirectedEdge("F6", "F7");
+            addDirectedEdge("F6", "F20");
+            for (int i = 7; i <= 18; i++) 
+            {
+                if (i == 9)
+                {
+                    addDirectedEdge("F9", "S15");
+                    addDirectedEdge("F9", "F27");
+                    addDirectedEdge("F27", "F10");
+                    addDirectedEdge("F27", "F17");
+                    addDirectedEdge("S15", "F10");
+                }
+                else
+                {
+                    addDirectedEdge("F" + i, "S" + (i + 6));
+                    addDirectedEdge("F" + i, "F" + (i + 1));
+                    addDirectedEdge("S" + (i + 6), "F" + (i + 1));
+                }
+            }
+            addDirectedEdge("F19", "F7");
+            addDirectedEdge("F19", "F20");
+            for (int i = 20; i <= 24; i++) 
+            {
+                addDirectedEdge("F" + i, "S" + (i - 13));
+                addDirectedEdge("F" + i, "F" + (i + 1));
+                addDirectedEdge("S" + (i - 13), "F" + (i + 1));
+            }
+            addDirectedEdge("F25","S12");
+            addDirectedEdge("F25","S0");
+            addDirectedEdge("S12", "S0");
         }
          
         private void showForks(Graphics g, Brush b)
         {
             Pen redPen = new Pen(Color.Red,6);
-            foreach( Station s in stationList)
+            foreach( string s in stationDic.Keys)
             {
-                if (s.name[0] == 'F')
+                if (s[0] == 'F')
                 {
-                    g.DrawString(s.name, new Font("宋体", 10), b, s.X, s.Y);
-                    g.DrawLine(redPen, s.X-3, s.Y, s.X+3, s.Y);
+                    g.DrawString(s, new Font("宋体", 9), b, stationDic[s].X, stationDic[s].Y);
+                    g.DrawLine(redPen, stationDic[s].X - 3, stationDic[s].Y, stationDic[s].X + 3, stationDic[s].Y);
                 }
             }
         }
@@ -387,7 +467,7 @@ namespace AGV
 							mainScale = 1;
 
 						temp.Draw(lePen, g, mainScale);                        
-                        g.DrawString("L"+obj.indexNo,new Font("宋体",10),lePen.Brush,centerX,centerY);
+                        g.DrawString("L"+obj.indexNo,new Font("宋体",9),lePen.Brush,centerX,centerY);
 
 						break;
 					}
@@ -444,7 +524,7 @@ namespace AGV
 							mainScale = 1;
 
 						temp.Draw(lePen, g, mainScale);
-                        g.DrawString("A"+obj.indexNo,new Font("宋体",10),lePen.Brush,temp.CenterPoint);
+                        g.DrawString("A"+obj.indexNo,new Font("宋体",9),lePen.Brush,temp.CenterPoint);
 						break;
 					}
 				}				
