@@ -12,10 +12,19 @@ namespace AGV
     class MapDataBase
     {
         private string mapName;
+        private ArrayList drawingList;
+        private ArrayList objectIdentifier;
+
         #region  database Methods
         public MapDataBase(string mapName)
         {
             this.mapName = mapName;
+        }
+        public MapDataBase(string mapName, ArrayList drawingList, ArrayList objectIdentifier)
+        {
+            this.mapName = mapName;
+            this.drawingList = drawingList;
+            this.objectIdentifier = objectIdentifier;
         }
         private SQLiteDBHelper getDataBase()
         {
@@ -163,7 +172,7 @@ namespace AGV
 
         public List<ShapeInfoPack> shapeList;
 
-        public void loadMapFromDataBase(ArrayList drawingList, ArrayList objectIdentifier)
+        public void loadMapFromDataBase()
         {
             shapeList = new List<ShapeInfoPack>(100);            
             string sql = "SELECT indexNo,shape FROM shapeTable  WHERE (ownerMap = @ownerMap) ORDER BY indexNo";
@@ -237,6 +246,69 @@ namespace AGV
                 }
             }
         }
+
+        public void loadStationsFromDB(Dictionary<string, Station> stationDic) 
+        {            
+            string sql = @"SELECT name,positionX,positionY,btnX,btnY,type 
+                           FROM station  
+                           WHERE (ownerMap = @ownerMap)";
+            SQLiteParameter[] parameters = new SQLiteParameter[]
+                                           { 
+                                                new SQLiteParameter("@ownerMap",mapName),                                                 
+                                           };
+            SQLiteDBHelper db = getDataBase();
+            try
+            {
+                using (SQLiteDataReader reader = db.ExecuteReader(sql, parameters))
+                {
+                    while (reader.Read())
+                    {
+                        //Console.WriteLine("indexNo:{0},shape:{1}", /*reader.GetInt64(0)*/1, reader.GetString(1));
+                        stationDic.Add(reader.GetString(0), new Station( reader.GetString(0), reader.GetInt32(1),
+                            reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4)));
+                    }
+                }
+            }
+            catch (Exception x)
+            {
+                Console.WriteLine(x.Message);
+            }            
+        }
+
+        public void loadPathsFromDB(Dictionary<string, Track> trackDic)
+        {
+            string sql = @"SELECT *
+                           FROM pathTable  
+                           WHERE (ownerMap = @ownerMap)";            
+            SQLiteParameter[] parameters = new SQLiteParameter[]
+                                           { 
+                                                new SQLiteParameter("@ownerMap",mapName),                                                 
+                                           };            
+            SQLiteDBHelper db = getDataBase();
+            try
+            {
+                using (SQLiteDataReader reader = db.ExecuteReader(sql, parameters))
+                {
+                    while (reader.Read())
+                    {
+                        //Console.WriteLine("indexNo:{0},shape:{1}", /*reader.GetInt64(0)*/1, reader.GetString(1));
+                        Track track = new Track(drawingList);
+                        track.Name = reader.GetString(0);
+                        track.StartStation = reader.GetString(1);
+                        track.EndStation = reader.GetString(2);
+                        track.PathString = reader.GetString(3);
+                        if (reader.IsDBNull(6) == false)
+                            track.CarAction = reader.GetString(6);
+                        trackDic.Add(track.Name,track);                        
+                    }
+                }
+            }
+            catch (Exception x)
+            {
+                Console.WriteLine(x.Message);
+            }    
+        }
+
         #endregion
     }
 }

@@ -45,11 +45,12 @@ namespace AGV
 
 		private static Point exPoint;
 
-        private AdjacencyList adjList = new AdjacencyList(100);
+        private AdjacencyList adjList;
         private Dictionary<string,Station> stationDic= new Dictionary<string,Station>(100);
+        private Dictionary<string, Track> trackDic = new Dictionary<string, Track>(100);
 		private ArrayList drawingList;
 		private ArrayList objectIdentifier;
-        private CarScheduler scheduler = new CarScheduler();
+        private CarScheduler scheduler ;
 
 		public bool onCanvas = false;
 		private polyline thePolyLine = null;
@@ -80,10 +81,19 @@ namespace AGV
 
 			//startPoint = new Point (0, 0);
 			//endPoint = new Point (0, 0);
+            
 			exPoint = new Point (0, 0);
 
 			InitializeComponent();
-            mapDB = new MapDataBase("geli_agv");
+            //.Net Style Double Buffering/////////////////
+            this.SetStyle(ControlStyles.DoubleBuffer, true);
+            this.SetStyle(ControlStyles.UserPaint, true);
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            this.SetStyle(ControlStyles.ResizeRedraw, true);
+            //////////////////////////////////////////////
+            //////////////////////////////////////////////
+
+            
             //mapDB.addMap("geli_agv");
 
 			XMax = canvasWidth;
@@ -93,28 +103,26 @@ namespace AGV
 			
 			drawingList = new ArrayList ();
 			objectIdentifier = new ArrayList ();
-            mapDB.loadMapFromDataBase(drawingList,objectIdentifier);
-            car1 = new Car("Car1",label1);
+            mapDB = new MapDataBase("geli_agv", drawingList, objectIdentifier);
+            mapDB.loadMapFromDataBase();            
+            //focusCar(car1);			            
+            mapDB.loadStationsFromDB(stationDic);
+            mapDB.loadPathsFromDB(trackDic);
+            adjList = new AdjacencyList(100,trackDic);
+            loadStations();             
+            car1 = new Car("Car1", label1);
             car1.carPosEvent += carPositionChange;
+            scheduler = new CarScheduler(stationDic,trackDic,adjList);
             scheduler.demo(car1);
-            addDrawingListToTrack(drawingList,objectIdentifier,scheduler.TrackToGo);
+            //addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
             scheduler.run();
-            //focusCar(car1);
-			//.Net Style Double Buffering/////////////////
-			this.SetStyle(ControlStyles.DoubleBuffer, true);
-			this.SetStyle(ControlStyles.UserPaint, true);
-			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-			this.SetStyle(ControlStyles.ResizeRedraw, true);
-			//////////////////////////////////////////////
-			//////////////////////////////////////////////
-
-            loadStations();
-
 		}
 
         private void btnClicked(object sender, EventArgs e) 
         {
             Button fromButton = (Button)sender;
+            string name = fromButton.Name;
+            scheduler.TargetStation = stationDic[name];
             //Console.WriteLine(e.ToString());
             //Console.WriteLine(sender.ToString());
         }
@@ -137,15 +145,15 @@ namespace AGV
         private void creatStation(string name, int shapeIndex, int xOffset, int yOffset) 
         {            
             Point p = ((Line)drawingList[shapeIndex]).GetEndPoint;
-            Station s = new Station(name, p.X, p.Y);
-            stationDic.Add(name,s);
-            adjList.AddVertex(s);
+            //Station s = new Station(name, p.X, p.Y);
+            //stationDic.Add(name,s);
+            //adjList.AddVertex(s);
             p.X = p.X + xOffset;
             p.Y = canvasHeight + p.Y + yOffset;
             Button btn = new Button();
             initButton(btn, name, btnClicked);
             btn.Location = p;
-        }
+        }         
 
         private void creatFork(string name, int shapeIndex) 
         {
@@ -157,7 +165,7 @@ namespace AGV
 
         private void loadStations() 
         {
-            creatStation("S0",0,-50,0);
+            /*creatStation("S0",0,-50,0);
             creatStation("S1",3,0,-40);
             creatStation("S2",14,0,-40);
             creatStation("S3", 22, 0, -40);
@@ -209,16 +217,33 @@ namespace AGV
             creatFork("F24", 90);
             creatFork("F25", 89);
             creatFork("F26", 198);
-            creatFork("F27", 211);
-            addDirectedEdges();
-            
+            creatFork("F27", 211);*/
+            foreach (Station s in stationDic.Values)
+            {
+                Point p = new Point(s.X, s.Y);
+                p.X = p.X + s.BtnXoffset;
+                p.Y = canvasHeight + p.Y + s.BtnYoffset;
+                adjList.AddVertex(s);
+                if (s.name[0] == 'S')
+                {
+                    Button btn = new Button();
+
+                    initButton(btn, s.name, btnClicked);
+                    btn.Location = p;
+                }
+            }
+            foreach(Track t in trackDic.Values)
+            {
+                adjList.AddDirectedEdge(adjList.Find(stationDic[t.StartStation]),
+                    adjList.Find(stationDic[t.EndStation]));
+            }            
         }
 
         private void addDirectedEdge(string name1, string name2) 
         {
             adjList.AddDirectedEdge(adjList.Find(stationDic[name1]), adjList.Find(stationDic[name2]));
         }
-        private void addDirectedEdges() 
+        private void NoAddDirectedEdges() 
         {
             for (int i = 0; i <= 5; i++)
             {
@@ -1415,7 +1440,7 @@ namespace AGV
                 drawingList.Clear();
                 objectIdentifier.Clear();
                 scheduler.TrackToGo.clear();                
-                mapDB.loadMapFromDataBase(drawingList,objectIdentifier);
+                mapDB.loadMapFromDataBase();
                 addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
             }
             objNumSelect = -1;

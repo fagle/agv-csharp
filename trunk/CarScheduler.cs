@@ -13,6 +13,10 @@ namespace AGV
         private List<Car> carsStandby = new List<Car>(20);
         private Thread thread;
         private bool onLine = false;
+        private Station targetStation = null, startStation = null;
+        private Dictionary<string, Station> stationDic;
+        private Dictionary<string, Track> trackDic;
+        private AdjacencyList adjList;
 
         public Track TrackToGo 
         {
@@ -20,9 +24,12 @@ namespace AGV
             get { return trackTogo; }
         }
 
-        public CarScheduler() 
+        public CarScheduler(Dictionary<string, Station> sDic,Dictionary<string, Track>tDic, AdjacencyList adj) 
         {
-            
+            stationDic = sDic;
+            trackDic = tDic;
+            adjList = adj;
+            startStation = stationDic["S0"];
         }
 
         public void demo(Car car) 
@@ -33,6 +40,12 @@ namespace AGV
         public void addCar(Car car)
         {
             carsStandby.Add(car);
+        }
+
+        public Station TargetStation 
+        {
+            set { targetStation = value; }
+            get { return targetStation; }
         }
 
         public void addTargetTrackToCar() 
@@ -50,10 +63,24 @@ namespace AGV
         {
             while (onLine)
             {
+                trackTogo.clear();
+                if (targetStation == null || (startStation.Equals(targetStation)))
+                {
+                    Thread.Sleep(100);
+                    continue;
+                }
+                List<Track> list = adjList.FindWay(adjList.Find(startStation), adjList.Find(targetStation));
+                
+                foreach (Track t in list)
+                {
+                    trackTogo.TrackPointList.AddRange(t.TrackPointList);
+                }
+
                 foreach(Car car in carsRun)
                 {
                     car.run(trackTogo);
                 }
+                startStation = targetStation;
             }
         }
         public void stop()

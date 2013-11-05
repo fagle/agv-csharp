@@ -7,12 +7,19 @@ namespace AGV
     public partial class AdjacencyList
     {    
         public List<Vertex> items; //图的顶点集合
+        private Dictionary<string, Track> trackDic;
 
         public AdjacencyList() : this(10) { } //构造方法
 
         public AdjacencyList(int capacity) //指定容量的构造方法
         {
             items = new List<Vertex>(capacity);
+        }
+
+        public AdjacencyList(int capacity, Dictionary<string, Track> tDic) //指定容量与关联数据库的构造方法
+        {
+            items = new List<Vertex>(capacity);
+            trackDic = tDic;
         }
 
         public void AddVertex(Station item) //添加一个顶点 //1
@@ -70,7 +77,7 @@ namespace AGV
         {
             if (fromVer.firstEdge == null) //无邻接点时
             {
-                fromVer.firstEdge = new Node(fromVer, toVer);
+                fromVer.firstEdge = new Node(fromVer, toVer, trackDic);
             }
             else
             {
@@ -84,7 +91,7 @@ namespace AGV
                     tmp = node;
                     node = node.next;
                 } while (node != null);
-                tmp.next = new Node(fromVer, toVer); //添加到链表未尾
+                tmp.next = new Node(fromVer, toVer, trackDic); //添加到链表未尾
             }
         }
 
@@ -179,6 +186,14 @@ namespace AGV
             }
             return track;
         }
+        public static Track getTrack(Station from, Station to, Dictionary<string, Track> tDic)
+        {
+            Track track = new Track();
+            string path = "";
+            path = from.name + "->" + to.name;
+            track = tDic[path];
+            return track;
+        }
 
         //嵌套类，表示链表中的表结点
         public class Node
@@ -192,6 +207,18 @@ namespace AGV
                 try
                 {
                     track = getTrack(fromVer.data, toVer.data);
+                }
+                catch (Exception w)
+                {
+                    System.Console.WriteLine(w.Message);
+                }
+            }
+            public Node(Vertex fromVer, Vertex toVer, Dictionary<string, Track> tDic)
+            {
+                adjvex = toVer;
+                try
+                {
+                    track = getTrack(fromVer.data, toVer.data, tDic);
                 }
                 catch (Exception w)
                 {

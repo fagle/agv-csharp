@@ -40,7 +40,7 @@ namespace AGV
     {
         private string name;
         private int speed = 0;
-        private int defaultSpeed = 60;
+        private int defaultSpeed = 100;
         private Point position=new Point(300,300); 
         private Track trackToGo=new Track();
         private Label bindingLabel;

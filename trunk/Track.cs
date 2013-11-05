@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Timers;
 using System.Threading;
+using System.Collections;
 
 namespace AGV
 {
@@ -1176,6 +1177,10 @@ namespace AGV
         private String endStation;
         private List<Point> trackPoints;
         private string name;
+        private string pathStr;
+        private string carAction;
+        private ArrayList drawingList;
+
         public Track()//构造函数
         {
             trackPoints = new List<Point>();
@@ -1186,11 +1191,86 @@ namespace AGV
             this.startStation = t.startStation;
             this.endStation = t.endStation;
         }
+        public Track(ArrayList drawingList)
+        {
+            trackPoints = new List<Point>();
+            this.drawingList = drawingList;           
+        }
+
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
+
+        public string PathString 
+        {
+            get { return pathStr ; }
+            set
+            {
+                pathStr = value;
+                string str = "";
+                int i;
+                int sn;
+                string type = "", lastType = "";
+                try
+                {
+                    for (i = 0; i < pathStr.Length; i++)
+                    {
+                        char c = pathStr[i];
+                        
+                        switch (c)
+                        {
+                            case 'L':
+                                lastType = type;
+                                type = "line";                                
+                                break;
+                            case 'A':
+                                lastType = type;
+                                type = "arc";                                
+                                break;
+                            default:
+                                {
+                                    if (char.IsDigit(c))
+                                        str += c;
+                                    break;
+                                }
+                        }
+                        if (i == pathStr.Length - 1)
+                            lastType = type;
+                        if (lastType == "line")
+                        {
+                            sn = Convert.ToInt32(str);
+                            Line line = (Line)drawingList[sn];
+                            AddLine(line);
+                            lastType = "";
+                            str = "";
+                        }
+                        else if (lastType == "arc")
+                        {
+                            sn = Convert.ToInt32(str);
+                            Arc arc = (Arc)drawingList[sn];
+                            AddArc(arc);
+                            lastType = "";
+                            str = "";
+                        }
+                    }
+                }
+                catch(Exception x)
+                {
+                    Console.WriteLine(x.Message);
+                }
+                // == 'L') || (str[0] == 'A')
+
+            }
+        }
+
+        public string CarAction
+        {
+            get { return carAction; }
+            set { carAction = value; }
+        }
+
         public List<Point> TrackPointList
         {
             set { trackPoints = value; }
@@ -1286,7 +1366,7 @@ namespace AGV
             Point center = arc.CenterPoint;
             int left = center.X - radius;
             int top = center.Y - radius;
-            AddArc(left,top,2*radius,2*radius,(int)arc.StartAngle,(int)arc.SweepAngle);
+            AddArc(left,top,2*radius,2*radius,-(int)arc.StartAngle,-(int)arc.SweepAngle);
         }
         /*public bool AddLine(Point p1, Point p2)
        {
@@ -1311,8 +1391,18 @@ namespace AGV
         public string name;
         public int X;
         public int Y;
+        public int BtnXoffset;
+        public int BtnYoffset;
         public Station()
         {
+        }
+        public Station(string name, int X, int Y, int btnX, int btnY)
+        {
+            this.name = name;
+            this.X = X;
+            this.Y = Y;
+            this.BtnXoffset = btnX;
+            this.BtnYoffset = btnY;  
         }
         public Station(string name, int X, int Y)
         {
