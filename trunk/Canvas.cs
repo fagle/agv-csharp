@@ -69,7 +69,7 @@ namespace AGV
         //private Button button4;
         //private Button button5;
         private Car car1;
-        private int canvasHeight = 800;
+        private int canvasHeight = 600;
         private int canvasWidth = 1280;
 		/// <summary>
 		/// Required designer variable.
@@ -96,10 +96,16 @@ namespace AGV
             
             //mapDB.addMap("geli_agv");
 
+            
+            if (Screen.PrimaryScreen.WorkingArea.Height >= 900)
+            {                
+                canvasHeight = 700;
+            }
+            else
+                canvasHeight = 500;
+
 			XMax = canvasWidth;
 			YMax = canvasHeight /2;
-
-
 			
 			drawingList = new ArrayList ();
 			objectIdentifier = new ArrayList ();
@@ -428,13 +434,13 @@ namespace AGV
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoScroll = true;
-            this.AutoScrollMinSize = new System.Drawing.Size(5000, 768);
+            this.AutoScrollMinSize = new System.Drawing.Size(5000, 540);
             this.BackColor = System.Drawing.Color.Teal;
-            this.ClientSize = new System.Drawing.Size(1278, 779);
+            this.ClientSize = new System.Drawing.Size(1278, 700);
             this.ControlBox = false;
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.MinimumSize = new System.Drawing.Size(1260, 800);
+            this.MinimumSize = new System.Drawing.Size(1260, 600);
             this.Name = "Canvas";
             this.ShowInTaskbar = false;
             this.Text = "Canvas";
