@@ -416,7 +416,7 @@ namespace AGV
             return 0;
         }
         private string startPositon;
-        public void agvSerialRemoteEvent(object sender, SerialEventArgs e)
+        public void agvSerialRemoteCall(object sender, SerialEventArgs e)
         {
             ++callNum;
             if (callNum == 1)
@@ -463,7 +463,7 @@ namespace AGV
         public void ReadPort()
         {
             SerialHandler serialHander = new SerialHandler();
-            serialHander.serialEvent += agvSerialRemoteEvent;
+            serialHander.serialEvent += agvSerialRemoteCall;
             while (true)
             {
                 if (serialPort1.IsOpen)
@@ -1393,6 +1393,10 @@ namespace AGV
         public int Y;
         public int BtnXoffset;
         public int BtnYoffset;
+        public Point Location 
+        {
+            get { return new Point(X,Y); }
+        }
         public Station()
         {
         }

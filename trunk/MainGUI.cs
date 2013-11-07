@@ -13,6 +13,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using System.Threading;
 
 namespace AGV
 {
@@ -39,11 +40,24 @@ namespace AGV
         private System.Windows.Forms.MenuItem menuItem4;
         private System.Windows.Forms.MenuItem menuItem5;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private SplitContainer splitContainer1;
+        private Button button1;
+        private Button button2;
+        private ComboBox comboBox;
         private MenuItem menuItem6;
         private MenuItem menuItem7;
-        private MenuItem menuItem8;
-        private SplitContainer splitContainer1;
+        private System.IO.Ports.SerialPort serialPort1;
+        private TextBox textBox1;
+        private GroupBox groupBox1;
+        private GroupBox groupBox2;
+        private TextBox textBox2;
+        private Label label1;
+        private GroupBox groupBox3;
         private IContainer components;
+        private bool firstSerialEvent = true;
+
+        enum eSerialSate { SerialOn, SerialOff };
+        private eSerialSate serialState = eSerialSate.SerialOff;
 
         public MainGUI()
         {
@@ -55,6 +69,102 @@ namespace AGV
             //
             // TODO: Add any constructor code after InitializeComponent call
             //
+            comboBox.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
+            comboBox.SelectedItem = comboBox.Items[0];
+        }
+
+        public int InitPort()
+        {
+            serialPort1.PortName = comboBox.SelectedItem.ToString();            
+            serialPort1.BaudRate = 115200;
+            serialPort1.DataBits = 8;
+            // serialPort1.WriteTimeout = 500;
+            //serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(DataReceived);
+            return 0;
+        }
+
+        private delegate void SetTextCallBack(string text);
+        private void writeLine(string text)
+        {
+            if (textBox1.InvokeRequired)
+            {
+                SetTextCallBack d = new SetTextCallBack(writeLine);          
+                Invoke(d, new object[] { text });
+            }
+            else
+            {
+                textBox1.Text += "\r\n" + text;
+                textBox1.Select(textBox1.Text.Length, 0);
+                textBox1.ScrollToCaret();
+            }
+        }
+
+        public void ReadPort()
+        {
+            SerialHandler serialHander = new SerialHandler();
+            serialHander.serialEvent += agvSerialRemoteCall;
+            while (true)
+            {
+                if (serialPort1.IsOpen)
+                {
+                    if (serialPort1.BytesToRead == 0)
+                    {
+                        Thread.Sleep(100);
+                        continue;
+                    }
+                    try
+                    {
+
+                        byte b = (byte)serialPort1.ReadByte();
+                        serialHander.handleOneByte(b);
+                        //String SerialIn = System.Text.Encoding.ASCII.GetString(readBuffer, 0, count);
+                        //if (count != 0) 
+                        //{ 
+                        //MessageBox.Show(SerialIn); 
+                        //}
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                else
+                    break;
+            }
+            
+        }
+
+        public void agvSerialRemoteCall(object sender, SerialEventArgs e)
+        {
+            #region old version            
+            if (firstSerialEvent == true)
+            {
+                firstSerialEvent = false;
+            }
+            try
+            {
+                switch (e.Message)
+                {
+                    case "toT1":
+                        writeLine("站点1呼叫");
+                        break;
+                    case "toT2":
+                        writeLine("站点2呼叫");
+                        break;
+                    case "reF2":
+                        writeLine("F2跑错");                        
+                        break;
+                    case "reT1":
+                        writeLine("T1跑错");
+                        break;
+
+                }
+            }
+            catch (Exception x)
+            {
+                Console.WriteLine(x.Message);
+            }
+            #endregion 
         }
 
         /// <summary>
@@ -69,6 +179,7 @@ namespace AGV
                     components.Dispose();
                 }
             }
+            serialPort1.Close();
             base.Dispose(disposing);
         }
 
@@ -88,11 +199,24 @@ namespace AGV
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
-            this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.comboBox = new System.Windows.Forms.ComboBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu1
@@ -100,9 +224,7 @@ namespace AGV
             this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem1,
             this.menuItem5,
-            this.menuItem6,
-            this.menuItem7,
-            this.menuItem8});
+            this.menuItem6});
             // 
             // menuItem1
             // 
@@ -111,7 +233,7 @@ namespace AGV
             this.menuItem2,
             this.menuItem3,
             this.menuItem4});
-            this.menuItem1.Text = "File";
+            this.menuItem1.Text = "文件(F)";
             // 
             // menuItem2
             // 
@@ -134,22 +256,19 @@ namespace AGV
             // 
             this.menuItem5.Index = 1;
             this.menuItem5.MdiList = true;
-            this.menuItem5.Text = "Window";
+            this.menuItem5.Text = "窗口(W)";
             // 
             // menuItem6
             // 
             this.menuItem6.Index = 2;
-            this.menuItem6.Text = "添加一个站点";
+            this.menuItem6.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem7});
+            this.menuItem6.Text = "帮助(H)";
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 3;
-            this.menuItem7.Text = "删除一个站点";
-            // 
-            // menuItem8
-            // 
-            this.menuItem8.Index = 4;
-            this.menuItem8.Text = "指定相邻两个站点的路径";
+            this.menuItem7.Index = 0;
+            this.menuItem7.Text = "关于(A)";
             // 
             // openFileDialog1
             // 
@@ -157,28 +276,140 @@ namespace AGV
             // 
             // splitContainer1
             // 
+            this.splitContainer1.BackColor = System.Drawing.SystemColors.Control;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.splitContainer1.Panel1MinSize = 100;
-            this.splitContainer1.Size = new System.Drawing.Size(1008, 965);
-            this.splitContainer1.SplitterDistance = 148;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
+            this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
+            this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
+            this.splitContainer1.Panel1MinSize = 160;
+            this.splitContainer1.Size = new System.Drawing.Size(1264, 965);
+            this.splitContainer1.SplitterDistance = 160;
             this.splitContainer1.TabIndex = 1;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.textBox1);
+            this.groupBox3.Location = new System.Drawing.Point(882, 12);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(382, 135);
+            this.groupBox3.TabIndex = 8;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "状态显示";
+            // 
+            // textBox1
+            // 
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Location = new System.Drawing.Point(12, 20);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(358, 109);
+            this.textBox1.TabIndex = 3;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.textBox2);
+            this.groupBox2.Location = new System.Drawing.Point(3, 12);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(436, 135);
+            this.groupBox2.TabIndex = 7;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "操作说明";
+            // 
+            // textBox2
+            // 
+            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox2.Location = new System.Drawing.Point(24, 20);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(384, 109);
+            this.textBox2.TabIndex = 6;
+            this.textBox2.Text = "    运行本软件前，请将调度中心设备用USB线连到本计算机，并安装好\r\n\r\n与操作系统版本一致的FT232串口驱动程序。可在设备管理器中查看插上\r\n\r\n设备后多" +
+                "出来的COM号，打开本软件后选择对应的串口号打开，调度软件\r\n\r\n开始调度工作。";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.comboBox);
+            this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Location = new System.Drawing.Point(452, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(424, 135);
+            this.groupBox1.TabIndex = 5;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "串口设置";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(19, 37);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(77, 12);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "串口号选择：";
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.Control;
+            this.button1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.button1.Location = new System.Drawing.Point(165, 46);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(95, 39);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "打开串口";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // comboBox
+            // 
+            this.comboBox.FormattingEnabled = true;
+            this.comboBox.Location = new System.Drawing.Point(21, 56);
+            this.comboBox.Name = "comboBox";
+            this.comboBox.Size = new System.Drawing.Size(107, 20);
+            this.comboBox.TabIndex = 2;
+            this.comboBox.DropDown += new System.EventHandler(this.comboBox_DropDown);
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.SystemColors.Control;
+            this.button2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.button2.Location = new System.Drawing.Point(288, 46);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(95, 39);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "点我有惊喜";
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // MainGUI
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.AutoScroll = true;
-            this.BackColor = System.Drawing.Color.DarkSlateGray;
-            this.ClientSize = new System.Drawing.Size(1008, 965);
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.ClientSize = new System.Drawing.Size(1264, 965);
             this.Controls.Add(this.splitContainer1);
             this.Menu = this.mainMenu1;
             this.Name = "MainGUI";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -190,6 +421,8 @@ namespace AGV
         [STAThread]
         static void Main()
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainGUI());
         }
 
@@ -252,6 +485,57 @@ namespace AGV
         {
             this.Close();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Thread readThread = null;
+            if (serialState == eSerialSate.SerialOff)
+            {
+                try
+                {
+                    //serialPort1.WriteTimeout = 500;
+                    //serialPort1.ReadTimeout = 500;
+                    InitPort();
+                    serialPort1.Open();
+                    serialState = eSerialSate.SerialOn;
+                    readThread = new Thread(ReadPort);
+                    readThread.Name = "read thread";
+                    button1.Text = "关闭串口";
+                    readThread.Start();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return;
+                }
+            }
+            else
+            {
+                try
+                {
+                    serialState = eSerialSate.SerialOff;
+                    //readThread.Join();//等待线程结束会出现线程死掉的情况，不知道为什么
+                    button1.Text = "打开串口";
+                    if (serialPort1.IsOpen)
+                        serialPort1.Close();
+                    if(readThread != null)
+                        readThread.Abort();
+                    
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return;
+                }
+            }
+        }
+
+        private void comboBox_DropDown(object sender, EventArgs e)
+        {
+            comboBox.Items.Clear();
+            comboBox.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
+        }
+
 
     }
 

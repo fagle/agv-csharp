@@ -102,7 +102,7 @@ namespace AGV
                 canvasHeight = 700;
             }
             else
-                canvasHeight = 500;
+                canvasHeight = 600;
 
 			XMax = canvasWidth;
 			YMax = canvasHeight /2;
@@ -111,13 +111,15 @@ namespace AGV
 			objectIdentifier = new ArrayList ();
             mapDB = new MapDataBase("geli_agv", drawingList, objectIdentifier);
             mapDB.loadMapFromDataBase();            
-            //focusCar(car1);			            
+            			            
             mapDB.loadStationsFromDB(stationDic);
             mapDB.loadPathsFromDB(trackDic);
             adjList = new AdjacencyList(100,trackDic);
             loadStations();             
             car1 = new Car("Car1", label1);
             car1.carPosEvent += carPositionChange;
+            car1.setPosition(stationDic["S0"].Location);
+            focusCar(car1);
             scheduler = new CarScheduler(stationDic,trackDic,adjList);
             scheduler.demo(car1);
             //addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
@@ -144,6 +146,7 @@ namespace AGV
             btn.TabStop = false;
             btn.Text = name;
             btn.UseVisualStyleBackColor = false;
+            btn.FlatStyle = FlatStyle.Popup;
             btn.Click += new System.EventHandler(eh);
             this.Controls.Add(btn);
         }
