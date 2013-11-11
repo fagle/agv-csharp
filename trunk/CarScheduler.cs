@@ -73,8 +73,9 @@ namespace AGV
             List<Track> list;
             while (true)
             {
-                foreach (Station s in stationList1)
+                for (int i = 0; i < stationList1.Count;i++ )
                 {
+                    Station s = stationList1[i];
                     if ((s.OccupiedCar != null) && (s.Next != ""))
                     {
                         if (stationDic[s.Next].OccupiedCar == null)
@@ -95,10 +96,11 @@ namespace AGV
         }
 
         private void runCarTask(object o)
-        {
+        {            
             Station targetStation = (Station)o;
             Track trackTogo = new Track();
-            trackTogo.clear();
+            if (carsStandby.Count == 0)
+                return;
             if (targetStation == null || (startStation.Equals(targetStation)))
             {
                 return;
@@ -113,8 +115,7 @@ namespace AGV
             }
 
             startStation.OccupiedCar = null;
-            if (carsStandby.Count == 0)
-                return;
+            
             Car car = carsStandby.First();
             carsStandby.Remove(car);
             car.run(trackTogo);
@@ -125,7 +126,7 @@ namespace AGV
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
             }
             car.run(trackTogo);
-            while (stationDic["F13"].OccupiedCar != null)
+            while (stationDic["F31"].OccupiedCar != null)
             {
                 Thread.Sleep(100);
             }
