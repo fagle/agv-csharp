@@ -11,12 +11,13 @@ namespace AGV
         private List<Car> carsRun = new List<Car>(20);
         private Track trackTogo = new Track();
         private List<Car> carsStandby = new List<Car>(20);
-        private Thread thread;
+        private Thread thread, thread2;
         private bool onLine = false;
-        private Station targetStation = null, startStation = null;
+        private Station targetStation = null, nextTargetStation=null, startStation = null;
         private Dictionary<string, Station> stationDic;
         private Dictionary<string, Track> trackDic;
         private AdjacencyList adjList;
+        private List<Station> stationList1;
 
         public Track TrackToGo 
         {
@@ -29,7 +30,13 @@ namespace AGV
             stationDic = sDic;
             trackDic = tDic;
             adjList = adj;
-            startStation = stationDic["S0"];
+            startStation = stationDic["S1"];
+            stationList1 = new List<Station>(8);
+            stationList1.Add(stationDic["S1"]);
+            stationList1.Add(stationDic["F28"]);
+            stationList1.Add(stationDic["F29"]);
+            stationList1.Add(stationDic["F30"]);
+            stationList1.Add(stationDic["F31"]);            
         }
 
         public void demo(Car car) 
@@ -44,7 +51,7 @@ namespace AGV
 
         public Station TargetStation 
         {
-            set { targetStation = value; }
+            set { nextTargetStation = value; }
             get { return targetStation; }
         }
 
@@ -57,36 +64,96 @@ namespace AGV
             onLine = true;
             thread = new Thread(scheduleThread);
             thread.Start();
+            thread2 = new Thread(stationThread);
+            thread2.Start();
         }
 
+        private void stationThread()
+        {
+            List<Track> list;
+            while (true)
+            {
+                foreach (Station s in stationList1)
+                {
+                    if ((s.OccupiedCar != null) && (s.Next != ""))
+                    {
+                        if (stationDic[s.Next].OccupiedCar == null)
+                        {
+                            list = adjList.FindWay(adjList.Find(s), adjList.Find(stationDic[s.Next]));
+                            Track track = new Track();
+                            foreach (Track t in list)
+                                track.TrackPointList.AddRange(t.TrackPointList);
+                            s.OccupiedCar.run(track);
+                            stationDic[s.Next].OccupiedCar = s.OccupiedCar;
+                            s.OccupiedCar = null;
+                        }
+                    }
+                }
+                Thread.Sleep(500);
+            }
+
+        }
+
+        private void runCarTask(object o)
+        {
+            Station targetStation = (Station)o;
+            Track trackTogo = new Track();
+            trackTogo.clear();
+            if (targetStation == null || (startStation.Equals(targetStation)))
+            {
+                return;
+            }
+            if (targetStation.name == "S1")
+                targetStation = stationDic["F31"];
+            List<Track> list1 = adjList.FindWay(adjList.Find(startStation), adjList.Find(targetStation));
+            List<Track> list2 = adjList.FindWay(adjList.Find(targetStation), adjList.Find(stationDic["F31"]));
+            foreach (Track t in list1)
+            {
+                trackTogo.TrackPointList.AddRange(t.TrackPointList);
+            }
+
+            startStation.OccupiedCar = null;
+            if (carsStandby.Count == 0)
+                return;
+            Car car = carsStandby.First();
+            carsStandby.Remove(car);
+            car.run(trackTogo);
+            trackTogo.clear();
+            Thread.Sleep(3000);
+            foreach (Track t in list2)
+            {
+                trackTogo.TrackPointList.AddRange(t.TrackPointList);
+            }
+            car.run(trackTogo);
+            while (stationDic["F13"].OccupiedCar != null)
+            {
+                Thread.Sleep(100);
+            }
+            stationDic["F31"].OccupiedCar = car;
+            carsStandby.Add(car);
+        }
+        
         private void scheduleThread ()
         {
+
             while (onLine)
             {
-                trackTogo.clear();
-                if (targetStation == null || (startStation.Equals(targetStation)))
+                if (nextTargetStation == null)
+                    Thread.Sleep(200);
+                else if(stationList1.First().OccupiedCar!=null)
                 {
-                    Thread.Sleep(100);
-                    continue;
+                    targetStation = nextTargetStation;
+                    nextTargetStation = null;
+                    Thread t = new Thread(runCarTask);
+                    t.Start(targetStation);
                 }
-                List<Track> list = adjList.FindWay(adjList.Find(startStation), adjList.Find(targetStation));
-                
-                foreach (Track t in list)
-                {
-                    trackTogo.TrackPointList.AddRange(t.TrackPointList);
-                }
-
-                foreach(Car car in carsRun)
-                {
-                    car.run(trackTogo);
-                }
-                startStation = targetStation;
             }
         }
         public void stop()
         {
             onLine = false;
             thread.Abort();
+            thread2.Abort();
         }
     }
 }

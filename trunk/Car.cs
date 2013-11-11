@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace AGV
 {
-    class CarEventArgs
+    public class CarEventArgs
     {
         private string carName;
         private Point position;
@@ -36,14 +36,15 @@ namespace AGV
         }
     }
 
-    class Car
+    public class Car
     {
         private string name;
         private int speed = 0;
-        private int defaultSpeed = 99;
+        private int defaultSpeed = 90;
         private Point position=new Point(300,300); 
         private Track trackToGo=new Track();
-        private Label bindingLabel;
+        private Label bindingLabel;       
+        public Station StartStation;
         public delegate void CarPosEventHandler(object sender, CarEventArgs e);
         public event CarPosEventHandler carPosEvent;
 
@@ -85,7 +86,7 @@ namespace AGV
         public Car(string name, Label label) 
         {
             this.name = name;
-            this.bindingLabel = label;
+            this.bindingLabel = label;            
         }
 
         public void stop() 
@@ -101,7 +102,7 @@ namespace AGV
 
         public void setPosition(Point p)
         {
-            position = new Point(p.X, -p.Y);
+            position = new Point(p.X-8, -p.Y+8);
             if (carPosEvent != null)
                 carPosEvent(this, new CarEventArgs(name, position, bindingLabel));   
         }
@@ -111,9 +112,11 @@ namespace AGV
             this.speed = speed;
             if (trackToGo.TrackPointList.Count == 0)
                 return;
+
             for (int i=0;i<trackToGo.TrackPointList.Count;i++)
             {
                 Point p = trackToGo.TrackPointList[i];
+                
                 setPosition(p);
                 if (this.speed == 0)
                     break;

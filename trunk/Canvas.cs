@@ -36,6 +36,7 @@ namespace AGV
 		private double scaleY = 1;
 		private double mainScale = 1;
         private double importScale = 0.04;
+        private bool editMode = false;
 
 		private Point aPoint;
 		//private bool sizeChanged = false;
@@ -62,13 +63,8 @@ namespace AGV
 		private FileInfo theSourceFile;
 
         private Rectangle highlightedRegion = new Rectangle(0, 0, 0, 0);
-        //private Button button2;
-        //private Button button1;
-        private Label label1;
-        //private Button button3;
-        //private Button button4;
-        //private Button button5;
-        private Car car1;
+
+        private Car car1, car2, car3, car4, car5;
         private int canvasHeight = 600;
         private int canvasWidth = 1280;
 		/// <summary>
@@ -115,16 +111,40 @@ namespace AGV
             mapDB.loadStationsFromDB(stationDic);
             mapDB.loadPathsFromDB(trackDic);
             adjList = new AdjacencyList(100,trackDic);
-            loadStations();             
-            car1 = new Car("Car1", label1);
-            car1.carPosEvent += carPositionChange;
-            car1.setPosition(stationDic["S0"].Location);
-            focusCar(car1);
+            loadStations();
+
+            
+            car1 = creatCar("Car1","1","S1");
+            car2 = creatCar("Car2", "2", "F28");
+            car3 = creatCar("Car3", "3", "F29");
+            car4 = creatCar("Car4", "4", "F30");
+            car5 = creatCar("Car5", "5", "F31");
+            stationDic["S1"].OccupiedCar = car1;
+            stationDic["F28"].OccupiedCar = car2;
+            stationDic["F29"].OccupiedCar = car3;
+            stationDic["F30"].OccupiedCar = car4;
+            stationDic["F31"].OccupiedCar = car5;
+            //focusCar(car1);
             scheduler = new CarScheduler(stationDic,trackDic,adjList);
-            scheduler.demo(car1);
+            scheduler.addCar(car1);
+            scheduler.addCar(car2);
+            scheduler.addCar(car3);
+            scheduler.addCar(car4);
+            scheduler.addCar(car5);
             //addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
             scheduler.run();
 		}
+
+        private Car creatCar(string carName, string labelIx,string station)
+        {
+            Car car;
+            Label label = new Label();
+            initLabel(label, labelIx);
+            car = new Car(carName, label);
+            car.carPosEvent += carPositionChange;
+            car.setPosition(stationDic[station].Location);
+            return car;
+        }
 
         private void btnClicked(object sender, EventArgs e) 
         {
@@ -133,6 +153,18 @@ namespace AGV
             scheduler.TargetStation = stationDic[name];
             //Console.WriteLine(e.ToString());
             //Console.WriteLine(sender.ToString());
+        }
+
+        private void initLabel(Label label,string name) 
+        {            
+            label.BackColor = System.Drawing.Color.Lime;
+            label.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            label.Location = new System.Drawing.Point(252, 190);
+            label.Name = "label" + name;
+            label.Size = new System.Drawing.Size(16, 16);
+            label.TabIndex = 3;
+            label.Text = name;
+            this.Controls.Add(label);
         }
 
         private void initButton(Button btn, string  name, System.EventHandler eh)
@@ -146,7 +178,8 @@ namespace AGV
             btn.TabStop = false;
             btn.Text = name;
             btn.UseVisualStyleBackColor = false;
-            btn.FlatStyle = FlatStyle.Popup;
+            btn.FlatStyle = FlatStyle.Popup;            
+            btn.Font = new Font("宋体",9);
             btn.Click += new System.EventHandler(eh);
             this.Controls.Add(btn);
         }
@@ -331,7 +364,7 @@ namespace AGV
             {
                 if (s[0] == 'F')
                 {
-                    g.DrawString(s, new Font("宋体", 9), b, stationDic[s].X, stationDic[s].Y);
+                    g.DrawString(s, new Font("宋体", 9), b, stationDic[s].X+stationDic[s].BtnXoffset, stationDic[s].Y+stationDic[s].BtnYoffset);
                     g.DrawLine(redPen, stationDic[s].X - 3, stationDic[s].Y, stationDic[s].X + 3, stationDic[s].Y);
                 }
             }
@@ -381,6 +414,7 @@ namespace AGV
             {
                lastPosX = label.Location.X;
                 label.Location = new Point(x, y);
+                //label.Refresh();
                 if (carFocus != null)
                 {
                     AutoScrollPosition = new Point( -(AutoScrollPosition.X - label.Location.X + lastPosX),0);
@@ -420,18 +454,7 @@ namespace AGV
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // label1
-            // 
-            this.label1.BackColor = System.Drawing.Color.Lime;
-            this.label1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(252, 190);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(16, 16);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "1";
             // 
             // Canvas
             // 
@@ -441,7 +464,7 @@ namespace AGV
             this.BackColor = System.Drawing.Color.Teal;
             this.ClientSize = new System.Drawing.Size(1278, 700);
             this.ControlBox = false;
-            this.Controls.Add(this.label1);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MinimumSize = new System.Drawing.Size(1260, 600);
             this.Name = "Canvas";
@@ -1350,18 +1373,7 @@ namespace AGV
 			aPoint.Y = e.Y  - canvasHeight + (int) Math.Abs(YMin) + 1 - scrollOffset.Height;
            
             
-			Rectangle rect = this.ClientRectangle;
-        
-			if (rect.Contains(new Point(e.X , e.Y)))
-			{
-                this.Cursor = Cursors.Cross;              
-				onCanvas = true;
-			}
-			else
-			{
-				this.Cursor = Cursors.Arrow;
-				onCanvas = false;
-			}
+			
 
             if (clicked)
             {
@@ -1369,16 +1381,33 @@ namespace AGV
                 int dragOffset = dragEndPoint.X - dragStartPoint.X;
                 dragStartPoint = dragEndPoint;
                 int x = -(AutoScrollPosition.X + dragOffset);
-                this.AutoScrollPosition = new Point(x, 0);                
+                this.AutoScrollPosition = new Point(x, 0);
+                Refresh();	
+            }
+            if (editMode)
+            {
+                Rectangle rect = this.ClientRectangle;
+
+                if (rect.Contains(new Point(e.X, e.Y)))
+                {
+                    this.Cursor = Cursors.Cross;
+                    onCanvas = true;
+                }
+                else
+                {
+                    this.Cursor = Cursors.Arrow;
+                    onCanvas = false;
+                }
             }
 
 			if (onCanvas == true)
 			{
-				if (multipleSelect)
+                if (multipleSelect && editMode)
 					HiglightObject();
-				
-				Refresh();			                	
-			}            
+
+                Refresh();			                	
+			}
+            Refresh();	
 		}
 
 
@@ -1402,58 +1431,75 @@ namespace AGV
         private void Canvas_MouseUp(object sender, MouseEventArgs e)
         {
             clicked = false;
-            if (objNumSelect >= 0) { 
-                DrawingObject obj = (DrawingObject)objectIdentifier[objNumSelect];
-                if (obj.shapeType == 2) { 
-                    Line line = (Line)(drawingList[obj.indexNo]);             
-                    Point startPoint = new Point((int)(line.GetStartPoint.X * mainScale),(int)(line.GetStartPoint.Y * (-mainScale)));
-                    Point endPoint = new Point((int)(line.GetEndPoint.X * mainScale), (int)(line.GetEndPoint.Y * (-mainScale)));
-                    dlgLineEdit = new LineEdit(startPoint,endPoint,obj.indexNo);
-                    dlgLineEdit.Owner = this;
-                    DialogResult res = dlgLineEdit.ShowDialog();
-                    if (res ==  DialogResult.OK) {                        
-                        mapDB.modifyLine(dlgLineEdit.StartPoint,dlgLineEdit.EndPoint,obj.indexNo);
-                    }
-                    else if (res == DialogResult.Yes)
+            #region 编辑模式
+            if (editMode)
+            {
+                if (objNumSelect >= 0)
+                {
+                    DrawingObject obj = (DrawingObject)objectIdentifier[objNumSelect];
+                    if (obj.shapeType == 2)
                     {
-                        int ix = drawingList.Add(new Line(dlgLineEdit.StartPoint, dlgLineEdit.EndPoint, Color.White, 1));
-                        objectIdentifier.Add(new DrawingObject(2, ix));
-                        mapDB.addLine(dlgLineEdit.StartPoint, dlgLineEdit.EndPoint, ix);
-                        mapDB.addShapeInfo(ix, "line");
+                        Line line = (Line)(drawingList[obj.indexNo]);
+                        Point startPoint = new Point((int)(line.GetStartPoint.X * mainScale), (int)(line.GetStartPoint.Y * (-mainScale)));
+                        Point endPoint = new Point((int)(line.GetEndPoint.X * mainScale), (int)(line.GetEndPoint.Y * (-mainScale)));
+                        dlgLineEdit = new LineEdit(startPoint, endPoint, obj.indexNo);
+                        dlgLineEdit.Owner = this;
+                        DialogResult res = dlgLineEdit.ShowDialog();
+                        if (res == DialogResult.OK)
+                        {
+                            mapDB.modifyLine(dlgLineEdit.StartPoint, dlgLineEdit.EndPoint, obj.indexNo);
+                        }
+                        else if (res == DialogResult.Yes)
+                        {
+                            int ix = drawingList.Add(new Line(dlgLineEdit.StartPoint, dlgLineEdit.EndPoint, Color.White, 1));
+                            objectIdentifier.Add(new DrawingObject(2, ix));
+                            mapDB.addLine(dlgLineEdit.StartPoint, dlgLineEdit.EndPoint, ix);
+                            mapDB.addShapeInfo(ix, "line");
+                        }
+                        else if (res == DialogResult.No)
+                        {
+                            int centerX = (dlgLineEdit.StartPoint.X + dlgLineEdit.EndPoint.X) / 2;
+                            int centerY = (dlgLineEdit.StartPoint.Y + dlgLineEdit.EndPoint.Y) / 2;
+                            mapDB.modifyLine(dlgLineEdit.StartPoint, new Point(centerX, centerY), obj.indexNo);
+                            int ix = drawingList.Add(new Line(new Point(centerX, centerY), dlgLineEdit.EndPoint, Color.White, 1));
+                            objectIdentifier.Add(new DrawingObject(2, ix));
+                            mapDB.addLine(new Point(centerX, centerY), dlgLineEdit.EndPoint, ix);
+                            mapDB.addShapeInfo(ix, "line");
+                        }
+                        dlgLineEdit.Dispose();
+                        //dlgLineEdit.Activate();
+                        //dlgLineEdit.Focus();
                     }
-                    else if (res == DialogResult.No)
+                    else if (obj.shapeType == 6)
                     {
-                        int centerX = (dlgLineEdit.StartPoint.X + dlgLineEdit.EndPoint.X)/2;
-                        int centerY = (dlgLineEdit.StartPoint.Y + dlgLineEdit.EndPoint.Y)/2;                        
-                        mapDB.modifyLine(dlgLineEdit.StartPoint, new Point( centerX, centerY), obj.indexNo);
-                        int ix = drawingList.Add(new Line(new Point(centerX,centerY), dlgLineEdit.EndPoint, Color.White, 1));
-                        objectIdentifier.Add(new DrawingObject(2, ix));
-                        mapDB.addLine(new Point(centerX, centerY), dlgLineEdit.EndPoint, ix);
-                        mapDB.addShapeInfo(ix, "line");
+                        Arc arc1 = (Arc)(drawingList[obj.indexNo]);
+                        Point o = arc1.CenterPoint;
+                        dlgArcEdit = new ArcEdit((int)(o.X * mainScale), -(int)(o.Y * mainScale), (int)(arc1.Radius * mainScale), (int)arc1.StartAngle, (int)(arc1.SweepAngle), obj.indexNo);
+                        dlgArcEdit.Owner = this;
+                        DialogResult res = dlgArcEdit.ShowDialog();
+                        if (res == DialogResult.OK)
+                        {
+                            mapDB.modifyArc(dlgArcEdit.Center, dlgArcEdit.Radius, dlgArcEdit.StartAngle, dlgArcEdit.SweepAngle, obj.indexNo);
+                        }
+                        else if (res == DialogResult.Yes)
+                        {
+                            int ix = drawingList.Add(new Arc(dlgArcEdit.Center, dlgArcEdit.Radius, dlgArcEdit.StartAngle, dlgArcEdit.SweepAngle, Color.White, Color.Red, 1));
+                            objectIdentifier.Add(new DrawingObject(6, ix));
+                            mapDB.addArc(dlgArcEdit.Center, dlgArcEdit.Radius, dlgArcEdit.StartAngle, dlgArcEdit.SweepAngle, ix);
+                            mapDB.addShapeInfo(ix, "arc");
+                        }
+                        dlgArcEdit.Dispose();
                     }
-                    dlgLineEdit.Dispose();
-                    //dlgLineEdit.Activate();
-                    //dlgLineEdit.Focus();
+                    multipleSelect = false;
+                    drawingList.Clear();
+                    objectIdentifier.Clear();
+                    scheduler.TrackToGo.clear();
+                    mapDB.loadMapFromDataBase();
+                    addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
                 }
-                else if (obj.shapeType == 6) {
-                    Arc arc1 = (Arc)(drawingList[obj.indexNo]);
-                    Point o = arc1.CenterPoint;
-                    dlgArcEdit = new ArcEdit((int)(o.X * mainScale),-(int)(o.Y * mainScale),(int)(arc1.Radius * mainScale),(int)arc1.StartAngle,(int)(arc1.SweepAngle),obj.indexNo);
-                    dlgArcEdit.Owner = this;
-                    if (dlgArcEdit.ShowDialog() == DialogResult.OK) { 
-                        mapDB.modifyArc(dlgArcEdit.Center,dlgArcEdit.Radius,dlgArcEdit.StartAngle,dlgArcEdit.SweepAngle,obj.indexNo);
-                    }                    
-                    dlgArcEdit.Dispose();
-                }
-                multipleSelect = false;
-                drawingList.Clear();
-                objectIdentifier.Clear();
-                scheduler.TrackToGo.clear();                
-                mapDB.loadMapFromDataBase();
-                addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
+                objNumSelect = -1;
             }
-            objNumSelect = -1;
-               
+            #endregion
         }
 
         //private bool focus = false;

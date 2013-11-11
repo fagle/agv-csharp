@@ -55,6 +55,8 @@ namespace AGV
         private GroupBox groupBox3;
         private IContainer components;
         private bool firstSerialEvent = true;
+        private PictureBox pictureBox1;
+        private Thread readThread = null;
 
         enum eSerialSate { SerialOn, SerialOff };
         private eSerialSate serialState = eSerialSate.SerialOff;
@@ -206,6 +208,7 @@ namespace AGV
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.comboBox = new System.Windows.Forms.ComboBox();
@@ -217,6 +220,7 @@ namespace AGV
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // mainMenu1
@@ -338,6 +342,7 @@ namespace AGV
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.pictureBox1);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.comboBox);
@@ -348,6 +353,16 @@ namespace AGV
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "串口设置";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::AGV.Properties.Resources.ICON_OFF;
+            this.pictureBox1.Location = new System.Drawing.Point(134, 56);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(20, 20);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
             // 
             // label1
             // 
@@ -410,6 +425,7 @@ namespace AGV
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -488,7 +504,7 @@ namespace AGV
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Thread readThread = null;
+            
             if (serialState == eSerialSate.SerialOff)
             {
                 try
@@ -501,6 +517,7 @@ namespace AGV
                     readThread = new Thread(ReadPort);
                     readThread.Name = "read thread";
                     button1.Text = "关闭串口";
+                    pictureBox1.Image = AGV.Properties.Resources.ICON_ON;
                     readThread.Start();
                 }
                 catch (Exception ex)
@@ -516,6 +533,7 @@ namespace AGV
                     serialState = eSerialSate.SerialOff;
                     //readThread.Join();//等待线程结束会出现线程死掉的情况，不知道为什么
                     button1.Text = "打开串口";
+                    pictureBox1.Image = AGV.Properties.Resources.ICON_OFF;
                     if (serialPort1.IsOpen)
                         serialPort1.Close();
                     if(readThread != null)

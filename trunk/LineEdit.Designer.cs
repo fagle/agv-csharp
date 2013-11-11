@@ -168,7 +168,6 @@
             // button5
             // 
             this.button5.DialogResult = System.Windows.Forms.DialogResult.No;
-            this.button5.Enabled = false;
             this.button5.Location = new System.Drawing.Point(115, 189);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(69, 25);

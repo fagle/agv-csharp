@@ -45,6 +45,7 @@
             this.textBoxRadius = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.textBoxNo = new System.Windows.Forms.TextBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -189,11 +190,22 @@
             this.textBoxNo.Size = new System.Drawing.Size(71, 21);
             this.textBoxNo.TabIndex = 16;
             // 
+            // button4
+            // 
+            this.button4.DialogResult = System.Windows.Forms.DialogResult.Yes;
+            this.button4.Location = new System.Drawing.Point(22, 252);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(63, 24);
+            this.button4.TabIndex = 17;
+            this.button4.Text = "创建圆弧";
+            this.button4.UseVisualStyleBackColor = true;
+            // 
             // ArcEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(290, 290);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.textBoxNo);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.textBoxRadius);
@@ -239,5 +251,6 @@
         private System.Windows.Forms.TextBox textBoxRadius;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBoxNo;
+        private System.Windows.Forms.Button button4;
     }
 }

@@ -154,6 +154,8 @@
     <Compile Include="Shapes.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="res\ICON_ON.png" />
+    <None Include="res\ICON_OFF.png" />
     <EmbeddedResource Include="ArcEdit.resx">
       <DependentUpon>ArcEdit.cs</DependentUpon>
     </EmbeddedResource>

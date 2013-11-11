@@ -59,5 +59,19 @@ namespace AGV.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static System.Drawing.Bitmap ICON_OFF {
+            get {
+                object obj = ResourceManager.GetObject("ICON_OFF", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ICON_ON {
+            get {
+                object obj = ResourceManager.GetObject("ICON_ON", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

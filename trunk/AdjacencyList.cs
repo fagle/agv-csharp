@@ -247,6 +247,8 @@ namespace AGV
             Vertex v = fromVer;
             int length = 0;
             int ansLength = int.MaxValue;
+            if (toVer == fromVer)
+                return ansList;
             discoveryQueue.Enqueue(v);
             while (discoveryQueue.Count > 0)
             {

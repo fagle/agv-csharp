@@ -236,7 +236,6 @@ namespace AGV
                                 objectIdentifier.Add(new DrawingObject(6, ix));
                                 shapeList[i].center = center;
                             }
-
                         }
                     }
                 }
@@ -248,8 +247,8 @@ namespace AGV
         }
 
         public void loadStationsFromDB(Dictionary<string, Station> stationDic) 
-        {            
-            string sql = @"SELECT name,positionX,positionY,btnX,btnY,type 
+        {
+            string sql = @"SELECT name,positionX,positionY,btnX,btnY,next 
                            FROM station  
                            WHERE (ownerMap = @ownerMap)";
             SQLiteParameter[] parameters = new SQLiteParameter[]
@@ -264,8 +263,12 @@ namespace AGV
                     while (reader.Read())
                     {
                         //Console.WriteLine("indexNo:{0},shape:{1}", /*reader.GetInt64(0)*/1, reader.GetString(1));
-                        stationDic.Add(reader.GetString(0), new Station( reader.GetString(0), reader.GetInt32(1),
-                            reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4)));
+                        Station s =  new Station( reader.GetString(0), reader.GetInt32(1),
+                            reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4));
+                        stationDic.Add(reader.GetString(0),s);
+                        if (!reader.IsDBNull(5))
+                            s.Next = reader.GetString(5);
+
                     }
                 }
             }

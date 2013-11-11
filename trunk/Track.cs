@@ -1406,7 +1406,8 @@ namespace AGV
             this.X = X;
             this.Y = Y;
             this.BtnXoffset = btnX;
-            this.BtnYoffset = btnY;  
+            this.BtnYoffset = btnY;
+            Next = "";
         }
         public Station(string name, int X, int Y)
         {
@@ -1414,7 +1415,8 @@ namespace AGV
             this.X = X;
             this.Y = Y;
         }
-
+        public string Next;
+        public Car OccupiedCar = null;
         //public bool canStop;
 
     }
