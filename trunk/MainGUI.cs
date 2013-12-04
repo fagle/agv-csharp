@@ -136,37 +136,119 @@ namespace AGV
             
         }
 
+        public delegate void PerformClick();
         public void agvSerialRemoteCall(object sender, SerialEventArgs e)
         {
-            #region old version            
-            if (firstSerialEvent == true)
-            {
-                firstSerialEvent = false;
-            }
+                        
+            //if (firstSerialEvent == true)
+            //{
+            //    firstSerialEvent = false;
+            //}
+            Control[] a;
+            Button b;
             try
             {
-                switch (e.Message)
+                switch (e.Station_ID)
                 {
-                    case "toT1":
+                    case 1:
                         writeLine("桴萸1網請");
                         break;
-                    case "toT2":
+                    case 2:
                         writeLine("桴萸2網請");
                         break;
-                    case "reF2":
-                        writeLine("F2變渣");                        
+                    case 3:
+                                           
+                        
                         break;
-                    case "reT1":
-                        writeLine("T1變渣");
+                    case 4:
+                        writeLine("桴萸2網請");
                         break;
-
+                    case 5:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 6:
+                        writeLine("桴萸2網請");
+                        break;
+                    case 7:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 8:
+                        writeLine("桴萸2網請");
+                        break;
+                    case 9:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 10:
+                        writeLine("桴萸2網請");
+                        break;
+                    case 11:
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S11", false);
+                        b = (Button)a[0];
+                        if(b!=null)
+                        Invoke(new PerformClick(b.PerformClick));
+                        writeLine("桴萸11網請");   
+                        this.newCanvas.Scheduler.CallStyle = 0;
+                        break;
+                    case 12:
+                                            
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S12", false);
+                        b = (Button)a[0];
+                        if(b!=null)
+                        Invoke(new PerformClick(b.PerformClick));
+                        writeLine("桴萸12網請"); 
+                        this.newCanvas.Scheduler.CallStyle = 0;
+                        break;
+                    case 13:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 14:
+                        writeLine("桴萸2網請");
+                        break;
+                    case 15:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 16:
+                        writeLine("桴萸2網請");
+                        break;
+                    case 17:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 18:
+                        writeLine("桴萸2網請");
+                        break;
+                    case 19:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 20:
+                        writeLine("桴萸2網請");
+                        break;
+                    case 21:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 22:
+                        writeLine("桴萸2網請");
+                        break;
+                    case 23:
+                        writeLine("桴萸1網請");
+                        break;
+                    case 24:
+                        writeLine("桴萸2網請");
+                        break;
+                    //case "reF2":
+                    //    writeLine("F2變渣");                        
+                    //    break;
+                    //case "reT1":
+                    //    writeLine("T1變渣");
+                    //    break;
                 }
             }
             catch (Exception x)
             {
                 Console.WriteLine(x.Message);
             }
-            #endregion 
+         
         }
 
         /// <summary>
@@ -293,7 +375,7 @@ namespace AGV
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1MinSize = 160;
-            this.splitContainer1.Size = new System.Drawing.Size(1264, 965);
+            this.splitContainer1.Size = new System.Drawing.Size(1264, 729);
             this.splitContainer1.SplitterDistance = 160;
             this.splitContainer1.TabIndex = 1;
             // 
@@ -410,7 +492,7 @@ namespace AGV
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1264, 965);
+            this.ClientSize = new System.Drawing.Size(1264, 729);
             this.Controls.Add(this.splitContainer1);
             this.Menu = this.mainMenu1;
             this.Name = "MainGUI";

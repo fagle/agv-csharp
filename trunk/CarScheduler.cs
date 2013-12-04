@@ -6,18 +6,23 @@ using System.Threading;
 
 namespace AGV
 {
-    class CarScheduler
+    public class CarScheduler
     {
+        private controlMessage ctlMessage;
+        private static int callStyle = 0;
         private List<Car> carsRun = new List<Car>(20);
         private Track trackTogo = new Track();
-        private List<Car> carsStandby = new List<Car>(20);
+        private List<Car> greenCarsStandby = new List<Car>(20);
+        private List<Car> redCarsStandby = new List<Car>(20);
+        private List<Car> pinkCarsStandby = new List<Car>(20);
+        private List<Car> goldCarsStandby = new List<Car>(20);
         private Thread thread, thread2;
         private bool onLine = false;
-        private Station targetStation = null, nextTargetStation=null, startStation = null;
+        private Station targetStation = null, nextTargetStation = null, gStartStation = null, rStartStation = null, pStartStation = null, goStartStation = null;
         private Dictionary<string, Station> stationDic;
         private Dictionary<string, Track> trackDic;
         private AdjacencyList adjList;
-        private List<Station> stationList1;
+        private List<Station> stationList1, stationList2, stationList3, stationList4;//Green Red Pink Gold
 
         public Track TrackToGo 
         {
@@ -30,13 +35,37 @@ namespace AGV
             stationDic = sDic;
             trackDic = tDic;
             adjList = adj;
-            startStation = stationDic["S1"];
+            gStartStation = stationDic["F29"];
             stationList1 = new List<Station>(8);
-            stationList1.Add(stationDic["S1"]);
-            stationList1.Add(stationDic["F28"]);
             stationList1.Add(stationDic["F29"]);
-            stationList1.Add(stationDic["F30"]);
-            stationList1.Add(stationDic["F31"]);            
+
+            rStartStation = stationDic["S2"];
+            stationList2 = new List<Station>(8);
+            stationList2.Add(stationDic["S2"]);
+
+            pStartStation = stationDic["S3"];
+            stationList3 = new List<Station>(8);
+            stationList3.Add(stationDic["S3"]);
+
+            goStartStation = stationDic["S10"];
+            stationList4 = new List<Station>(8);
+            stationList4.Add(stationDic["S10"]);
+            //stationList1.Add(stationDic["S1"]);
+            //stationList1.Add(stationDic["F28"]);
+            
+            //stationList1.Add(stationDic["F30"]);
+            //stationList1.Add(stationDic["F31"]);            
+        }
+
+        public int CallStyle
+        {  
+            set 
+            {
+                lock (this)
+                {
+                    callStyle = value;
+                }
+            } 
         }
 
         public void demo(Car car) 
@@ -44,9 +73,24 @@ namespace AGV
             carsRun.Add(car);
         }
 
-        public void addCar(Car car)
+        public void addGreenCar(Car car)
         {
-            carsStandby.Add(car);
+            greenCarsStandby.Add(car);
+        }
+
+        public void addRedCar(Car car)
+        {
+            redCarsStandby.Add(car);
+        }
+
+        public void addGoldCar(Car car)
+        {
+            goldCarsStandby.Add(car);
+        }
+
+        public void addPinkCar(Car car)
+        {
+            pinkCarsStandby.Add(car);
         }
 
         public Station TargetStation 
@@ -64,8 +108,8 @@ namespace AGV
             onLine = true;
             thread = new Thread(scheduleThread);
             thread.Start();
-            thread2 = new Thread(stationThread);
-            thread2.Start();
+            //thread2 = new Thread(stationThread);
+            //thread2.Start();
         }
 
         private void stationThread()
@@ -95,30 +139,91 @@ namespace AGV
 
         }
 
+        private void scheduleThread()
+        {
+            while (onLine)
+            {
+                #region
+                if (nextTargetStation == null)
+                    Thread.Sleep(200);
+                else if (callStyle!=0)
+                {
+                    switch (callStyle)
+                    {
+                        case 1:
+                            if (stationList1.First().OccupiedCar == null)
+                            {
+                                nextTargetStation = null;
+                                continue;
+                            }
+                            ctlMessage = new controlMessage(stationDic["F29"], nextTargetStation, stationDic["F29"], greenCarsStandby);
+                            break;
+                        case 2:
+                            if (stationList2.First().OccupiedCar == null)
+                            {
+                                nextTargetStation = null;
+                                continue;
+                            }
+                            ctlMessage = new controlMessage(stationDic["S2"], nextTargetStation, stationDic["S2"], redCarsStandby);
+                            break;
+                        case 3:
+                            if (stationList3.First().OccupiedCar == null)
+                            {
+                                nextTargetStation = null;
+                                continue;
+                            }
+                            ctlMessage = new controlMessage(stationDic["S3"], nextTargetStation, stationDic["S3"], pinkCarsStandby);
+                            break;
+                        case 4:
+                            if (stationList4.First().OccupiedCar == null)
+                            {
+                                nextTargetStation = null;
+                                continue;
+                            }
+                            ctlMessage = new controlMessage(stationDic["S10"], nextTargetStation, stationDic["S10"], goldCarsStandby);
+                            break;
+                    }
+                    //targetStation = nextTargetStation;
+                    nextTargetStation = null;
+                    Thread t = new Thread(runCarTask);
+                    t.Start(ctlMessage);
+                }
+                #endregion
+            }
+               
+        }
+
         private void runCarTask(object o)
-        {            
-            Station targetStation = (Station)o;
+        {
+            controlMessage ctlMessage = (controlMessage)o;
             Track trackTogo = new Track();
-            if (carsStandby.Count == 0)
+            if (ctlMessage.RelevantStandby.Count == 0)
                 return;
-            if (targetStation == null || (startStation.Equals(targetStation)))
+            if (ctlMessage.TargetStation == null || (ctlMessage.StartStation.Equals(ctlMessage.TargetStation)))
             {
                 return;
             }
-            if (targetStation.name == "S1")
-                targetStation = stationDic["F31"];
-            List<Track> list1 = adjList.FindWay(adjList.Find(startStation), adjList.Find(targetStation));
-            List<Track> list2 = adjList.FindWay(adjList.Find(targetStation), adjList.Find(stationDic["F31"]));
+            //if (targetStation.name == "S1")
+                //targetStation = stationDic["F31"];
+            List<Track> list1 = adjList.FindWay(adjList.Find(ctlMessage.StartStation), adjList.Find(ctlMessage.TargetStation));
+            List<Track> list2 = adjList.FindWay(adjList.Find(ctlMessage.TargetStation), adjList.Find(ctlMessage.EndStation));
             foreach (Track t in list1)
             {
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
             }
 
-            startStation.OccupiedCar = null;
-            
-            Car car = carsStandby.First();
-            carsStandby.Remove(car);
-            car.run(trackTogo);
+            ctlMessage.StartStation.OccupiedCar = null;
+
+            Car car = ctlMessage.RelevantStandby.First();
+            if (car != null)
+            {
+                ctlMessage.RelevantStandby.Remove(car);
+                car.run(trackTogo);
+            }
+            else
+            {
+                return;
+            }
             trackTogo.clear();
             Thread.Sleep(3000);
             foreach (Track t in list2)
@@ -126,35 +231,51 @@ namespace AGV
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
             }
             car.run(trackTogo);
-            while (stationDic["F31"].OccupiedCar != null)
-            {
-                Thread.Sleep(100);
-            }
-            stationDic["F31"].OccupiedCar = car;
-            carsStandby.Add(car);
-        }
+            //while (stationDic["F31"].OccupiedCar != null)
+            //{
+            //    Thread.Sleep(100);
+            //}
+            ctlMessage.EndStation.OccupiedCar = car;
+            ctlMessage.RelevantStandby.Add(car);
+        }  
         
-        private void scheduleThread ()
-        {
-
-            while (onLine)
-            {
-                if (nextTargetStation == null)
-                    Thread.Sleep(200);
-                else if(stationList1.First().OccupiedCar!=null)
-                {
-                    targetStation = nextTargetStation;
-                    nextTargetStation = null;
-                    Thread t = new Thread(runCarTask);
-                    t.Start(targetStation);
-                }
-            }
-        }
         public void stop()
         {
             onLine = false;
             thread.Abort();
-            thread2.Abort();
+            //thread2.Abort();
+        }
+    }
+
+    public class controlMessage
+    {
+        private Station startStation;
+        private Station targetStation;
+        private Station endStation;
+        private List<Car> relevantStandby;
+        public controlMessage(Station startStation, Station targetStation, Station endStation, List<Car> relevantStandby)
+        {
+            this.startStation = startStation;
+            this.targetStation = targetStation;
+            this.endStation = endStation;
+            this.relevantStandby = relevantStandby;
+
+        }
+        public Station StartStation
+        {
+            get{return startStation;}
+        }
+        public Station TargetStation
+        {
+            get { return targetStation; }
+        }
+        public Station EndStation
+        {
+            get { return endStation; }
+        }
+        public List<Car> RelevantStandby
+        {
+            get { return relevantStandby; }
         }
     }
 }

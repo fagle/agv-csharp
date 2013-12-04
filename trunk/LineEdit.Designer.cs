@@ -43,6 +43,7 @@
             this.textBoxNo = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -175,11 +176,22 @@
             this.button5.Text = "切成两段";
             this.button5.UseVisualStyleBackColor = true;
             // 
+            // button6
+            // 
+            this.button6.DialogResult = System.Windows.Forms.DialogResult.Ignore;
+            this.button6.Location = new System.Drawing.Point(203, 189);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(69, 25);
+            this.button6.TabIndex = 14;
+            this.button6.Text = "删除直线";
+            this.button6.UseVisualStyleBackColor = true;
+            // 
             // LineEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.textBoxNo);
@@ -222,5 +234,6 @@
         private System.Windows.Forms.TextBox textBoxNo;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
     }
 }

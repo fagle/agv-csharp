@@ -36,7 +36,7 @@ namespace AGV
 		private double scaleY = 1;
 		private double mainScale = 1;
         private double importScale = 0.04;
-        private bool editMode = false;
+        private bool editMode = true;
 
 		private Point aPoint;
 		//private bool sizeChanged = false;
@@ -114,50 +114,59 @@ namespace AGV
             loadStations();
 
             
-            car1 = creatCar("Car1","1","S1");
-            car2 = creatCar("Car2", "2", "F28");
-            car3 = creatCar("Car3", "3", "F29");
-            car4 = creatCar("Car4", "4", "F30");
-            car5 = creatCar("Car5", "5", "F31");
-            stationDic["S1"].OccupiedCar = car1;
-            stationDic["F28"].OccupiedCar = car2;
-            stationDic["F29"].OccupiedCar = car3;
-            stationDic["F30"].OccupiedCar = car4;
-            stationDic["F31"].OccupiedCar = car5;
+            //car1 = creatCar("Car1","1","S1");
+            //car2 = creatCar("Car2", "2", "F28");
+            //car3 = creatCar("Car3", "3", "F29");
+            //car4 = creatCar("Car4", "4", "F30");
+            //car5 = creatCar("Car5", "5", "F31");
+            //stationDic["S1"].OccupiedCar = car1;
+            //stationDic["F28"].OccupiedCar = car2;
+            //stationDic["F29"].OccupiedCar = car3;
+            //stationDic["F30"].OccupiedCar = car4;
+            //stationDic["F31"].OccupiedCar = car5;
             //focusCar(car1);
+            car1 = creatCar("Car1", "1", "F29", System.Drawing.Color.Green);
+            car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red);
+            car3 = creatCar("Car3", "3", "S3", System.Drawing.Color.Pink);
+            car4 = creatCar("Car4", "4", "S10", System.Drawing.Color.Gold);
+            //car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red);
+            stationDic["F29"].OccupiedCar = car1;
+            stationDic["S2"].OccupiedCar = car2;
+            stationDic["S3"].OccupiedCar = car3;
+            stationDic["S10"].OccupiedCar = car4;
             scheduler = new CarScheduler(stationDic,trackDic,adjList);
-            scheduler.addCar(car1);
-            scheduler.addCar(car2);
-            scheduler.addCar(car3);
-            scheduler.addCar(car4);
-            scheduler.addCar(car5);
+            scheduler.addGreenCar(car1);
+            scheduler.addRedCar(car2);
+            scheduler.addPinkCar(car3);
+            scheduler.addGoldCar(car4);
+            //scheduler.addCar(car2);
+            //scheduler.addCar(car3);
+            //scheduler.addCar(car4);
+            //scheduler.addCar(car5);
             //addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
             scheduler.run();
 		}
 
-        private Car creatCar(string carName, string labelIx,string station)
+        public CarScheduler Scheduler
+        {
+            get { return scheduler; }
+            set { scheduler = value; }
+        }
+
+        private Car creatCar(string carName, string labelIx, string station, Color color)
         {
             Car car;
             Label label = new Label();
-            initLabel(label, labelIx);
+            initLabel(label, labelIx,color);
             car = new Car(carName, label);
             car.carPosEvent += carPositionChange;
             car.setPosition(stationDic[station].Location);
             return car;
         }
 
-        private void btnClicked(object sender, EventArgs e) 
+        private void initLabel(Label label, string name, Color color) 
         {
-            Button fromButton = (Button)sender;
-            string name = fromButton.Name;
-            scheduler.TargetStation = stationDic[name];
-            //Console.WriteLine(e.ToString());
-            //Console.WriteLine(sender.ToString());
-        }
-
-        private void initLabel(Label label,string name) 
-        {            
-            label.BackColor = System.Drawing.Color.Lime;
+            label.BackColor = color;// System.Drawing.Color.Lime;
             label.Font = new System.Drawing.Font("ËÎÌו", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             label.Location = new System.Drawing.Point(252, 190);
             label.Name = "label" + name;
@@ -167,7 +176,18 @@ namespace AGV
             this.Controls.Add(label);
         }
 
-        private void initButton(Button btn, string  name, System.EventHandler eh)
+
+        private void btnClicked(object sender, EventArgs e)
+        {
+            
+            Button fromButton = (Button)sender;
+            string name = fromButton.Name;
+            scheduler.TargetStation = stationDic[name];
+            //Console.WriteLine(e.ToString());
+            //Console.WriteLine(sender.ToString());
+        }
+        
+        private void initButton(Button btn, string name, EventHandler eh)//System.EventHandler eh)//EventHandler<ClickEventArgs> click)
         {
             btn.BackColor = System.Drawing.Color.Blue;
             btn.ForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -181,6 +201,7 @@ namespace AGV
             btn.FlatStyle = FlatStyle.Popup;            
             btn.Font = new Font("ËÎÌו",9);
             btn.Click += new System.EventHandler(eh);
+            //btn.Click += new EventHandler(eh);
             this.Controls.Add(btn);
         }
 
@@ -192,6 +213,7 @@ namespace AGV
             //adjList.AddVertex(s);
             p.X = p.X + xOffset;
             p.Y = canvasHeight + p.Y + yOffset;
+            //Button btn = new Button();
             Button btn = new Button();
             initButton(btn, name, btnClicked);
             btn.Location = p;
@@ -1456,6 +1478,10 @@ namespace AGV
                             mapDB.addLine(dlgLineEdit.StartPoint, dlgLineEdit.EndPoint, ix);
                             mapDB.addShapeInfo(ix, "line");
                         }
+                        else if (res == DialogResult.Ignore)
+                        {
+
+                        }
                         else if (res == DialogResult.No)
                         {
                             int centerX = (dlgLineEdit.StartPoint.X + dlgLineEdit.EndPoint.X) / 2;
@@ -1523,4 +1549,24 @@ namespace AGV
         }
         */
 	}
+
+    //public class NButton : Button
+    //{
+    //    public delegate void EventHandler(int callStyle);
+    //    public event EventHandler Click;
+    //    protected override void OnClick()
+    //    {
+    //        base.OnClick();
+
+    //    }
+    //}
+
+    //public class ClickEventArgs : EventArgs
+    //{
+    //    private int callStyle;
+    //    public ClickEventArgs(int callStyle)
+    //    {
+    //        this.callStyle = callStyle;
+    //    }
+    //}
 }

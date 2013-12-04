@@ -416,6 +416,7 @@ namespace AGV
             return 0;
         }
         private string startPositon;
+        /*
         public void agvSerialRemoteCall(object sender, SerialEventArgs e)
         {
             ++callNum;
@@ -459,11 +460,11 @@ namespace AGV
                 Console.WriteLine(x.Message);
             }
         }
-
+        */
         public void ReadPort()
         {
             SerialHandler serialHander = new SerialHandler();
-            serialHander.serialEvent += agvSerialRemoteCall;
+            //serialHander.serialEvent += agvSerialRemoteCall;
             while (true)
             {
                 if (serialPort1.IsOpen)
@@ -1423,14 +1424,20 @@ namespace AGV
 
     public class SerialEventArgs
     {
-        private string message;
-        public SerialEventArgs(String s)
+        private byte station_ID;
+        private byte call_type;
+        public SerialEventArgs(byte station_ID, byte call_type)
         {
-            message = s;
+            this.station_ID = station_ID;
+            this.call_type = call_type;
         }
-        public string Message
+        public byte Station_ID
         {
-            get { return message; }
+            get { return station_ID; }
+        }
+        public byte Call_type
+        {
+            get { return call_type; }
         }
     }
 
@@ -1443,35 +1450,32 @@ namespace AGV
         public void handleOneByte(byte b)
         {
             serialBuf.Add(b);
-            if (serialBuf[0] != 0xfe)
+            if (serialBuf[0] != 0x68)
                 serialBuf.RemoveAt(0);
-            if (serialBuf.Count < 11)
+            if (serialBuf.Count < 8)
                 return;
             eArgs = null;
-            if (serialBuf[2] == 0xF2)//车子错位，重新规划回起点
+            if (serialBuf[1] == 0xE4)//呼叫器呼叫
             {
-                if (serialBuf[8] == 0x70)
+                if (serialBuf != null)
                 {
-                    if (serialBuf[9] == 0x0D && serialBuf[10] == 0xB1 && serialBuf[11] == 0xDB)
-                    {
-                        eArgs = new SerialEventArgs("reF2");
-                    }
-                    else if (serialBuf[9] == 0x0c && serialBuf[10] == 0x38 && serialBuf[11] == 0xca)
-                    {
-                        eArgs = new SerialEventArgs("reT1");
-                    }
+                    eArgs = new SerialEventArgs(serialBuf[5], serialBuf[6]);
                 }
             }
-            else if (serialBuf[2] == 0xF6)//呼叫器呼叫
+            else if (serialBuf[1] == 0xE1)
             {
                 if (serialBuf[7] == 0x0c && serialBuf[8] == 0x38 && serialBuf[9] == 0xca)//T1呼叫
                 {
-                    eArgs = new SerialEventArgs("toT1");
+                    //eArgs = new SerialEventArgs("toT1");
                 }
                 else if (serialBuf[7] == 0x0e && serialBuf[8] == 0x2a && serialBuf[9] == 0xe9)//T2呼叫
                 {
-                    eArgs = new SerialEventArgs("toT2");
+                    //eArgs = new SerialEventArgs("toT2");
                 }
+            }
+            else if (serialBuf[1] == 0xE3)
+            {
+
             }
 
             try
@@ -1481,7 +1485,7 @@ namespace AGV
                     serialEvent(this, eArgs);
                     serialBuf.Clear();//有效帧
                 }
-                else if ((serialBuf.Count == 11) && (eArgs == null))
+                else if ((serialBuf.Count == 10) && (eArgs == null))
                 {
                     serialBuf.Clear();//无效命令帧
                 }
@@ -1492,7 +1496,7 @@ namespace AGV
             {
                 Console.WriteLine(x.Message);
             }
-            
+
         }
     }
 }
