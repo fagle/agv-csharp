@@ -183,12 +183,15 @@ namespace AGV
                         break;
                     case 11:
                         this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
-                        a = this.newCanvas.Controls.Find("S11", false);
+                        a = this.newCanvas.Controls.Find("S11",false);
                         b = (Button)a[0];
-                        if(b!=null)
-                        Invoke(new PerformClick(b.PerformClick));
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));      
+                        }
+
                         writeLine("桴萸11網請");   
-                        this.newCanvas.Scheduler.CallStyle = 0;
+                        //this.newCanvas.Scheduler.CallStyle = 0;
                         break;
                     case 12:
                                             
@@ -198,7 +201,7 @@ namespace AGV
                         if(b!=null)
                         Invoke(new PerformClick(b.PerformClick));
                         writeLine("桴萸12網請"); 
-                        this.newCanvas.Scheduler.CallStyle = 0;
+                        //this.newCanvas.Scheduler.CallStyle = 0;
                         break;
                     case 13:
                         writeLine("桴萸1網請");

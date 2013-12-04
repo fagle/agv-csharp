@@ -9,7 +9,7 @@ namespace AGV
     public class CarScheduler
     {
         private controlMessage ctlMessage;
-        private static int callStyle = 0;
+        private int callStyle = 0;
         private List<Car> carsRun = new List<Car>(20);
         private Track trackTogo = new Track();
         private List<Car> greenCarsStandby = new List<Car>(20);
@@ -65,7 +65,8 @@ namespace AGV
                 {
                     callStyle = value;
                 }
-            } 
+            }
+            get { return callStyle; }
         }
 
         public void demo(Car car) 
@@ -95,7 +96,13 @@ namespace AGV
 
         public Station TargetStation 
         {
-            set { nextTargetStation = value; }
+            set 
+            {
+                lock (this)
+                {
+                    nextTargetStation = value;
+                }
+            }
             get { return targetStation; }
         }
 
@@ -157,6 +164,7 @@ namespace AGV
                                 continue;
                             }
                             ctlMessage = new controlMessage(stationDic["F29"], nextTargetStation, stationDic["F29"], greenCarsStandby);
+                            nextTargetStation = null;
                             break;
                         case 2:
                             if (stationList2.First().OccupiedCar == null)
@@ -165,6 +173,7 @@ namespace AGV
                                 continue;
                             }
                             ctlMessage = new controlMessage(stationDic["S2"], nextTargetStation, stationDic["S2"], redCarsStandby);
+                            nextTargetStation = null;
                             break;
                         case 3:
                             if (stationList3.First().OccupiedCar == null)
@@ -173,6 +182,7 @@ namespace AGV
                                 continue;
                             }
                             ctlMessage = new controlMessage(stationDic["S3"], nextTargetStation, stationDic["S3"], pinkCarsStandby);
+                            nextTargetStation = null;
                             break;
                         case 4:
                             if (stationList4.First().OccupiedCar == null)
@@ -181,10 +191,11 @@ namespace AGV
                                 continue;
                             }
                             ctlMessage = new controlMessage(stationDic["S10"], nextTargetStation, stationDic["S10"], goldCarsStandby);
+                            nextTargetStation = null;
                             break;
                     }
                     //targetStation = nextTargetStation;
-                    nextTargetStation = null;
+                    //nextTargetStation = null;
                     Thread t = new Thread(runCarTask);
                     t.Start(ctlMessage);
                 }
@@ -211,10 +222,12 @@ namespace AGV
             {
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
             }
-
+            Car car = null;
             ctlMessage.StartStation.OccupiedCar = null;
-
-            Car car = ctlMessage.RelevantStandby.First();
+            if (ctlMessage.RelevantStandby.Count!=0)
+                car = ctlMessage.RelevantStandby.First();
+            else
+                return;
             if (car != null)
             {
                 ctlMessage.RelevantStandby.Remove(car);
