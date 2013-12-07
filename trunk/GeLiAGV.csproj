@@ -111,7 +111,6 @@
     <Compile Include="AdjacencyList.cs" />
     <Compile Include="Car.cs" />
     <Compile Include="CarScheduler.cs" />
-    <Compile Include="CommandFrame.cs" />
     <Compile Include="define.cs" />
     <Compile Include="MapDataBase.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

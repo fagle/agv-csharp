@@ -248,9 +248,12 @@ namespace AGV
 
         public void loadStationsFromDB(Dictionary<string, Station> stationDic) 
         {
-            string sql = @"SELECT name,positionX,positionY,btnX,btnY,next 
-                           FROM station  
-                           WHERE (ownerMap = @ownerMap)";
+//            string sql = @"SELECT name,positionX,positionY,btnX,btnY,next 
+//                           FROM station  
+//                           WHERE (ownerMap = @ownerMap)";
+            string sql = @"SELECT name,positionX,positionY,btnX,btnY,next,cardID 
+                             FROM station  
+                             WHERE (ownerMap = @ownerMap)";
             SQLiteParameter[] parameters = new SQLiteParameter[]
                                            { 
                                                 new SQLiteParameter("@ownerMap",mapName),                                                 
@@ -264,7 +267,7 @@ namespace AGV
                     {
                         //Console.WriteLine("indexNo:{0},shape:{1}", /*reader.GetInt64(0)*/1, reader.GetString(1));
                         Station s =  new Station( reader.GetString(0), reader.GetInt32(1),
-                            reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4));
+                            reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4),reader.GetInt32(6));//select语句的顺序
                         stationDic.Add(reader.GetString(0),s);
                         if (!reader.IsDBNull(5))
                             s.Next = reader.GetString(5);

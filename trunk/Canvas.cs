@@ -125,10 +125,10 @@ namespace AGV
             //stationDic["F30"].OccupiedCar = car4;
             //stationDic["F31"].OccupiedCar = car5;
             //focusCar(car1);
-            car1 = creatCar("Car1", "1", "F29", System.Drawing.Color.Green);
-            car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red);
-            car3 = creatCar("Car3", "3", "S3", System.Drawing.Color.Pink);
-            car4 = creatCar("Car4", "4", "S10", System.Drawing.Color.Gold);
+            car1 = creatCar("Car1", "1", "F29", System.Drawing.Color.Green,1);
+            car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red,2);
+            car3 = creatCar("Car3", "3", "S3", System.Drawing.Color.Pink,3);
+            car4 = creatCar("Car4", "4", "S10", System.Drawing.Color.Gold,4);
             //car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red);
             stationDic["F29"].OccupiedCar = car1;
             stationDic["S2"].OccupiedCar = car2;
@@ -153,12 +153,12 @@ namespace AGV
             set { scheduler = value; }
         }
 
-        private Car creatCar(string carName, string labelIx, string station, Color color)
+        private Car creatCar(string carName, string labelIx, string station, Color color,byte cardID)
         {
             Car car;
             Label label = new Label();
             initLabel(label, labelIx,color);
-            car = new Car(carName, label);
+            car = new Car(carName, label, cardID);
             car.carPosEvent += carPositionChange;
             car.setPosition(stationDic[station].Location);
             return car;
@@ -176,6 +176,15 @@ namespace AGV
             this.Controls.Add(label);
         }
 
+        public AdjacencyList AdjList
+        {
+            get { return adjList; }
+        }
+
+        public Dictionary<string, Station> StationDic
+        {
+            get { return stationDic; }
+        }
 
         private void btnClicked(object sender, EventArgs e)
         {

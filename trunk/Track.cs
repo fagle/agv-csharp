@@ -596,31 +596,7 @@ namespace AGV
 
         private void button40_Click(object sender, EventArgs e)//Send
         {
-            CommandFrame cmd = new CommandFrame();
-            cmd.CommandWord1 = define.W108_CAR_CONSOLE_SEND_COMMAND;//0XEE
-            List<byte> temArray = new List<byte>();
-            if (textBox19.Text != "")
-            {
-                byte[] command = Encoding.Default.GetBytes(textBox19.Text);
-                foreach (byte c in command)
-                {
-                    temArray.Add(c);
-                }
-            }
-            //temArray.Add((byte)((id & 0xff00) >> 0x08));
-            //cmd.DataLength1 = (byte)temArray.Count;
-            cmd.Data1 = temArray.ToArray();
-            byte[] t = cmd.GetFrameToBytes();
-            try
-            {
-                //SendMsgTorSerialPort(cmd);
-                serialPort1.Write(t, 0, t.Length);
-            }
-            catch (TimeoutException ex)
-            {
-                MessageBox.Show(ex.Message);
-
-            }
+           
         }
 
         private void textBox20_TextChanged(object sender, EventArgs e)
@@ -1052,79 +1028,7 @@ namespace AGV
             return shortPath;
         }
 
-        public void SendData(List<Track> shortPath, byte CarNum, byte EndStation)
-        {
-            i = 0;
-            CommandFrame cmd = new CommandFrame();
-            cmd.CommandWord1 = define.W108_CAR_CONSOLE_SEND_COMMAND;
-            List<byte> strSP = new List<byte>();
-            strSP.Add(CarNum);
-            i = Check(shortPath, strSP);
-            if (i <= 28)
-            {
-                strSP.Insert(1, 0xFF);
-            }
-            else
-            {
-                strSP.Insert(1, 1);
-            }
-            //cmd.DataLength1 = (byte)(i + 4);
-            strSP.Add(EndStation);
-            strSP.Add(0x04);
-            cmd.SumCheck1 = cmd.CalSumCheckFunction();
-            #region
-            if (i <= 28)
-            {
-                cmd.Data1 = strSP.ToArray();
-                byte[] t = cmd.GetFrameToBytes();
-                try
-                {
-                    serialPort1.Write(t, 0, t.Length);
-
-                }
-                catch (TimeoutException ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            else
-            {
-                #region
-                List<byte> zhen1 = strSP.GetRange(0, 32);
-                cmd.Data1 = zhen1.ToArray();
-                cmd.SumCheck1 = cmd.CalSumCheckFunction();
-                byte[] t = cmd.GetFrameToBytes();
-                try
-                {
-                    serialPort1.Write(t, 0, t.Length);
-                }
-                catch (TimeoutException ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                #endregion
-                #region
-                List<byte> zhen2 = new List<byte>();
-                zhen2.Insert(0, CarNum);
-                zhen2.Insert(1, 0xFF);
-                zhen2.AddRange(strSP.GetRange(32, i - 28));
-                //zhen2 = strSP.GetRange(32, i - 28);
-                cmd.Data1 = zhen2.ToArray();
-                cmd.SumCheck1 = cmd.CalSumCheckFunction();
-                t = cmd.GetFrameToBytes();
-                try
-                {
-                    serialPort1.Write(t, 0, t.Length);
-                }
-                catch (TimeoutException ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-                #endregion
-            #endregion
-            i = 0;
-        }
+        
 
         public void arrangeWays(List<Track> shortPath1, List<Track> shortPath2) {
             List<byte> byteList1 = new List<byte>();
@@ -1136,22 +1040,11 @@ namespace AGV
             if (n1 + n2 <= 30)
             {
                 byteList1.AddRange(byteList2);
-                sendData(byteList1);
+                //sendData(byteList1);
             }                
         }
 
-        public void sendData(List<byte> byteList)  {
-            CommandFrame cmd = new CommandFrame();
-            cmd.CommandWord1 = define.W108_CAR_CONSOLE_SEND_COMMAND;
-            cmd.Data1 = byteList.ToArray();
-            //cmd.DataLength1 = (byte)byteList.Count;
-            cmd.CalSumCheck();
-            if (serialPort1.IsOpen)
-            {
-                byte[] t = cmd.GetFrameToBytes();
-                serialPort1.Write(t, 0, t.Length);
-            }
-        }
+        
 
         private void StartStation_Click(object sender, EventArgs e)
         {
@@ -1394,6 +1287,7 @@ namespace AGV
         public int Y;
         public int BtnXoffset;
         public int BtnYoffset;
+        public int cardID;
         public Point Location 
         {
             get { return new Point(X,Y); }
@@ -1401,13 +1295,14 @@ namespace AGV
         public Station()
         {
         }
-        public Station(string name, int X, int Y, int btnX, int btnY)
+        public Station(string name, int X, int Y, int btnX, int btnY,int cardID)
         {
             this.name = name;
             this.X = X;
             this.Y = Y;
             this.BtnXoffset = btnX;
             this.BtnYoffset = btnY;
+            this.cardID = cardID;
             Next = "";
         }
         public Station(string name, int X, int Y)
@@ -1419,7 +1314,15 @@ namespace AGV
         public string Next;
         public Car OccupiedCar = null;
         //public bool canStop;
-
+        public int CardID
+        {
+            get { return cardID; }
+        }
+        public string Name
+        {
+            get { return name; }
+        }
+        
     }
 
     public class SerialEventArgs
@@ -1499,4 +1402,6 @@ namespace AGV
 
         }
     }
+
+   
 }

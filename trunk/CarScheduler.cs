@@ -57,6 +57,26 @@ namespace AGV
             //stationList1.Add(stationDic["F31"]);            
         }
 
+        public Station GStartStation
+        {
+            get { return gStartStation; }
+        }
+
+        public Station RStartStation
+        {
+            get { return rStartStation; }
+        }
+
+        public Station PStartStation
+        {
+            get { return pStartStation; }
+        }
+
+        public Station GOStartStation
+        {
+            get { return goStartStation; }
+        }
+
         public int CallStyle
         {  
             set 
@@ -103,7 +123,7 @@ namespace AGV
                     nextTargetStation = value;
                 }
             }
-            get { return targetStation; }
+            get { return nextTargetStation; }//targetStation; }
         }
 
         public void addTargetTrackToCar() 
@@ -148,6 +168,8 @@ namespace AGV
 
         private void scheduleThread()
         {
+            //RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
+            //serialHander.serialEvent += serialHander.accessRoadTable;
             while (onLine)
             {
                 #region
@@ -164,6 +186,7 @@ namespace AGV
                                 continue;
                             }
                             ctlMessage = new controlMessage(stationDic["F29"], nextTargetStation, stationDic["F29"], greenCarsStandby);
+                            //serialHander.accessRoadTable(stationDic["F29"], nextTargetStation, stationDic["F29"]);
                             nextTargetStation = null;
                             break;
                         case 2:
@@ -173,6 +196,7 @@ namespace AGV
                                 continue;
                             }
                             ctlMessage = new controlMessage(stationDic["S2"], nextTargetStation, stationDic["S2"], redCarsStandby);
+                            //serialHander.accessRoadTable(stationDic["S2"], nextTargetStation, stationDic["S2"]);
                             nextTargetStation = null;
                             break;
                         case 3:
@@ -182,6 +206,7 @@ namespace AGV
                                 continue;
                             }
                             ctlMessage = new controlMessage(stationDic["S3"], nextTargetStation, stationDic["S3"], pinkCarsStandby);
+                            //serialHander.accessRoadTable(stationDic["S3"], nextTargetStation, stationDic["S3"]);
                             nextTargetStation = null;
                             break;
                         case 4:
@@ -191,6 +216,7 @@ namespace AGV
                                 continue;
                             }
                             ctlMessage = new controlMessage(stationDic["S10"], nextTargetStation, stationDic["S10"], goldCarsStandby);
+                            //serialHander.accessRoadTable(stationDic["S10"], nextTargetStation, stationDic["S10"]);
                             nextTargetStation = null;
                             break;
                     }
@@ -218,6 +244,16 @@ namespace AGV
                 //targetStation = stationDic["F31"];
             List<Track> list1 = adjList.FindWay(adjList.Find(ctlMessage.StartStation), adjList.Find(ctlMessage.TargetStation));
             List<Track> list2 = adjList.FindWay(adjList.Find(ctlMessage.TargetStation), adjList.Find(ctlMessage.EndStation));
+            for (int i = 0; i < list1.Count; ++i)
+            {
+                if (list1[i].CarAction != null)
+                {
+                    string station = list1[i].CarAction.Substring(0, 1);
+
+                }
+            }
+            
+
             foreach (Track t in list1)
             {
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);

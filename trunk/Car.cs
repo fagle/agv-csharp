@@ -43,7 +43,8 @@ namespace AGV
         private int defaultSpeed = 90;
         private Point position=new Point(300,300); 
         private Track trackToGo=new Track();
-        private Label bindingLabel;       
+        private Label bindingLabel; 
+        private byte cardID;
         public Station StartStation;
         public delegate void CarPosEventHandler(object sender, CarEventArgs e);
         public event CarPosEventHandler carPosEvent;
@@ -83,10 +84,16 @@ namespace AGV
             this.name=name;           
         }*/
 
-        public Car(string name, Label label) 
+        public Car(string name, Label label,byte cardID) 
         {
             this.name = name;
-            this.bindingLabel = label;            
+            this.bindingLabel = label;  
+            this.cardID = cardID;
+        }
+
+        public byte CardID
+        {
+            get { return cardID; }
         }
 
         public void stop() 
