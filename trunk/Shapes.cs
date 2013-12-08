@@ -233,8 +233,9 @@ namespace AGV
 			{
 				areaRegion = new Region(areaPath);
 			}
-			catch
-			{
+            catch (Exception x)
+            {
+                Console.WriteLine(x.Message);
 				return false;
 			}
 					
