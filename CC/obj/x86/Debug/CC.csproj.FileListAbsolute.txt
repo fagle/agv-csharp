@@ -1,0 +1,16 @@
+E:\file\CC\bin\Debug\CC.exe
+E:\file\CC\bin\Debug\CC.pdb
+E:\file\CC\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\file\CC\obj\x86\Debug\CC.Form1.resources
+E:\file\CC\obj\x86\Debug\CC.Form2.resources
+E:\file\CC\obj\x86\Debug\CC.Form3.resources
+E:\file\CC\obj\x86\Debug\CC.Form4.resources
+E:\file\CC\obj\x86\Debug\CC.Help.resources
+E:\file\CC\obj\x86\Debug\CC.LampHelp.resources
+E:\file\CC\obj\x86\Debug\CC.Properties.Resources.resources
+E:\file\CC\obj\x86\Debug\CC.RoadHelp.resources
+E:\file\CC\obj\x86\Debug\CC.serial.resources
+E:\file\CC\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\file\CC\obj\x86\Debug\GenerateResource.write.1.tlog
+E:\file\CC\obj\x86\Debug\CC.exe
+E:\file\CC\obj\x86\Debug\CC.pdb
