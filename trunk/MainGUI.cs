@@ -76,8 +76,8 @@ namespace AGV
 
         public int InitPort()
         {
-            serialPort1.PortName = comboBox.SelectedItem.ToString();            
-            serialPort1.BaudRate = 115200;
+            serialPort1.PortName = comboBox.SelectedItem.ToString();
+            serialPort1.BaudRate = 19200;//115200;
             serialPort1.DataBits = 8;
             // serialPort1.WriteTimeout = 500;
             //serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(DataReceived);
@@ -160,22 +160,23 @@ namespace AGV
             {
                 case 1:
                     startStation = this.newCanvas.Scheduler.GStartStation;
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID];
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID % 100];
                     endStation = this.newCanvas.StationDic["F29"];
                     break;
                 case 2:
                     startStation = this.newCanvas.Scheduler.RStartStation;
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID];
+     
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID%100];
                     endStation = this.newCanvas.StationDic["S2"];
                     break;
                 case 3:
                     startStation = this.newCanvas.Scheduler.PStartStation;
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID];
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID % 100];
                     endStation = this.newCanvas.StationDic["S3"];
                     break;
                 case 4:
                     startStation = this.newCanvas.Scheduler.GOStartStation;
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID];
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID % 100];
                     endStation = this.newCanvas.StationDic["S10"];
                     break;
             }
@@ -222,7 +223,7 @@ namespace AGV
                     case 10:
                         writeLine("桴萸2網請");
                         break;
-                    case 11:
+                    case 111:
                         serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
                         this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
                         a = this.newCanvas.Controls.Find("S11",false);
@@ -235,7 +236,7 @@ namespace AGV
                         writeLine("桴萸11網請");   
                         //this.newCanvas.Scheduler.CallStyle = 0;
                         break;
-                    case 12:
+                    case 112:
                         serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);                    
                         this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
                         a = this.newCanvas.Controls.Find("S12", false);
@@ -763,7 +764,7 @@ namespace AGV
                     command.Insert(0, CardAccount);
                     command.Insert(0, CardAccount);
                     command.Insert(0, (byte)1);
-                    command.Insert(0, (byte)canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, (byte)(05)/*canvas.StationDic[startStation.Name].OccupiedCar.CardID*/);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)(CardAccount*2+4));

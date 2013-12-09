@@ -1282,6 +1282,7 @@ namespace AGV
 
     public class Station
     {
+        public int stationID;
         public string name;
         public int X;
         public int Y;
@@ -1295,7 +1296,7 @@ namespace AGV
         public Station()
         {
         }
-        public Station(string name, int X, int Y, int btnX, int btnY,int cardID)
+        public Station(string name, int X, int Y, int btnX, int btnY,int cardID,int stationID)
         {
             this.name = name;
             this.X = X;
@@ -1303,6 +1304,7 @@ namespace AGV
             this.BtnXoffset = btnX;
             this.BtnYoffset = btnY;
             this.cardID = cardID;
+            this.stationID = stationID;
             Next = "";
         }
         public Station(string name, int X, int Y)
@@ -1358,7 +1360,7 @@ namespace AGV
             if (serialBuf.Count < 8)
                 return;
             eArgs = null;
-            if (serialBuf[1] == 0xE4)//呼叫器呼叫
+            if (serialBuf[1] == 0xE5)//呼叫器呼叫
             {
                 if (serialBuf != null)
                 {
