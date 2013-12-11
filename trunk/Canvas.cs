@@ -153,12 +153,12 @@ namespace AGV
             set { scheduler = value; }
         }
 
-        private Car creatCar(string carName, string labelIx, string station, Color color,byte cardID)
+        private Car creatCar(string carName, string labelIx, string station, Color color,byte carID)
         {
             Car car;
             Label label = new Label();
             initLabel(label, labelIx,color);
-            car = new Car(carName, label, cardID);
+            car = new Car(carName, label, carID);
             car.carPosEvent += carPositionChange;
             car.setPosition(stationDic[station].Location);
             return car;
@@ -236,8 +236,9 @@ namespace AGV
             adjList.AddVertex(s);
         }
 
-        private void loadStations() 
+        private void loadStations()
         {
+            #region oldstyle
             /*creatStation("S0",0,-50,0);
             creatStation("S1",3,0,-40);
             creatStation("S2",14,0,-40);
@@ -291,6 +292,7 @@ namespace AGV
             creatFork("F25", 89);
             creatFork("F26", 198);
             creatFork("F27", 211);*/
+            #endregion oldstyle
             foreach (Station s in stationDic.Values)
             {
                 Point p = new Point(s.X, s.Y);
@@ -1535,6 +1537,18 @@ namespace AGV
                 objNumSelect = -1;
             }
             #endregion
+        }
+        public Station findStationByCardID(byte cardid)
+        {
+            Station theStation = null;
+            foreach (Station s in stationDic.Values)
+            {
+                if (s.cardID == cardid)
+                {
+                    theStation = s;
+                }
+            }
+            return theStation;
         }
 
         //private bool focus = false;

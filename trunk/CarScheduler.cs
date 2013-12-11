@@ -6,6 +6,11 @@ using System.Threading;
 
 namespace AGV
 {
+    public class CarTask
+    {
+        Car car;
+    }
+
     public class CarScheduler
     {
         private controlMessage ctlMessage;
@@ -229,6 +234,8 @@ namespace AGV
             }
                
         }
+
+        public List<CarTask> carTaskList;
 
         private void runCarTask(object o)
         {

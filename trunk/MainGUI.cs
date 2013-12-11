@@ -103,7 +103,8 @@ namespace AGV
         public void ReadPort()
         {
             SerialHandler serialHander = new SerialHandler();
-            serialHander.serialEvent += agvSerialRemoteCall;
+            serialHander.remoteCallEvent += agvSerialRemoteCall;
+            serialHander.carStateReportEvent += agvCarStateReport;
             while (true)
             {
                 if (serialPort1.IsOpen)
@@ -151,7 +152,7 @@ namespace AGV
         }
 
         public delegate void PerformClick();
-        public void agvSerialRemoteCall(object sender, SerialEventArgs e)
+        public void agvSerialRemoteCall(object sender, RemoteCallEventArgs e)
         {
             Station startStation = null;
             Station targetStation = null;
@@ -296,7 +297,17 @@ namespace AGV
             }
          
         }
-
+        public void agvCarStateReport(object sender, CarStateReportEventArgs e) 
+        {
+            Station startStation = null;
+            Station targetStation = null;
+            Station endStation = null;
+            startStation = newCanvas.findStationByCardID(e.CardId);            
+            switch(e.Movement){
+                case 7:
+                    break;
+            }
+        }
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>

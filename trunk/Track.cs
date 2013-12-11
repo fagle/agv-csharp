@@ -1327,12 +1327,61 @@ namespace AGV
         
     }
 
-    public class SerialEventArgs
+    enum SerialEventType{
+        RemoteCall,
+        ErrorState,
+        StateReport,
+        NoReport
+    }
+
+    public class CarStateReportEventArgs 
+    {
+        private byte carid;
+        private byte cardid;
+        private bool obstacle;
+        private byte movement;
+        private byte step;
+        private byte taskLen;
+        public CarStateReportEventArgs(byte carid, byte cardid, byte obstacle, 
+            byte movement, byte step, byte taskLen) 
+        {
+            this.carid = carid;
+            this.cardid = cardid;
+            if (obstacle > 0)
+                this.obstacle = true;
+            else
+                this.obstacle = false;
+            this.movement = movement;
+            this.step = step;
+            this.taskLen = taskLen;
+        }
+
+        public byte CarId{
+            get { return cardid;}
+        }
+        public byte CardId{
+            get{ return cardid; }
+        }
+        public bool Obstacle{
+            get{ return obstacle;}
+        }
+        public byte Movement{
+            get { return movement;}
+        }
+        public byte Step { 
+            get { return step;} 
+        }
+        public byte TaskLen{
+            get { return taskLen; }
+        }
+    }
+
+    public class RemoteCallEventArgs
     {
         private byte station_ID;
-        private byte call_type;
-        public SerialEventArgs(byte station_ID, byte call_type)
-        {
+        private byte call_type;      
+        public RemoteCallEventArgs(byte station_ID, byte call_type)
+        {            
             this.station_ID = station_ID;
             this.call_type = call_type;
         }
@@ -1348,10 +1397,13 @@ namespace AGV
 
     public class SerialHandler
     {
-        private List<byte> serialBuf = new List<byte>(11);
-        private SerialEventArgs eArgs = null;
-        public delegate void SeialEventHandler(object sender, SerialEventArgs e);
-        public event SeialEventHandler serialEvent;
+        private List<byte> serialBuf = new List<byte>(20);
+        private RemoteCallEventArgs callEventArgs = null;
+        private CarStateReportEventArgs stateReportEventArgs = null;
+        public delegate void CarSateReportEventHandler(object sender, CarStateReportEventArgs e);
+        public delegate void RemoteCallEventHandler(object sender, RemoteCallEventArgs e);
+        public event RemoteCallEventHandler remoteCallEvent;
+        public event CarSateReportEventHandler carStateReportEvent;
         public void handleOneByte(byte b)
         {
             serialBuf.Add(b);
@@ -1359,43 +1411,41 @@ namespace AGV
                 serialBuf.RemoveAt(0);
             if (serialBuf.Count < 8)
                 return;
-            eArgs = null;
+            callEventArgs = null;
+            stateReportEventArgs = null;
             if (serialBuf[1] == 0xE5)//呼叫器呼叫
             {
                 if (serialBuf != null)
                 {
-                    eArgs = new SerialEventArgs(serialBuf[5], serialBuf[6]);
+                    callEventArgs = new RemoteCallEventArgs(serialBuf[5], serialBuf[6]);
                 }
-            }
-            else if (serialBuf[1] == 0xE1)
+            }            
+            else if (serialBuf[1] == 0xE3)//状态上报
             {
-                if (serialBuf[7] == 0x0c && serialBuf[8] == 0x38 && serialBuf[9] == 0xca)//T1呼叫
+                if (serialBuf.Count < 12)
+                    return;
+                else if (serialBuf.Count == 12)
                 {
-                    //eArgs = new SerialEventArgs("toT1");
+                    stateReportEventArgs = new CarStateReportEventArgs(serialBuf[5],serialBuf[6],serialBuf[7],
+                        serialBuf[8],serialBuf[9],serialBuf[10]);
                 }
-                else if (serialBuf[7] == 0x0e && serialBuf[8] == 0x2a && serialBuf[9] == 0xe9)//T2呼叫
-                {
-                    //eArgs = new SerialEventArgs("toT2");
-                }
-            }
-            else if (serialBuf[1] == 0xE3)
-            {
-
             }
 
             try
             {
-                if ((null != serialEvent) && (eArgs != null))
+                if ((null != remoteCallEvent) && (callEventArgs != null))
                 {
-                    serialEvent(this, eArgs);
+                    remoteCallEvent(this, callEventArgs);
                     serialBuf.Clear();//有效帧
                 }
-                else if ((serialBuf.Count == 10) && (eArgs == null))
+                else if ((null != stateReportEventArgs) && (null != carStateReportEvent))
                 {
-                    serialBuf.Clear();//无效命令帧
-                }
-                else if (serialBuf.Count >= 13)
+                    carStateReportEvent(this, stateReportEventArgs);
                     serialBuf.Clear();
+                }
+                else if (serialBuf.Count >= 12)
+                    serialBuf.Clear();
+                
             }
             catch (Exception x)
             {
