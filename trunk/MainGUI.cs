@@ -89,7 +89,7 @@ namespace AGV
         {
             if (textBox1.InvokeRequired)
             {
-                SetTextCallBack d = new SetTextCallBack(writeLine);          
+                SetTextCallBack d = new SetTextCallBack(writeLine);
                 Invoke(d, new object[] { text });
             }
             else
@@ -133,7 +133,7 @@ namespace AGV
                 else
                     break;
             }
-            
+
         }
 
         public void writePort()
@@ -157,7 +157,7 @@ namespace AGV
             Station startStation = null;
             Station targetStation = null;
             Station endStation = null;
-            switch(e.Call_type)
+            switch (e.Call_type)
             {
                 case 1:
                     startStation = this.newCanvas.Scheduler.GStartStation;
@@ -166,8 +166,8 @@ namespace AGV
                     break;
                 case 2:
                     startStation = this.newCanvas.Scheduler.RStartStation;
-     
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID%100];
+
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID % 100];
                     endStation = this.newCanvas.StationDic["S2"];
                     break;
                 case 3:
@@ -193,95 +193,270 @@ namespace AGV
             {
                 switch (e.Station_ID)
                 {
-                    case 1:
+                    case 101:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S1", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
                         writeLine("桴萸1網請");
                         break;
-                    case 2:
+                    case 102:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S2", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
                         writeLine("桴萸2網請");
                         break;
-                    case 3:
-                                           
-                        
+                    case 103:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S3", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸3網請");
                         break;
-                    case 4:
-                        writeLine("桴萸2網請");
+                    case 104:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S4", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸4網請");
                         break;
-                    case 5:
-                        writeLine("桴萸1網請");
+                    case 105:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S5", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸5網請");
                         break;
-                    case 6:
-                        writeLine("桴萸2網請");
+                    case 106:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S6", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸6網請");
                         break;
-                    case 7:
-                        writeLine("桴萸1網請");
+                    case 107:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S7", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸7網請");
                         break;
-                    case 8:
-                        writeLine("桴萸2網請");
+                    case 108:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S8", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸8網請");
                         break;
-                    case 9:
-                        writeLine("桴萸1網請");
+                    case 109:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S9", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸9網請");
                         break;
-                    case 10:
-                        writeLine("桴萸2網請");
+                    case 110:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S10", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸10網請");
                         break;
                     case 111:
                         serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
                         this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
-                        a = this.newCanvas.Controls.Find("S11",false);
+                        a = this.newCanvas.Controls.Find("S11", false);
                         b = (Button)a[0];
                         if (b != null)
                         {
-                            Invoke(new PerformClick(b.PerformClick));      
+                            Invoke(new PerformClick(b.PerformClick));
                         }
 
-                        writeLine("桴萸11網請");   
+                        writeLine("桴萸11網請");
                         //this.newCanvas.Scheduler.CallStyle = 0;
                         break;
                     case 112:
-                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);                    
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
                         this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
                         a = this.newCanvas.Controls.Find("S12", false);
                         b = (Button)a[0];
-                        if(b!=null)
-                        Invoke(new PerformClick(b.PerformClick));
-                        writeLine("桴萸12網請"); 
+                        if (b != null)
+                            Invoke(new PerformClick(b.PerformClick));
+                        writeLine("桴萸12網請");
                         //this.newCanvas.Scheduler.CallStyle = 0;
                         break;
-                    case 13:
-                        writeLine("桴萸1網請");
+                    case 113:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S13", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸13網請");
                         break;
-                    case 14:
-                        writeLine("桴萸2網請");
+                    case 114:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S14", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸14網請");
                         break;
-                    case 15:
-                        writeLine("桴萸1網請");
+                    case 115:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S15", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸15網請");
                         break;
-                    case 16:
-                        writeLine("桴萸2網請");
+                    case 116:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S16", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸16網請");
                         break;
-                    case 17:
-                        writeLine("桴萸1網請");
+                    case 117:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S17", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸17網請");
                         break;
-                    case 18:
-                        writeLine("桴萸2網請");
+                    case 118:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S18", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸18網請");
                         break;
-                    case 19:
-                        writeLine("桴萸1網請");
+                    case 119:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S19", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸19網請");
                         break;
-                    case 20:
-                        writeLine("桴萸2網請");
+                    case 120:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S20", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸20網請");
                         break;
-                    case 21:
-                        writeLine("桴萸1網請");
+                    case 121:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S21", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸21網請");
                         break;
-                    case 22:
-                        writeLine("桴萸2網請");
+                    case 122:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S22", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸22網請");
                         break;
-                    case 23:
-                        writeLine("桴萸1網請");
+                    case 123:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S23", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸23網請");
                         break;
-                    case 24:
-                        writeLine("桴萸2網請");
+                    case 124:
+                        serialHander.accessRoadTable(startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                        this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                        a = this.newCanvas.Controls.Find("S24", false);
+                        b = (Button)a[0];
+                        if (b != null)
+                        {
+                            Invoke(new PerformClick(b.PerformClick));
+                        }
+                        writeLine("桴萸24網請");
                         break;
                     //case "reF2":
                     //    writeLine("F2變渣");                        
@@ -295,7 +470,7 @@ namespace AGV
             {
                 Console.WriteLine(x.Message);
             }
-         
+
         }
         public void agvCarStateReport(object sender, CarStateReportEventArgs e) 
         {
@@ -643,7 +818,7 @@ namespace AGV
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+
             if (serialState == eSerialSate.SerialOff)
             {
                 try
@@ -678,9 +853,9 @@ namespace AGV
                     pictureBox1.Image = AGV.Properties.Resources.ICON_OFF;
                     if (serialPort1.IsOpen)
                         serialPort1.Close();
-                    if(readThread != null)
+                    if (readThread != null)
                         readThread.Abort();
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -716,7 +891,7 @@ namespace AGV
             private RoadTableEventArgs eArgs = null;
             public delegate void SeialEventHandler(Station startStation, Station targetStation, Station endStation);
             public event SeialEventHandler serialEvent;
-            public void accessRoadTable(Station startStation, Station targetStation, Station endStation, AdjacencyList adj, SerialPort serialPort1,Canvas canvas)
+            public void accessRoadTable(Station startStation, Station targetStation, Station endStation, AdjacencyList adj, SerialPort serialPort1, Canvas canvas)
             {
                 List<Track> list1 = adj.FindWay(adj.Find(startStation), adj.Find(targetStation));
                 List<Track> list2 = adj.FindWay(adj.Find(targetStation), adj.Find(endStation));
@@ -727,7 +902,7 @@ namespace AGV
                     {
                         string station = list1[i].CarAction.Substring(0, list1[i].CarAction.IndexOf('G'));
                         command.Add((byte)canvas.StationDic[station].CardID);
-                        switch (list1[i].CarAction.Substring(list1[i].CarAction.Length-1, 1))
+                        switch (list1[i].CarAction.Substring(list1[i].CarAction.Length - 1, 1))
                         {
                             case "L":
                                 command.Add((byte)01);
@@ -739,7 +914,7 @@ namespace AGV
                                 command.Add((byte)03);
                                 break;
                         }
-                    } 
+                    }
                 }
                 command.Add((byte)canvas.StationDic[targetStation.Name].CardID);
                 command.Add((byte)04);
@@ -778,7 +953,7 @@ namespace AGV
                     command.Insert(0, (byte)(05)/*canvas.StationDic[startStation.Name].OccupiedCar.CardID*/);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)0);
-                    command.Insert(0, (byte)(CardAccount*2+4));
+                    command.Insert(0, (byte)(CardAccount * 2 + 4));
                     command.Insert(0, (byte)0xe6);
                     command.Add(checksum(command));
                     command.Insert(0, (byte)0x68);
@@ -789,7 +964,115 @@ namespace AGV
                         Console.Write(roadTable[j] + " ");
                     }
                     serialPort1.Write(roadTable, 0, roadTable.Length);
-                    
+                }
+                else if (command != null && 28 < command.Count && command.Count <= 56)
+                {      
+                    byte total = (byte)(command.Count >> 1);
+                    byte CardAccount = (byte)(command.Count >> 1);
+                    command.Insert(0, (byte)14);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)1);
+                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(32));
+                    command.Insert(0, (byte)0xe6);
+                    //command.Add(checksum(command));
+                    byte csum = checksum(command,36);
+                    command.Insert(0, (byte)0x68);
+                    byte[] roadTable = new byte[38];
+                    command.CopyTo(0,roadTable,0,37);
+                    roadTable[37] = csum;
+                    for (int j = 0; j < 38; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    Console.WriteLine();
+                    serialPort1.Write(roadTable, 0, 38);
+                    command.RemoveRange(0, 37);
+                    CardAccount = (byte)(command.Count/2);
+                    command.Insert(0, CardAccount);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)2);
+                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(CardAccount * 2 + 4));
+                    command.Insert(0, (byte)0xe6);
+                    command.Add(checksum(command));
+                    command.Insert(0, (byte)0x68);
+                    roadTable = new byte[command.Count];
+                    command.CopyTo(roadTable);
+                    for (int j = 0; j < roadTable.Length; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    serialPort1.Write(roadTable, 0, roadTable.Length);
+                }else if(command != null && 56 < command.Count && command.Count <= 84)
+                {
+                    byte total = (byte)(command.Count >> 1);
+                    byte CardAccount = (byte)(command.Count >> 1);
+                    command.Insert(0, (byte)14);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)1);
+                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(32));
+                    command.Insert(0, (byte)0xe6);
+                    //command.Add(checksum(command));
+                    byte csum = checksum(command,36);
+                    command.Insert(0, (byte)0x68);
+                    byte[] roadTable = new byte[38];
+                    command.CopyTo(0, roadTable, 0, 37);
+                    roadTable[37] = csum;
+                    for (int j = 0; j < 38; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    Console.WriteLine();
+                    serialPort1.Write(roadTable, 0, 38);
+                    command.RemoveRange(0, 37);
+                    Console.WriteLine();
+                    command.Insert(0, (byte)14);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)2);
+                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(32));
+                    command.Insert(0, (byte)0xe6);
+                    //command.Add(checksum(command));
+                    csum = checksum(command,36);
+                    command.Insert(0, (byte)0x68);
+                    roadTable = new byte[38];
+                    command.CopyTo(0, roadTable, 0, 37);
+                    roadTable[37] = csum;
+                    for (int j = 0; j < 38; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    Console.WriteLine();
+                    serialPort1.Write(roadTable, 0, 38);
+                    command.RemoveRange(0, 37);
+                    CardAccount = (byte)(command.Count >> 1);
+                    command.Insert(0, CardAccount);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)3);
+                    command.Insert(0, (byte)(05)/*canvas.StationDic[startStation.Name].OccupiedCar.CardID*/);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(CardAccount * 2 + 4));
+                    command.Insert(0, (byte)0xe6);
+                    command.Add(checksum(command));
+                    command.Insert(0, (byte)0x68);
+                    roadTable = new byte[command.Count];
+                    command.CopyTo(roadTable);
+                    for (int j = 0; j < roadTable.Length; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    serialPort1.Write(roadTable, 0, roadTable.Length);
                 }
             }
             public byte checksum(List<byte> command)
@@ -801,10 +1084,19 @@ namespace AGV
                 }
                 return (byte)(sum % 256);
             }
+            public byte checksum(List<byte> command,int indexEnd)
+            {
+                int sum = 0;
+                for (int i = 0; i < indexEnd; ++i)
+                {
+                    sum = sum + (int)command[i];
+                }
+                return (byte)(sum % 256);
+            }
         }
 
     }
 
-     
+
 
 }
