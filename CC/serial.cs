@@ -163,7 +163,7 @@ namespace CC
                 MessageBox.Show("请先选择操作对象！");
                 return;
             }
-            string s = textBox2.Text;
+            string s = textBox2.Text.ToString().Trim();
             string l = comboBox2.Text;
             if (s.Length < 3)
             {
@@ -255,7 +255,6 @@ namespace CC
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             RoadHelp r = new RoadHelp();
-            //r.ShowDialog();
             r.Show();
         }
 

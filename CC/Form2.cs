@@ -47,8 +47,7 @@ namespace CC
                 return;
             }
             string sql = comboBox1.Text.ToString().Trim();
-            //只绑定指定的列
-            //string strsql = string.Format("select id,name,passwd from {0}", sql);
+            //只绑定指定的列            
             string strsql = string.Format("select * from {0}", sql);
             SQLiteCommand dbCommand = new SQLiteCommand(strsql, dbConnection);
             dbConnection.Open();
@@ -158,6 +157,31 @@ namespace CC
 
         private void button1_Click(object sender, EventArgs e)
         {
+            using (SQLiteConnection conn = new SQLiteConnection(dbconn.connection))
+            {
+                conn.Open();
+                string sql = comboBox1.Text.ToString().Trim();
+                if (sql == "")
+                {
+                    MessageBox.Show("请先选择或输入表名！");
+                    return;
+                }
+                SQLiteCommand cm = conn.CreateCommand();
+                cm.CommandText = "SELECT COUNT(*)  as CNT FROM sqlite_master where type='table' and name=" + "'" + sql + "'";
+                try
+                {
+                    cm.ExecuteNonQuery();
+                    if (0 == Convert.ToInt32(cm.ExecuteScalar()))
+                    {
+                        MessageBox.Show("您选择的表不存在!");
+                        return;
+                    }
+                }
+                catch (System.Exception ex)
+                {                   
+                    MessageBox.Show(ex.Message);
+                }
+            }
             dataview();            
         }
 
@@ -228,7 +252,7 @@ namespace CC
 
         private void button5_Click(object sender, EventArgs e)
         {
-            col1.Text = "";
+            //col1.Text = "";
             col2.Text = "";
             col3.Text = "";
             col4.Text = "";
@@ -244,9 +268,7 @@ namespace CC
             sqConnection.Open();
             SQLiteCommand sqCommand = new SQLiteCommand();
             sqCommand.Connection = sqConnection;
-            String t = comboBox1.Text.ToString().Trim();
-            //string[] col = new string[] { "", "", "", "", "", "", "", "" };
-            //string[] d = new string[] { "", "", "", "", "", "", "", "" };
+            String t = comboBox1.Text.ToString().Trim();          
             d[0] = col1.Text.ToString().Trim();
             d[1] = col2.Text.ToString().Trim();
             d[2] = col3.Text.ToString().Trim();
@@ -255,8 +277,7 @@ namespace CC
             d[5] = col6.Text.ToString().Trim();
             d[6] = col7.Text.ToString().Trim();
             d[7] = col8.Text.ToString().Trim();
-            int j = 0;
-            //string[] name = new string[] { "", "", "", "", "", "", "", "" };
+            int j = 0;            
             name[0] = tcol1.Text.ToString().Trim();
             name[1] = tcol2.Text.ToString().Trim();
             name[2] = tcol3.Text.ToString().Trim();
@@ -337,31 +358,6 @@ namespace CC
                 MessageBox.Show("修改数据失败！请检查列字段信息等！");
             }
            
-//             string sql = "insert into t(id,name,passwd,num)values(@id,@name,@passwd,@num)";
-//             SQLiteDBHelper db = getDataBase();
-//             SQLiteParameter[] parameters = new SQLiteParameter[]
-//                                             { 
-//                                                  new SQLiteParameter("@id",DbType.Int32), 
-//                                                  new SQLiteParameter("@name",DbType.String), 
-//                                                  new SQLiteParameter("@passwd",DbType.String), 
-//                                                  new SQLiteParameter("@num",DbType.String),                                                 
-//                                             };
-// 
-//             parameters[0].Value = col1.Text;
-//             parameters[1].Value = Convert.ToString(col2.Text);
-//             parameters[2].Value = Convert.ToString(col3.Text);
-//             parameters[3].Value = Convert.ToString(col4.Text);
-//             try
-//             {
-//                 db.ExecuteNonQuery(sql, parameters);
-//                 MessageBox.Show("添加数据成功！");
-//             }
-//             catch (Exception x)
-//             {
-//                 MessageBox.Show("添加数据失败！\n\r"+ x.Message);
-//             }
-//             this.col3.Text = "";
-//             this.col4.Text = "";
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -396,8 +392,7 @@ namespace CC
         }
 
         private void button4_Click_1(object sender, EventArgs e)
-        {
-            //string[] d = new string[] { "", "", "", "", "", "", "", "" };
+        {            
             d[0] = col1.Text.ToString().Trim();
             d[1] = col2.Text.ToString().Trim();
             d[2] = col3.Text.ToString().Trim();
@@ -411,10 +406,8 @@ namespace CC
                 number++;
             }            
             
-            //存储表列
-            //string[] col = new string[] { "", "", "", "", "", "", "", ""};
-            int j = 0;
-            //string[] name = new string[] { "", "", "", "", "", "", "", "" };
+            //存储表列         
+            int j = 0;            
             name[0] = tcol1.Text.ToString();
             name[1] = tcol2.Text.ToString();
             name[2] = tcol3.Text.ToString();
@@ -519,6 +512,7 @@ namespace CC
             {
                 Console.WriteLine(ex.Message);
                 MessageBox.Show("修改数据失败！请检查列字段信息等！");
+                return;
             }          
         }
 

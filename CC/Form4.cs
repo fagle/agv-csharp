@@ -61,8 +61,9 @@ namespace CC
                 }
                 catch (System.Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    MessageBox.Show("修改失败！");
+                    //Console.WriteLine(ex.Message);
+                    MessageBox.Show("修改失败！"+ex.Message);
+                    return;
                 }
             }
         }

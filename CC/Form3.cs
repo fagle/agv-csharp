@@ -62,18 +62,16 @@ namespace CC
                 sqCommand.ExecuteNonQuery();
                 if (0 == Convert.ToInt32(sqCommand.ExecuteScalar()))
                 {
-                    MessageBox.Show("table does not exist!");
+                    MessageBox.Show("您选择的表不存在!");
                     return;
                 }                
             }
             catch (System.Exception ex)
-            {
-                Console.WriteLine(ex.Message);                
+            {                
+                MessageBox.Show(ex.Message);
             }
-
-            //string[] col = new string[] { "", "", "", "", "", "", "", "" };
-            int j = 0;
-            //string[] name = new string[] { "", "", "", "", "", "", "", "" };
+           
+            int j = 0;            
             name[0] = tcol1.Text.ToString().Trim();
             name[1] = tcol2.Text.ToString().Trim();
             name[2] = tcol3.Text.ToString().Trim();
@@ -194,82 +192,3 @@ namespace CC
          
     }
 }
-
-
-//             DbProviderFactory factory = SQLiteFactory.Instance;
-//             using (DbConnection conn = factory.CreateConnection())
-//             {
-//                 // 连接数据库 
-//                 conn.ConnectionString = "Data Source=D:\\Demo.db3";
-//                 conn.Open();
-// 
-//                 // 创建数据表 
-//                 string sql = "create table [test1] ([id] INTEGER PRIMARY KEY, [s] TEXT COLLATE NOCASE)";
-//                 DbCommand cmd = conn.CreateCommand();
-//                 cmd.Connection = conn;
-//                 cmd.CommandText = sql;
-//                 cmd.ExecuteNonQuery();
-// 
-//                 // 添加参数 
-//                 cmd.Parameters.Add(cmd.CreateParameter());
-// 
-//                 // 开始计时 
-//                 Stopwatch watch = new Stopwatch();
-//                 watch.Start();
-// 
-//                 DbTransaction trans = conn.BeginTransaction();
-//                 try
-//                 {
-//                     // 连续插入1000条记录 
-//                     for (int i = 0; i < 1000; i++)
-//                     {
-//                         cmd.CommandText = "insert into [test1] ([s]) values (?)";
-//                         cmd.Parameters[0].Value = i.ToString();
-// 
-//                         cmd.ExecuteNonQuery();
-//                     }
-//                     trans.Commit();
-//                 }
-//                 catch
-//                 {
-//                     trans.Rollback();
-//                     throw;
-//                 }
-// 
-//                 // 停止计时 
-//                 watch.Stop();
-//                 Console.WriteLine(watch.Elapsed);
-//                 Console.Read(); 
-//             }
-
-/*
-for (int i = 0; i < dataGridView1.Rows.Count - 1; i++ )
-{
-    string sql = "insert into t(id,name,passwd,num)values(@id,@name,@passwd,@num)";
-    SQLiteDBHelper db = getDataBase();
-    SQLiteParameter[] parameters = new SQLiteParameter[]
-                            { 
-                                    new SQLiteParameter("@id",DbType.Int32), 
-                                    new SQLiteParameter("@name",DbType.String), 
-                                    new SQLiteParameter("@passwd",DbType.String), 
-                                    new SQLiteParameter("@num",DbType.String),                                                 
-                            };
-
-    parameters[0].Value = dataGridView1.Rows[i].Cells[0].Value;
-    parameters[1].Value = Convert.ToString(dataGridView1.Rows[i].Cells[1].Value);
-    parameters[2].Value = Convert.ToString(dataGridView1.Rows[i].Cells[2].Value);
-    parameters[3].Value = Convert.ToString(dataGridView1.Rows[i].Cells[3].Value);
-    try
-    {
-        db.ExecuteNonQuery(sql, parameters);                   
-    }
-    catch (Exception x)
-    {
-        Console.WriteLine(x.Message);
-        MessageBox.Show("添加数据失败！");
-        return;
-    }
-}
-MessageBox.Show("添加数据成功！");           
-}
-*/
