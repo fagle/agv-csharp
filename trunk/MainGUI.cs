@@ -726,7 +726,7 @@ namespace AGV
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(95, 39);
             this.button2.TabIndex = 1;
-            this.button2.Text = "点我有惊喜";
+            this.button2.Text = "轨道编辑";
             this.button2.UseVisualStyleBackColor = true;
             // 
             // MainGUI
