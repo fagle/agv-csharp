@@ -28,7 +28,9 @@ namespace AGV
         }
         private SQLiteDBHelper getDataBase()
         {
-            return new SQLiteDBHelper("D:\\Demo.db3");
+            string dir = System.IO.Directory.GetCurrentDirectory();
+            dir += "\\Demo.db3";
+            return new SQLiteDBHelper(dir);
         }
         public void addMapToDataBase()
         {/*
