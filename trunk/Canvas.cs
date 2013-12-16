@@ -1550,6 +1550,18 @@ namespace AGV
             }
             return theStation;
         }
+        public Station findStationByID(byte id)
+        {
+            Station theStation = null;
+            foreach (Station s in stationDic.Values)
+            {
+                if (s.stationID == id)
+                {
+                    theStation = s;
+                }
+            }
+            return theStation;
+        }
 
         //private bool focus = false;
         /*private void button2_Click(object sender, EventArgs e)

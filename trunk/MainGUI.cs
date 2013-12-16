@@ -166,8 +166,7 @@ namespace AGV
                     break;
                 case 2:
                     startStation = this.newCanvas.Scheduler.RStartStation;
-
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID % 100];
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID%100];
                     endStation = this.newCanvas.StationDic["S2"];
                     break;
                 case 3:
@@ -474,12 +473,23 @@ namespace AGV
         }
         public void agvCarStateReport(object sender, CarStateReportEventArgs e) 
         {
+            RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
             Station startStation = null;
             Station targetStation = null;
             Station endStation = null;
-            startStation = newCanvas.findStationByCardID(e.CardId);            
+            
             switch(e.Movement){
                 case 7:
+                    if ((e.CardId == 0) || (e.TargetCardId == 0) || (e.EndCardId == 0))
+                        break;
+                    startStation = newCanvas.findStationByCardID(e.CardId);
+                    targetStation = newCanvas.findStationByCardID(e.TargetCardId);
+                    endStation = newCanvas.findStationByCardID(e.EndCardId);
+                    if ( (startStation == null) || (targetStation == null) || (endStation == null) )
+                    {
+                        break;
+                    }
+                    serialHander.accessRoadTable(e.CarId,startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
                     break;
             }
         }
@@ -944,16 +954,16 @@ namespace AGV
                 //{
                 //    Console.Write(command[j] + " ");
                 //}
-                if (command != null && command.Count <= 28)
+                if (command.Count >= 4 && command.Count <= 28)
                 {
-                    byte CardAccount = (byte)(command.Count >> 1);
-                    command.Insert(0, CardAccount);
-                    command.Insert(0, CardAccount);
+                    byte CardCount = (byte)(command.Count >> 1);
+                    command.Insert(0, CardCount);
+                    command.Insert(0, CardCount);
                     command.Insert(0, (byte)1);
-                    command.Insert(0, (byte)(05)/*canvas.StationDic[startStation.Name].OccupiedCar.CardID*/);
+                    command.Insert(0, (byte)(canvas.StationDic[startStation.Name].OccupiedCar.CarID));
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)0);
-                    command.Insert(0, (byte)(CardAccount * 2 + 4));
+                    command.Insert(0, (byte)(CardCount * 2 + 4));
                     command.Insert(0, (byte)0xe6);
                     command.Add(checksum(command));
                     command.Insert(0, (byte)0x68);
@@ -972,7 +982,7 @@ namespace AGV
                     command.Insert(0, (byte)14);
                     command.Insert(0, total);
                     command.Insert(0, (byte)1);
-                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CarID);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)(32));
@@ -994,7 +1004,7 @@ namespace AGV
                     command.Insert(0, CardAccount);
                     command.Insert(0, total);
                     command.Insert(0, (byte)2);
-                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CarID);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)(CardAccount * 2 + 4));
@@ -1015,7 +1025,7 @@ namespace AGV
                     command.Insert(0, (byte)14);
                     command.Insert(0, total);
                     command.Insert(0, (byte)1);
-                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CarID);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)(32));
@@ -1037,7 +1047,7 @@ namespace AGV
                     command.Insert(0, (byte)14);
                     command.Insert(0, total);
                     command.Insert(0, (byte)2);
-                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CardID);
+                    command.Insert(0, /*(byte)(05)*/canvas.StationDic[startStation.Name].OccupiedCar.CarID);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)(32));
@@ -1060,6 +1070,192 @@ namespace AGV
                     command.Insert(0, total);
                     command.Insert(0, (byte)3);
                     command.Insert(0, (byte)(05)/*canvas.StationDic[startStation.Name].OccupiedCar.CardID*/);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(CardAccount * 2 + 4));
+                    command.Insert(0, (byte)0xe6);
+                    command.Add(checksum(command));
+                    command.Insert(0, (byte)0x68);
+                    roadTable = new byte[command.Count];
+                    command.CopyTo(roadTable);
+                    for (int j = 0; j < roadTable.Length; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    serialPort1.Write(roadTable, 0, roadTable.Length);
+                }
+            }
+            public void accessRoadTable(byte carId,Station startStation, Station targetStation, Station endStation, AdjacencyList adj, SerialPort serialPort1, Canvas canvas)
+            {
+                List<Track> list1 = adj.FindWay(adj.Find(startStation), adj.Find(targetStation));
+                List<Track> list2 = adj.FindWay(adj.Find(targetStation), adj.Find(endStation));
+                List<byte> command = new List<byte>();
+                list1.RemoveAt(0);
+                for (int i = 0; i < list1.Count; ++i)
+                {
+                    if (list1[i].CarAction != null)
+                    {
+                        string station = list1[i].CarAction.Substring(0, list1[i].CarAction.IndexOf('G'));
+                        command.Add((byte)canvas.StationDic[station].CardID);
+                        switch (list1[i].CarAction.Substring(list1[i].CarAction.Length - 1, 1))
+                        {
+                            case "L":
+                                command.Add((byte)01);
+                                break;
+                            case "R":
+                                command.Add((byte)02);
+                                break;
+                            case "S":
+                                command.Add((byte)03);
+                                break;
+                        }
+                    }
+                }
+                command.Add((byte)canvas.StationDic[targetStation.Name].CardID);
+                command.Add((byte)04);
+                for (int i = 0; i < list2.Count; ++i)
+                {
+                    if (list2[i].CarAction != null)
+                    {
+                        string station = list2[i].CarAction.Substring(0, list2[i].CarAction.IndexOf('G'));
+                        command.Add((byte)canvas.StationDic[station].CardID);
+                        switch (list2[i].CarAction.Substring(list2[i].CarAction.Length - 1, 1))
+                        {
+                            case "L":
+                                command.Add((byte)01);
+                                break;
+                            case "R":
+                                command.Add((byte)02);
+                                break;
+                            case "S":
+                                command.Add((byte)03);
+                                break;
+                        }
+                    }
+                }
+                command.Add((byte)canvas.StationDic[endStation.Name].CardID);
+                command.Add((byte)04);
+                //for (int j = 0; j < command.Count; ++j)
+                //{
+                //    Console.Write(command[j] + " ");
+                //}
+                if (command.Count >= 4 && command.Count <= 28)
+                {
+                    byte CardCount = (byte)(command.Count >> 1);
+                    command.Insert(0, CardCount);
+                    command.Insert(0, CardCount);
+                    command.Insert(0, (byte)1);
+                    command.Insert(0, (byte)(carId));
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(CardCount * 2 + 4));
+                    command.Insert(0, (byte)0xe6);
+                    command.Add(checksum(command));
+                    command.Insert(0, (byte)0x68);
+                    byte[] roadTable = new byte[command.Count];
+                    command.CopyTo(roadTable);
+                    for (int j = 0; j < roadTable.Length; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    serialPort1.Write(roadTable, 0, roadTable.Length);
+                }
+                else if (command != null && 28 < command.Count && command.Count <= 56)
+                {
+                    byte total = (byte)(command.Count >> 1);
+                    byte CardAccount = (byte)(command.Count >> 1);
+                    command.Insert(0, (byte)14);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)1);
+                    command.Insert(0, carId);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(32));
+                    command.Insert(0, (byte)0xe6);
+                    //command.Add(checksum(command));
+                    byte csum = checksum(command, 36);
+                    command.Insert(0, (byte)0x68);
+                    byte[] roadTable = new byte[38];
+                    command.CopyTo(0, roadTable, 0, 37);
+                    roadTable[37] = csum;
+                    for (int j = 0; j < 38; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    Console.WriteLine();
+                    serialPort1.Write(roadTable, 0, 38);
+                    command.RemoveRange(0, 37);
+                    CardAccount = (byte)(command.Count / 2);
+                    command.Insert(0, CardAccount);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)2);
+                    command.Insert(0, carId);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(CardAccount * 2 + 4));
+                    command.Insert(0, (byte)0xe6);
+                    command.Add(checksum(command));
+                    command.Insert(0, (byte)0x68);
+                    roadTable = new byte[command.Count];
+                    command.CopyTo(roadTable);
+                    for (int j = 0; j < roadTable.Length; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    serialPort1.Write(roadTable, 0, roadTable.Length);
+                }
+                else if (command != null && 56 < command.Count && command.Count <= 84)
+                {
+                    byte total = (byte)(command.Count >> 1);
+                    byte CardAccount = (byte)(command.Count >> 1);
+                    command.Insert(0, (byte)14);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)1);
+                    command.Insert(0, carId);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(32));
+                    command.Insert(0, (byte)0xe6);
+                    //command.Add(checksum(command));
+                    byte csum = checksum(command, 36);
+                    command.Insert(0, (byte)0x68);
+                    byte[] roadTable = new byte[38];
+                    command.CopyTo(0, roadTable, 0, 37);
+                    roadTable[37] = csum;
+                    for (int j = 0; j < 38; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    Console.WriteLine();
+                    serialPort1.Write(roadTable, 0, 38);
+                    command.RemoveRange(0, 37);
+                    Console.WriteLine();
+                    command.Insert(0, (byte)14);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)2);
+                    command.Insert(0, carId);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)0);
+                    command.Insert(0, (byte)(32));
+                    command.Insert(0, (byte)0xe6);
+                    //command.Add(checksum(command));
+                    csum = checksum(command, 36);
+                    command.Insert(0, (byte)0x68);
+                    roadTable = new byte[38];
+                    command.CopyTo(0, roadTable, 0, 37);
+                    roadTable[37] = csum;
+                    for (int j = 0; j < 38; ++j)
+                    {
+                        Console.Write(roadTable[j] + " ");
+                    }
+                    Console.WriteLine();
+                    serialPort1.Write(roadTable, 0, 38);
+                    command.RemoveRange(0, 37);
+                    CardAccount = (byte)(command.Count >> 1);
+                    command.Insert(0, CardAccount);
+                    command.Insert(0, total);
+                    command.Insert(0, (byte)3);
+                    command.Insert(0, carId);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)0);
                     command.Insert(0, (byte)(CardAccount * 2 + 4));

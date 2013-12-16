@@ -1338,11 +1338,13 @@ namespace AGV
     {
         private byte carid;
         private byte cardid;
+        private byte targetCardId;
+        private byte endCardId;
         private bool obstacle;
         private byte movement;
         private byte step;
         private byte taskLen;
-        public CarStateReportEventArgs(byte carid, byte cardid, byte obstacle, 
+        public CarStateReportEventArgs(byte carid, byte cardid, byte targetCardId, byte endCardId, byte obstacle, 
             byte movement, byte step, byte taskLen) 
         {
             this.carid = carid;
@@ -1351,16 +1353,24 @@ namespace AGV
                 this.obstacle = true;
             else
                 this.obstacle = false;
+            this.targetCardId = targetCardId;
+            this.endCardId = endCardId;
             this.movement = movement;
             this.step = step;
             this.taskLen = taskLen;
         }
 
         public byte CarId{
-            get { return cardid;}
+            get { return carid;}
         }
         public byte CardId{
             get{ return cardid; }
+        }
+        public byte TargetCardId{
+            get { return targetCardId; }
+        }
+        public byte EndCardId{
+            get{ return endCardId; }
         }
         public bool Obstacle{
             get{ return obstacle;}
@@ -1422,12 +1432,12 @@ namespace AGV
             }            
             else if (serialBuf[1] == 0xE3)//状态上报
             {
-                if (serialBuf.Count < 12)
+                if (serialBuf.Count < 14)
                     return;
-                else if (serialBuf.Count == 12)
+                else if (serialBuf.Count == 14)
                 {
                     stateReportEventArgs = new CarStateReportEventArgs(serialBuf[5],serialBuf[6],serialBuf[7],
-                        serialBuf[8],serialBuf[9],serialBuf[10]);
+                        serialBuf[8],serialBuf[9],serialBuf[10],serialBuf[11],serialBuf[12]);
                 }
             }
 
@@ -1443,8 +1453,8 @@ namespace AGV
                     carStateReportEvent(this, stateReportEventArgs);
                     serialBuf.Clear();
                 }
-                else if (serialBuf.Count >= 12)
-                    serialBuf.Clear();
+                else 
+                    serialBuf.RemoveAt(0);
                 
             }
             catch (Exception x)
