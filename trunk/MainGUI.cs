@@ -136,21 +136,6 @@ namespace AGV
 
         }
 
-        public void writePort()
-        {
-            while (true)
-            {
-                if (serialPort1.IsOpen)
-                {
-                    if (serialPort1.BytesToWrite == 0)
-                    {
-                        Thread.Sleep(100);
-                        continue;
-                    }
-                }
-            }
-        }
-
         public delegate void PerformClick();
         public void agvSerialRemoteCall(object sender, RemoteCallEventArgs e)
         {
@@ -840,13 +825,10 @@ namespace AGV
                     serialPort1.Open();
                     serialState = eSerialSate.SerialOn;
                     readThread = new Thread(ReadPort);
-                    readThread.Name = "read thread";
-                    writeThread = new Thread(writePort);
-                    writeThread.Name = "write thread";
+                    readThread.Name = "read thread";                                       
                     button1.Text = "¹Ø±Õ´®¿Ú";
                     pictureBox1.Image = AGV.Properties.Resources.ICON_ON;
-                    readThread.Start();
-                    writeThread.Start();
+                    readThread.Start();                   
                 }
                 catch (Exception ex)
                 {
