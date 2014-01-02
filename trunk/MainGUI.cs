@@ -118,12 +118,7 @@ namespace AGV
                     {
                         byte b = (byte)serialPort1.ReadByte();
                         Console.WriteLine(b);
-                        serialHander.handleOneByte(b);
-                        //String SerialIn = System.Text.Encoding.ASCII.GetString(readBuffer, 0, count);
-                        //if (count != 0) 
-                        //{ 
-                        //MessageBox.Show(SerialIn); 
-                        //}
+                        serialHander.handleOneByte(b);                        
                     }
                     catch (Exception e)
                     {
@@ -181,7 +176,7 @@ namespace AGV
             try
             {              
                 serialHander.planRoadTable(e.Call_type, startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
-                this.newCanvas.Scheduler.CallStyle = (int)e.Call_type;
+                this.newCanvas.Scheduler.CallStyle = e.Call_type;
                 a = this.newCanvas.Controls.Find("S"+ s, false);
                 b = (Button)a[0];
                 if (b != null)

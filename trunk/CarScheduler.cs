@@ -5,30 +5,28 @@ using System.Text;
 using System.Threading;
 
 namespace AGV
-{
-    public class CarTask
-    {
-        Car car;
-    }
-
+{    
     public class CarScheduler
     {
-        private controlMessage ctlMessage;
-        private int callStyle = 0;
+        private CarTask carTask;
+        private Queue<CarTask> [] carTaskQueues = new Queue<CarTask>[5];
+        private byte callStyle = 0;
         private List<Car> carsRun = new List<Car>(20);
         private Track trackTogo = new Track();
-        private List<Car> greenCarsStandby = new List<Car>(20);
-        private List<Car> redCarsStandby = new List<Car>(20);
-        private List<Car> pinkCarsStandby = new List<Car>(20);
-        private List<Car> goldCarsStandby = new List<Car>(20);
-        private Thread thread, thread2;
+        private Queue<Car> greenCarQueue = new Queue<Car>(20);
+        private Queue<Car> redCarQueue = new Queue<Car>(20);
+        private Queue<Car> pinkCarQueue = new Queue<Car>(20);
+        private Queue<Car> goldCarQueue = new Queue<Car>(20);
+        private Queue<Car>[] carQueues = new Queue<Car>[5];       
+        private Thread thread ;
         private bool onLine = false;
-        private Station targetStation = null, nextTargetStation = null, gStartStation = null, rStartStation = null, pStartStation = null, goStartStation = null;
+        private Station targetStation = null, gStartStation = null, rStartStation = null, pStartStation = null, goStartStation = null;
         private Dictionary<string, Station> stationDic;
         private Dictionary<string, Track> trackDic;
         private AdjacencyList adjList;
         private List<Station> stationList1, stationList2, stationList3, stationList4;//Green Red Pink Gold
-
+        private Mutex mutexStationTarget = new Mutex(false);
+        
         public Track TrackToGo 
         {
             set { trackTogo = value; }
@@ -55,11 +53,14 @@ namespace AGV
             goStartStation = stationDic["S10"];
             stationList4 = new List<Station>(8);
             stationList4.Add(stationDic["S10"]);
-            //stationList1.Add(stationDic["S1"]);
-            //stationList1.Add(stationDic["F28"]);
-            
-            //stationList1.Add(stationDic["F30"]);
-            //stationList1.Add(stationDic["F31"]);            
+            carQueues[1] = greenCarQueue;
+            carQueues[2] = redCarQueue;
+            carQueues[3] = pinkCarQueue;
+            carQueues[4] = goldCarQueue;
+            carTaskQueues[1] = new Queue<CarTask>(10);
+            carTaskQueues[2] = new Queue<CarTask>(10);
+            carTaskQueues[3] = new Queue<CarTask>(10);
+            carTaskQueues[4] = new Queue<CarTask>(10);            
         }
 
         public Station GStartStation
@@ -80,19 +81,7 @@ namespace AGV
         public Station GOStartStation
         {
             get { return goStartStation; }
-        }
-
-        public int CallStyle
-        {  
-            set 
-            {
-                lock (this)
-                {
-                    callStyle = value;
-                }
-            }
-            get { return callStyle; }
-        }
+        }        
 
         public void demo(Car car) 
         {
@@ -101,38 +90,58 @@ namespace AGV
 
         public void addGreenCar(Car car)
         {
-            greenCarsStandby.Add(car);
+            greenCarQueue.Enqueue(car);
         }
 
         public void addRedCar(Car car)
         {
-            redCarsStandby.Add(car);
+            redCarQueue.Enqueue(car);
         }
 
         public void addGoldCar(Car car)
         {
-            goldCarsStandby.Add(car);
+            goldCarQueue.Enqueue(car);
         }
 
         public void addPinkCar(Car car)
         {
-            pinkCarsStandby.Add(car);
+            pinkCarQueue.Enqueue(car);
         }
 
-        public Station TargetStation 
-        {
-            set 
+        public Station TargetStation {
+            get { return targetStation;}
+            set { targetStation = value;}
+        }
+
+        public byte CallStyle {
+            get { return callStyle;}
+            set { callStyle = value;}
+        }
+
+        public void addTarget(Station targetStation,byte carType)
+        {            
+            switch (carType)
             {
-                lock (this)
-                {
-                    nextTargetStation = value;
-                }
+                case 1:
+                    carTask = new CarTask(stationDic["F29"], targetStation, stationDic["F29"], carType);                    
+                    break;
+                case 2:
+                    carTask = new CarTask(stationDic["S2"], targetStation, stationDic["S2"], carType);
+                    break;
+                case 3:
+                    carTask = new CarTask(stationDic["S3"], targetStation, stationDic["S3"], carType);
+                    break;
+                case 4:
+                    carTask = new CarTask(stationDic["S10"], targetStation, stationDic["S10"], carType);
+                    break;
             }
-            get { return nextTargetStation; }//targetStation; }
-        }
-
-        public void addTargetTrackToCar() 
-        { 
+            if (carTask != null )
+                if(carTaskQueues[carType].Count==0)
+                    carTaskQueues[carType].Enqueue(carTask);
+                else if ( !carTaskQueues[carType].Contains(carTask) )
+                {
+                    carTaskQueues[carType].Enqueue(carTask);
+                }
         }
 
         public void run() 
@@ -177,122 +186,122 @@ namespace AGV
             //serialHander.serialEvent += serialHander.accessRoadTable;
             while (onLine)
             {
-                #region
-                if (nextTargetStation == null)
-                    Thread.Sleep(200);
-                else if (callStyle!=0)
+                for (int i = 1; i <= 4; i++)
                 {
-                    switch (callStyle)
+                    if (carTaskQueues[i].Count > 0)
                     {
-                        case 1:
-                            if (stationList1.First().OccupiedCar == null)
-                            {
-                                nextTargetStation = null;
-                                continue;
-                            }
-                            ctlMessage = new controlMessage(stationDic["F29"], nextTargetStation, stationDic["F29"], greenCarsStandby);
-                            //serialHander.accessRoadTable(stationDic["F29"], nextTargetStation, stationDic["F29"]);
-                            nextTargetStation = null;
-                            break;
-                        case 2:
-                            if (stationList2.First().OccupiedCar == null)
-                            {
-                                nextTargetStation = null;
-                                continue;
-                            }
-                            ctlMessage = new controlMessage(stationDic["S2"], nextTargetStation, stationDic["S2"], redCarsStandby);
-                            //serialHander.accessRoadTable(stationDic["S2"], nextTargetStation, stationDic["S2"]);
-                            nextTargetStation = null;
-                            break;
-                        case 3:
-                            if (stationList3.First().OccupiedCar == null)
-                            {
-                                nextTargetStation = null;
-                                continue;
-                            }
-                            ctlMessage = new controlMessage(stationDic["S3"], nextTargetStation, stationDic["S3"], pinkCarsStandby);
-                            //serialHander.accessRoadTable(stationDic["S3"], nextTargetStation, stationDic["S3"]);
-                            nextTargetStation = null;
-                            break;
-                        case 4:
-                            if (stationList4.First().OccupiedCar == null)
-                            {
-                                nextTargetStation = null;
-                                continue;
-                            }
-                            ctlMessage = new controlMessage(stationDic["S10"], nextTargetStation, stationDic["S10"], goldCarsStandby);
-                            //serialHander.accessRoadTable(stationDic["S10"], nextTargetStation, stationDic["S10"]);
-                            nextTargetStation = null;
-                            break;
-                    }
-                    //targetStation = nextTargetStation;
-                    //nextTargetStation = null;
-                    Thread t = new Thread(runCarTask);
-                    t.Start(ctlMessage);
+                        if (carQueues[carTaskQueues[i].First().CarType].Count > 0)
+                        {
+                            Thread t = new Thread(runCarThread);
+                            t.Start(carTaskQueues[i].Dequeue());
+                        }                        
+                    }                    
+                    Thread.Sleep(200);
                 }
-                #endregion
             }
-               
         }
-
-        public List<CarTask> carTaskList;
-
-        private void runCarTask(object o)
+        
+        private void runCarThread(object o)
         {
-            controlMessage ctlMessage = (controlMessage)o;
+            CarTask carTask = (CarTask)o;
             Track trackTogo = new Track();
-            if (ctlMessage.RelevantStandby.Count == 0)
+            int i;
+            Queue<Car> carQueue = carQueues[carTask.CarType];
+            
+            if (carQueue.Count == 0)
                 return;
-            if (ctlMessage.TargetStation == null || (ctlMessage.StartStation.Equals(ctlMessage.TargetStation)))
+            if (carTask.TargetStation == null || (carTask.StartStation.Equals(carTask.TargetStation)))
             {
                 return;
             }
-            //if (targetStation.name == "S1")
-                //targetStation = stationDic["F31"];
-            List<Track> list1 = adjList.FindWay(adjList.Find(ctlMessage.StartStation), adjList.Find(ctlMessage.TargetStation));
-            List<Track> list2 = adjList.FindWay(adjList.Find(ctlMessage.TargetStation), adjList.Find(ctlMessage.EndStation));
-            for (int i = 0; i < list1.Count; ++i)
+            
+            List<Track> list1 = adjList.FindWay(adjList.Find(carTask.StartStation), adjList.Find(carTask.TargetStation));
+            List<Track> list2 = adjList.FindWay(adjList.Find(carTask.TargetStation), adjList.Find(carTask.EndStation));
+            for (i = 0; i < list1.Count; ++i)
             {
                 if (list1[i].CarAction != null)
                 {
                     string station = list1[i].CarAction.Substring(0, 1);
-
                 }
             }
-            
-
-            foreach (Track t in list1)
-            {
-                trackTogo.TrackPointList.AddRange(t.TrackPointList);
-            }
             Car car = null;
-            ctlMessage.StartStation.OccupiedCar = null;
-            if (ctlMessage.RelevantStandby.Count!=0)
-                car = ctlMessage.RelevantStandby.First();
-            else
-                return;
-            if (car != null)
+            if (carQueue.Count > 0)
             {
-                ctlMessage.RelevantStandby.Remove(car);
-                car.run(trackTogo);
+                car = carQueue.Dequeue();
             }
             else
-            {
                 return;
-            }
-            trackTogo.clear();
-            Thread.Sleep(3000);
-            foreach (Track t in list2)
+            
+            carTask.StartStation.OccupiedCar = null;
+            
+            for (i=0;i<list1.Count;i++)
             {
+                Track t = list1[i];
+                while (true)
+                {                    
+                    mutexStationTarget.WaitOne();
+                    if ( (t.occupied == false) && (stationDic[t.EndStation].targeted == false) )
+                    {
+                        t.occupied = true;
+                        stationDic[t.EndStation].targeted = true;
+                        if (car.lastStation != null)
+                            car.lastStation.targeted = false;
+                        car.lastStation = stationDic[t.EndStation];
+                        if(i>0)
+                        {
+                            if (list1[i - 1].occupied)
+                            {
+                                list1[i - 1].occupied = false;
+                            }
+                        }
+                        mutexStationTarget.ReleaseMutex();
+                        break;
+                    }
+                    
+                    mutexStationTarget.ReleaseMutex();
+                    Thread.Sleep(200);
+                }
+                trackTogo.clear();
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
+                car.run(trackTogo);
+                
+            }                                 
+            Thread.Sleep(3000);
+            list1[i - 1].occupied = false;           
+            for (i = 0; i < list2.Count; i++)
+            {
+                Track t = list2[i];
+                while (true)
+                {
+                    mutexStationTarget.WaitOne();
+                    if ((t.occupied == false) && (stationDic[t.EndStation].targeted == false))
+                    {
+                        t.occupied = true;
+                        stationDic[t.EndStation].targeted = true;
+                        if (car.lastStation != null)
+                            car.lastStation.targeted = false;
+                        car.lastStation = stationDic[t.EndStation];
+                        if (i > 0)
+                        {
+                            if (list2[i - 1].occupied)
+                            {
+                                list2[i - 1].occupied = false;
+                            }
+                        }
+                        mutexStationTarget.ReleaseMutex();
+                        break;
+                    }
+
+                    mutexStationTarget.ReleaseMutex();
+                    Thread.Sleep(200);
+                }
+                trackTogo.clear();
+                trackTogo.TrackPointList.AddRange(t.TrackPointList);
+                car.run(trackTogo);                
             }
-            car.run(trackTogo);
-            //while (stationDic["F31"].OccupiedCar != null)
-            //{
-            //    Thread.Sleep(100);
-            //}
-            ctlMessage.EndStation.OccupiedCar = car;
-            ctlMessage.RelevantStandby.Add(car);
+            list2[i-1].occupied = false;
+            carTask.EndStation.OccupiedCar = car;
+            carQueue.Enqueue(car);
         }  
         
         public void stop()
@@ -303,19 +312,18 @@ namespace AGV
         }
     }
 
-    public class controlMessage
+    public class CarTask
     {
         private Station startStation;
         private Station targetStation;
         private Station endStation;
-        private List<Car> relevantStandby;
-        public controlMessage(Station startStation, Station targetStation, Station endStation, List<Car> relevantStandby)
+        private byte carType;
+        public CarTask(Station startStation, Station targetStation, Station endStation, byte carType)
         {
             this.startStation = startStation;
             this.targetStation = targetStation;
             this.endStation = endStation;
-            this.relevantStandby = relevantStandby;
-
+            this.carType = carType;            
         }
         public Station StartStation
         {
@@ -329,9 +337,19 @@ namespace AGV
         {
             get { return endStation; }
         }
-        public List<Car> RelevantStandby
+        public byte CarType
         {
-            get { return relevantStandby; }
+            get { return carType; }
+        }
+        public override bool Equals(object obj)
+        {
+            CarTask task = (CarTask)obj;
+            if (task.carType == this.carType)
+                if (task.endStation == this.endStation)
+                    if (task.startStation == this.startStation)
+                        if (task.targetStation == this.targetStation)
+                            return true;
+            return false;            
         }
     }
 }

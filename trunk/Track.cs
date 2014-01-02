@@ -1091,6 +1091,8 @@ namespace AGV
             this.drawingList = drawingList;           
         }
 
+        public bool occupied = false;
+
         public string Name
         {
             get { return name; }
@@ -1289,12 +1291,13 @@ namespace AGV
         public int BtnXoffset;
         public int BtnYoffset;
         public int cardID;
+        public bool targeted = false;
         public Point Location 
         {
             get { return new Point(X,Y); }
         }
         public Station()
-        {
+        {            
         }
         public Station(string name, int X, int Y, int btnX, int btnY,int cardID,int stationID)
         {

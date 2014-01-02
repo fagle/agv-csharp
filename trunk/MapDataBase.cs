@@ -225,7 +225,7 @@ namespace AGV
                             {
                                 Point startPoint = new Point(reader.GetInt32(0),reader.GetInt32(1));
                                 Point endPoint = new Point(reader.GetInt32(2),reader.GetInt32(3));
-                                int ix = drawingList.Add(new Line(startPoint,endPoint,Color.White, 1));
+                                int ix = drawingList.Add(new Line(startPoint,endPoint,Color.LightGreen, 1));
                                 objectIdentifier.Add(new DrawingObject(2, ix));
                                 int centerX = (startPoint.X + endPoint.X) / 2;
                                 int centerY = (startPoint.Y + endPoint.Y) / 2;
@@ -234,7 +234,7 @@ namespace AGV
                             else if (shapeList[i].shape == "arc")
                             {
                                 Point center = new Point(reader.GetInt32(1), reader.GetInt32(2));
-                                int ix = drawingList.Add(new Arc(center, reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), Color.White, Color.Red, 1));
+                                int ix = drawingList.Add(new Arc(center, reader.GetInt32(0), reader.GetInt32(3), reader.GetInt32(4), Color.LightGreen, Color.Red, 1));
                                 objectIdentifier.Add(new DrawingObject(6, ix));
                                 shapeList[i].center = center;
                             }

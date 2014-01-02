@@ -164,6 +164,12 @@ namespace AGV
             return car;
         }
 
+        private void carLabelClicked(object sender, EventArgs e)
+        {
+            Label label = (Label) sender;
+            scheduler.CallStyle = Convert.ToByte(label.Text);
+        }
+
         private void initLabel(Label label, string name, Color color) 
         {
             label.BackColor = color;// System.Drawing.Color.Lime;
@@ -173,6 +179,7 @@ namespace AGV
             label.Size = new System.Drawing.Size(16, 16);
             label.TabIndex = 3;
             label.Text = name;
+            label.Click += carLabelClicked;
             this.Controls.Add(label);
         }
 
@@ -192,8 +199,10 @@ namespace AGV
             Button fromButton = (Button)sender;
             string name = fromButton.Name;
             scheduler.TargetStation = stationDic[name];
-            //Console.WriteLine(e.ToString());
-            //Console.WriteLine(sender.ToString());
+            if (scheduler.CallStyle != 0)
+            {
+                scheduler.addTarget(stationDic[name],scheduler.CallStyle);
+            }
         }
         
         private void initButton(Button btn, string name, EventHandler eh)//System.EventHandler eh)//EventHandler<ClickEventArgs> click)
@@ -644,7 +653,6 @@ namespace AGV
 							
 			}
 			return false;
-
 		}
 
 

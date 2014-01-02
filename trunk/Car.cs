@@ -48,7 +48,7 @@ namespace AGV
         public Station StartStation;
         public delegate void CarPosEventHandler(object sender, CarEventArgs e);
         public event CarPosEventHandler carPosEvent;
-
+        public Station lastStation = null;
         public int DefaultSpeed 
         {
             get { return defaultSpeed; }

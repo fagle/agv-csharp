@@ -125,7 +125,6 @@
     <Compile Include="Track.Designer.cs">
       <DependentUpon>Track.cs</DependentUpon>
     </Compile>
-    <Content Include="Icon1.ico" />
     <Compile Include="ArcEdit.cs">
       <SubType>Form</SubType>
     </Compile>
