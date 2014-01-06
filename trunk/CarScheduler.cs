@@ -240,24 +240,16 @@ namespace AGV
                 while (true)
                 {                    
                     mutexStationTarget.WaitOne();
-                    if ( (t.occupied == false) && (stationDic[t.EndStation].targeted == false) )
+                    if (stationDic[t.EndStation].targeted == false && stationDic[t.StartStation].CardID == car.posCard)
                     {
-                        t.occupied = true;
                         stationDic[t.EndStation].targeted = true;
+                        car.permitPass();
                         if (car.lastStation != null)
                             car.lastStation.targeted = false;
                         car.lastStation = stationDic[t.EndStation];
-                        if(i>0)
-                        {
-                            if (list1[i - 1].occupied)
-                            {
-                                list1[i - 1].occupied = false;
-                            }
-                        }
                         mutexStationTarget.ReleaseMutex();
                         break;
-                    }
-                    
+                    }                    
                     mutexStationTarget.ReleaseMutex();
                     Thread.Sleep(200);
                 }
@@ -266,40 +258,30 @@ namespace AGV
                 car.run(trackTogo);
                 
             }                                 
-            Thread.Sleep(3000);
-            list1[i - 1].occupied = false;           
+            Thread.Sleep(3000);                    
             for (i = 0; i < list2.Count; i++)
             {
                 Track t = list2[i];
                 while (true)
                 {
                     mutexStationTarget.WaitOne();
-                    if ((t.occupied == false) && (stationDic[t.EndStation].targeted == false))
-                    {
-                        t.occupied = true;
+                    if (stationDic[t.EndStation].targeted == false && stationDic[t.StartStation].CardID == car.posCard)
+                    {                        
                         stationDic[t.EndStation].targeted = true;
+                        car.permitPass();
                         if (car.lastStation != null)
                             car.lastStation.targeted = false;
-                        car.lastStation = stationDic[t.EndStation];
-                        if (i > 0)
-                        {
-                            if (list2[i - 1].occupied)
-                            {
-                                list2[i - 1].occupied = false;
-                            }
-                        }
+                        car.lastStation = stationDic[t.EndStation];                        
                         mutexStationTarget.ReleaseMutex();
                         break;
                     }
-
                     mutexStationTarget.ReleaseMutex();
                     Thread.Sleep(200);
                 }
                 trackTogo.clear();
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
                 car.run(trackTogo);                
-            }
-            list2[i-1].occupied = false;
+            }            
             carTask.EndStation.OccupiedCar = car;
             carQueue.Enqueue(car);
         }  

@@ -65,6 +65,7 @@ namespace AGV
         private Rectangle highlightedRegion = new Rectangle(0, 0, 0, 0);
 
         private Car car1, car2, car3, car4, car5;
+        public Car[] carArray = new Car[6];
         private int canvasHeight = 600;
         private int canvasWidth = 1280;
 		/// <summary>
@@ -129,6 +130,10 @@ namespace AGV
             car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red,2);
             car3 = creatCar("Car3", "3", "S3", System.Drawing.Color.Pink,3);
             car4 = creatCar("Car4", "4", "S10", System.Drawing.Color.Gold,4);
+            carArray[1] = car1;
+            carArray[2] = car2;
+            carArray[3] = car3;
+            carArray[4] = car4;
             //car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red);
             stationDic["F29"].OccupiedCar = car1;
             stationDic["S2"].OccupiedCar = car2;

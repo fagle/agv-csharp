@@ -209,7 +209,11 @@ namespace AGV
                     {
                         break;
                     }
+                    newCanvas.carArray[e.CarId].posCard = e.CardId;
                     serialHander.accessRoadTable(e.CarId,startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                    break;
+                default:
+                    newCanvas.carArray[e.CarId].posCard = e.CardId;
                     break;
             }
         }

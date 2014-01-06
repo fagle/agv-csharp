@@ -49,6 +49,11 @@ namespace AGV
         public delegate void CarPosEventHandler(object sender, CarEventArgs e);
         public event CarPosEventHandler carPosEvent;
         public Station lastStation = null;
+        public byte posCard;
+        public void permitPass()
+        {
+ 
+        }
         public int DefaultSpeed 
         {
             get { return defaultSpeed; }
