@@ -16,6 +16,8 @@ using System.Drawing.Drawing2D;
 using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using SQLiteQueryBrowser;
+using System.Data.SQLite;
 
 namespace AGV
 {
@@ -112,29 +114,10 @@ namespace AGV
             mapDB.loadStationsFromDB(stationDic);
             mapDB.loadPathsFromDB(trackDic);
             adjList = new AdjacencyList(100,trackDic);
-            loadStations();
-
+            loadStations();           
             
-            //car1 = creatCar("Car1","1","S1");
-            //car2 = creatCar("Car2", "2", "F28");
-            //car3 = creatCar("Car3", "3", "F29");
-            //car4 = creatCar("Car4", "4", "F30");
-            //car5 = creatCar("Car5", "5", "F31");
-            //stationDic["S1"].OccupiedCar = car1;
-            //stationDic["F28"].OccupiedCar = car2;
-            //stationDic["F29"].OccupiedCar = car3;
-            //stationDic["F30"].OccupiedCar = car4;
-            //stationDic["F31"].OccupiedCar = car5;
-            //focusCar(car1);
-            car1 = creatCar("Car1", "1", "F29", System.Drawing.Color.Green,1);
-            car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red,2);
-            car3 = creatCar("Car3", "3", "S3", System.Drawing.Color.Pink,3);
-            car4 = creatCar("Car4", "4", "S10", System.Drawing.Color.Gold,4);
-            carArray[1] = car1;
-            carArray[2] = car2;
-            carArray[3] = car3;
-            carArray[4] = car4;
-            //car2 = creatCar("Car2", "2", "S2", System.Drawing.Color.Red);
+            readCar();
+           
             stationDic["F29"].OccupiedCar = car1;
             stationDic["S2"].OccupiedCar = car2;
             stationDic["S3"].OccupiedCar = car3;
@@ -144,11 +127,7 @@ namespace AGV
             scheduler.addRedCar(car2);
             scheduler.addPinkCar(car3);
             scheduler.addGoldCar(car4);
-            //scheduler.addCar(car2);
-            //scheduler.addCar(car3);
-            //scheduler.addCar(car4);
-            //scheduler.addCar(car5);
-            //addDrawingListToTrack(drawingList, objectIdentifier, scheduler.TrackToGo);
+            
             scheduler.run();
 		}
 
@@ -158,10 +137,45 @@ namespace AGV
             set { scheduler = value; }
         }
 
-        private Car creatCar(string carName, string labelIx, string station, Color color,byte carID)
+        Color carColor;
+        private void readCar()
         {
-            Car car;
+            string[] s = new string[4] {"","","",""};                       
             Label label = new Label();
+            SQLiteDBHelper db = new SQLiteDBHelper("D:\\Demo.db3");
+            string str = "select * from carInit";
+            using (SQLiteDataReader reader = db.ExecuteReader(str, null))
+            {
+                while (reader.Read())
+                {
+                    s[0] = reader.GetString(0);
+                    s[1] = reader.GetString(1);
+                    s[2] = reader.GetString(2);
+                    s[3] = reader.GetString(3);
+                    switch (s[1])
+                    {
+                        case "1":
+                            carColor = System.Drawing.Color.Green;
+                            break;
+                        case "2":
+                            carColor = System.Drawing.Color.Red;
+                            break;
+                        case "3":
+                            carColor = System.Drawing.Color.Pink;
+                            break;
+                        case "4":
+                            carColor = System.Drawing.Color.Gold;
+                            break;
+                    }
+                    creatCar(s[0], s[1], s[2], carColor, Convert.ToByte(s[3]));
+                }
+            }
+        }
+
+        private Car creatCar(string carName, string labelIx, string station, Color color,byte carID)        
+        {            
+            Car car;            
+            Label label = new Label();            
             initLabel(label, labelIx,color);
             car = new Car(carName, label, carID);
             car.carPosEvent += carPositionChange;
