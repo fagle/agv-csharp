@@ -36,6 +36,10 @@ namespace AGV
         }
     }
 
+    public enum  CarState{
+        CarStop,CarRun
+    }
+
     public class Car
     {
         private string name;
@@ -45,6 +49,7 @@ namespace AGV
         private Track trackToGo=new Track();
         private Label bindingLabel; 
         private byte carID;
+        private CarState realState;
         public Station StartStation;
         public delegate void CarPosEventHandler(object sender, CarEventArgs e);
         public event CarPosEventHandler carPosEvent;
@@ -54,6 +59,17 @@ namespace AGV
         {
  
         }
+        public void forbidPass()
+        {
+            if (realState == CarState.CarRun)
+            {
+                realState = CarState.CarStop;
+            }
+        }
+        public CarState getRealState()
+        {
+            return realState;
+        }
         public int DefaultSpeed 
         {
             get { return defaultSpeed; }
@@ -61,7 +77,7 @@ namespace AGV
             {
                 if (value > 100)
                 {
-                    defaultSpeed = 100;
+                    defaultSpeed = 99;
                 }else{
                     defaultSpeed = value;
                 }
@@ -74,7 +90,7 @@ namespace AGV
             {
                 if (value > 100)
                 {
-                    speed = 100;
+                    speed = 99;
                 }
                 else if (value < 0)
                 {
@@ -157,9 +173,11 @@ namespace AGV
             trackToGo.AddLine(line);
             run();
         }
+
         public void run(Arc arc) {
             trackToGo.AddArc(arc);
             run();
         }
+
     }
 }

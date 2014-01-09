@@ -240,15 +240,23 @@ namespace AGV
                 while (true)
                 {                    
                     mutexStationTarget.WaitOne();
-                    if (stationDic[t.EndStation].targeted == false && stationDic[t.StartStation].CardID == car.posCard)
+                    
+                    if (stationDic[t.StartStation].CardID == car.posCard)
                     {
-                        stationDic[t.EndStation].targeted = true;
-                        car.permitPass();
-                        if (car.lastStation != null)
-                            car.lastStation.targeted = false;
-                        car.lastStation = stationDic[t.EndStation];
-                        mutexStationTarget.ReleaseMutex();
-                        break;
+                        if (stationDic[t.EndStation].targeted == false)
+                        {
+                            stationDic[t.EndStation].targeted = true;
+                            car.permitPass();
+                            if (car.lastStation != null)
+                                car.lastStation.targeted = false;
+                            car.lastStation = stationDic[t.EndStation];
+                            mutexStationTarget.ReleaseMutex();
+                            break;
+                        }
+                        else
+                        {
+                            car.forbidPass();
+                        }
                     }                    
                     mutexStationTarget.ReleaseMutex();
                     Thread.Sleep(200);
@@ -265,15 +273,22 @@ namespace AGV
                 while (true)
                 {
                     mutexStationTarget.WaitOne();
-                    if (stationDic[t.EndStation].targeted == false && stationDic[t.StartStation].CardID == car.posCard)
-                    {                        
-                        stationDic[t.EndStation].targeted = true;
-                        car.permitPass();
-                        if (car.lastStation != null)
-                            car.lastStation.targeted = false;
-                        car.lastStation = stationDic[t.EndStation];                        
-                        mutexStationTarget.ReleaseMutex();
-                        break;
+                    if (stationDic[t.StartStation].CardID == car.posCard)
+                    {
+                        if (stationDic[t.EndStation].targeted == false)
+                        {
+                            stationDic[t.EndStation].targeted = true;
+                            car.permitPass();
+                            if (car.lastStation != null)
+                                car.lastStation.targeted = false;
+                            car.lastStation = stationDic[t.EndStation];
+                            mutexStationTarget.ReleaseMutex();
+                            break;
+                        }
+                        else
+                        {
+                            car.forbidPass();
+                        }
                     }
                     mutexStationTarget.ReleaseMutex();
                     Thread.Sleep(200);
