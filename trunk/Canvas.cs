@@ -116,8 +116,17 @@ namespace AGV
             adjList = new AdjacencyList(100,trackDic);
             loadStations();           
             
-            readCar();
-           
+            //readCar();
+
+            car1 = creatCar("Car1", "1", "F29", System.Drawing.Color.Green, 1);
+            car2 = creatCar("Car2", "2", "F28", System.Drawing.Color.Red, 2);
+            car3 = creatCar("Car3", "3", "F30", System.Drawing.Color.Pink, 3);
+            car4 = creatCar("Car4", "4", "F31", System.Drawing.Color.Gold, 4);
+            carArray[1] = car1;
+            carArray[2] = car2;
+            carArray[3] = car3;
+            carArray[4] = car4;
+
             stationDic["F29"].OccupiedCar = car1;
             stationDic["S2"].OccupiedCar = car2;
             stationDic["S3"].OccupiedCar = car3;

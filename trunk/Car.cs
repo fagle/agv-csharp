@@ -49,7 +49,7 @@ namespace AGV
         private Track trackToGo=new Track();
         private Label bindingLabel; 
         private byte carID;
-        private CarState realState;
+        private CarState realState = CarState.CarStop;
         public Station StartStation;
         public delegate void CarPosEventHandler(object sender, CarEventArgs e);
         public event CarPosEventHandler carPosEvent;
@@ -57,7 +57,10 @@ namespace AGV
         public byte posCard;
         public void permitPass()
         {
- 
+            if (realState == CarState.CarStop)
+            {
+                realState = CarState.CarRun;
+            }
         }
         public void forbidPass()
         {

@@ -191,6 +191,7 @@ namespace AGV
             }
 
         }
+
         public void agvCarStateReport(object sender, CarStateReportEventArgs e) 
         {
             RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
@@ -210,7 +211,55 @@ namespace AGV
                         break;
                     }
                     newCanvas.carArray[e.CarId].posCard = e.CardId;
-                    serialHander.accessRoadTable(e.CarId,startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+                    Thread.Sleep(20);
+                    if (e.Movement==0x05&&CarState.CarStop==newCanvas.carArray[e.CarId].getRealState())
+                    {
+                        byte[] controlCommand = new byte[7] {(byte)0x68, (byte)0x55, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
+                        controlCommand[5] = (byte)e.CarId;
+                        controlCommand[6] = (byte)((0x55 + 0x01 + e.CarId) % 256);
+                        serialPort1.Write(controlCommand, 0, controlCommand.Length);
+                        //List<byte> command = new List<byte>(7);
+                        //command.Add(0x68);
+                        //command.Add(0x55);
+                        //command.Add(0x01);
+                        //command.Add(0x00);
+                        //command.Add(0x00);
+                        //command.Add((byte)e.CarId);
+                        //command.Add((byte)((0x55 + 0x01 + e.CarId)%256));
+
+                        //byte[] controlCommand = new byte[command.Count];
+                        //command.CopyTo(controlCommand);
+                        //for (int j = 0; j < controlCommand.Length; ++j)
+                        //{
+                        //    Console.Write(controlCommand[j] + " ");
+                        //}
+                        
+                    }
+                    else if (e.Movement == 0x04 && CarState.CarStop == newCanvas.carArray[e.CarId].getRealState())
+                    {
+                        byte[] controlCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
+                        controlCommand[5] = (byte)e.CarId;
+                        controlCommand[6] = (byte)((0x54 + 0x01 + e.CarId) % 256);
+                        serialPort1.Write(controlCommand, 0, controlCommand.Length);
+                        //List<byte> command = new List<byte>(7);
+                        //command.Add(0x68);
+                        //command.Add(0x54);
+                        //command.Add(0x01);
+                        //command.Add(0x00);
+                        //command.Add(0x00);
+                        //command.Add((byte)e.CarId);
+                        //command.Add((byte)((0x54 + 0x01 + e.CarId) % 256));
+
+                        //byte[] controlCommand = new byte[command.Count];
+                        //command.CopyTo(controlCommand);
+                        //for (int j = 0; j < controlCommand.Length; ++j)
+                        //{
+                        //    Console.Write(controlCommand[j] + " ");
+                        //}
+                        //serialPort1.Write(controlCommand, 0, controlCommand.Length);
+                    }
+
+                    //serialHander.accessRoadTable(e.CarId,startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
                     break;
                 default:
                     newCanvas.carArray[e.CarId].posCard = e.CardId;
