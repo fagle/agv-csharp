@@ -67,7 +67,7 @@ namespace AGV
         private Rectangle highlightedRegion = new Rectangle(0, 0, 0, 0);
 
         private Car car1, car2, car3, car4, car5;
-        public Car[] carArray = new Car[6];
+        public Car[] carArray = new Car[9];
         private int canvasHeight = 600;
         private int canvasWidth = 1280;
 		/// <summary>
@@ -118,19 +118,19 @@ namespace AGV
             
             //readCar();
 
-            car1 = creatCar("Car1", "1", "F29", System.Drawing.Color.Green, 1);
-            car2 = creatCar("Car2", "2", "F28", System.Drawing.Color.Red, 2);
-            car3 = creatCar("Car3", "3", "F30", System.Drawing.Color.Pink, 3);
-            car4 = creatCar("Car4", "4", "F31", System.Drawing.Color.Gold, 4);
-            carArray[1] = car1;
-            carArray[2] = car2;
-            carArray[3] = car3;
-            carArray[4] = car4;
+            car1 = creatCar("Car1", "1", "F28", System.Drawing.Color.Green, 5);
+            car2 = creatCar("Car2", "2", "F29", System.Drawing.Color.Red, 6);
+            car3 = creatCar("Car3", "3", "F30", System.Drawing.Color.Pink, 7);
+            car4 = creatCar("Car4", "4", "F31", System.Drawing.Color.Gold, 8);
+            carArray[5] = car1;
+            carArray[6] = car2;
+            carArray[7] = car3;
+            carArray[8] = car4;
 
-            stationDic["F29"].OccupiedCar = car1;
-            stationDic["S2"].OccupiedCar = car2;
-            stationDic["S3"].OccupiedCar = car3;
-            stationDic["S10"].OccupiedCar = car4;
+            stationDic["F28"].OccupiedCar = car1;
+            stationDic["F29"].OccupiedCar = car2;
+            stationDic["F30"].OccupiedCar = car3;
+            stationDic["F31"].OccupiedCar = car4;
             scheduler = new CarScheduler(stationDic,trackDic,adjList);
             scheduler.addGreenCar(car1);
             scheduler.addRedCar(car2);

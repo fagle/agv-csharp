@@ -77,15 +77,17 @@ namespace AGV
         public int InitPort()
         {
             serialPort1.PortName = comboBox.SelectedItem.ToString();
-            serialPort1.BaudRate = 19200;//115200;
+            serialPort1.BaudRate = 115200;//19200;
             serialPort1.DataBits = 8;
             // serialPort1.WriteTimeout = 500;
             //serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(DataReceived);
             return 0;
         }
 
-        private delegate void SetTextCallBack(string text);
-        private void writeLine(string text)
+        //private delegate void SetTextCallBack(string text);
+       // private void writeLine(string text)
+        private delegate void SetTextCallBack(byte text);
+            private void writeLine(byte text)
         {
             if (textBox1.InvokeRequired)
             {
@@ -94,7 +96,9 @@ namespace AGV
             }
             else
             {
-                textBox1.Text += "\r\n" + text;
+                //textBox1.Text += "\r\n" + text;
+                textBox1.Text += " " + text;
+                //textBox1.Text +=  text;
                 textBox1.Select(textBox1.Text.Length, 0);
                 textBox1.ScrollToCaret();
             }
@@ -117,7 +121,8 @@ namespace AGV
                     try
                     {
                         byte b = (byte)serialPort1.ReadByte();
-                        Console.WriteLine(b);
+                        writeLine(b);
+                        //Console.WriteLine(b);
                         serialHander.handleOneByte(b);                        
                     }
                     catch (Exception e)
@@ -139,30 +144,30 @@ namespace AGV
             Station startStation = null;
             Station targetStation = null;
             Station endStation = null;            
-            string s = (e.Station_ID-100).ToString();            
-            if (e.Call_type > 4)
+            string s = (e.Station_ID).ToString();
+            if (e.Call_type < 5 && e.Call_type>8)
                 return;
             switch (e.Call_type)
             {
-                case 1:
+                case 5:
                     startStation = this.newCanvas.Scheduler.GStartStation;
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID % 100];
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID];
+                    endStation = this.newCanvas.StationDic["F28"];
+                    break;
+                case 6:
+                    startStation = this.newCanvas.Scheduler.RStartStation;
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID];
                     endStation = this.newCanvas.StationDic["F29"];
                     break;
-                case 2:
-                    startStation = this.newCanvas.Scheduler.RStartStation;
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID%100];
-                    endStation = this.newCanvas.StationDic["S2"];
-                    break;
-                case 3:
+                case 7:
                     startStation = this.newCanvas.Scheduler.PStartStation;
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID % 100];
-                    endStation = this.newCanvas.StationDic["S3"];
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID];
+                    endStation = this.newCanvas.StationDic["F30"];
                     break;
-                case 4:
+                case 8:
                     startStation = this.newCanvas.Scheduler.GOStartStation;
-                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID % 100];
-                    endStation = this.newCanvas.StationDic["S10"];
+                    targetStation = this.newCanvas.StationDic["S" + e.Station_ID];
+                    endStation = this.newCanvas.StationDic["F31"];
                     break;
             }
             RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
@@ -183,7 +188,7 @@ namespace AGV
                 {
                     Invoke(new PerformClick(b.PerformClick));
                 }
-                writeLine("站点" + s + "呼叫");                                       
+                //writeLine("站点" + s + "呼叫");                                       
             }
             catch (Exception x)
             {
@@ -198,73 +203,81 @@ namespace AGV
             Station startStation = null;
             Station targetStation = null;
             Station endStation = null;
-            
-            switch(e.Movement){
-                case 7:
-                    if ((e.CardId == 0) || (e.TargetCardId == 0) || (e.EndCardId == 0))
-                        break;
-                    startStation = newCanvas.findStationByCardID(e.CardId);
-                    targetStation = newCanvas.findStationByCardID(e.TargetCardId);
-                    endStation = newCanvas.findStationByCardID(e.EndCardId);
-                    if ( (startStation == null) || (targetStation == null) || (endStation == null) )
-                    {
-                        break;
-                    }
-                    newCanvas.carArray[e.CarId].posCard = e.CardId;
-                    Thread.Sleep(20);
-                    if (e.Movement==0x05&&CarState.CarStop==newCanvas.carArray[e.CarId].getRealState())
-                    {
-                        byte[] controlCommand = new byte[7] {(byte)0x68, (byte)0x55, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
-                        controlCommand[5] = (byte)e.CarId;
-                        controlCommand[6] = (byte)((0x55 + 0x01 + e.CarId) % 256);
-                        serialPort1.Write(controlCommand, 0, controlCommand.Length);
-                        //List<byte> command = new List<byte>(7);
-                        //command.Add(0x68);
-                        //command.Add(0x55);
-                        //command.Add(0x01);
-                        //command.Add(0x00);
-                        //command.Add(0x00);
-                        //command.Add((byte)e.CarId);
-                        //command.Add((byte)((0x55 + 0x01 + e.CarId)%256));
 
-                        //byte[] controlCommand = new byte[command.Count];
-                        //command.CopyTo(controlCommand);
-                        //for (int j = 0; j < controlCommand.Length; ++j)
-                        //{
-                        //    Console.Write(controlCommand[j] + " ");
-                        //}
-                        
-                    }
-                    else if (e.Movement == 0x04 && CarState.CarStop == newCanvas.carArray[e.CarId].getRealState())
-                    {
-                        byte[] controlCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
-                        controlCommand[5] = (byte)e.CarId;
-                        controlCommand[6] = (byte)((0x54 + 0x01 + e.CarId) % 256);
-                        serialPort1.Write(controlCommand, 0, controlCommand.Length);
-                        //List<byte> command = new List<byte>(7);
-                        //command.Add(0x68);
-                        //command.Add(0x54);
-                        //command.Add(0x01);
-                        //command.Add(0x00);
-                        //command.Add(0x00);
-                        //command.Add((byte)e.CarId);
-                        //command.Add((byte)((0x54 + 0x01 + e.CarId) % 256));
-
-                        //byte[] controlCommand = new byte[command.Count];
-                        //command.CopyTo(controlCommand);
-                        //for (int j = 0; j < controlCommand.Length; ++j)
-                        //{
-                        //    Console.Write(controlCommand[j] + " ");
-                        //}
-                        //serialPort1.Write(controlCommand, 0, controlCommand.Length);
-                    }
-
-                    //serialHander.accessRoadTable(e.CarId,startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
-                    break;
-                default:
-                    newCanvas.carArray[e.CarId].posCard = e.CardId;
-                    break;
+            if (e.Movement == 0x50 || e.Movement == 0x51 || e.Movement == 0x52)
+            {
+                newCanvas.carArray[e.CarId].posCard = e.CardId;
+                Thread.Sleep(10);
+                if (e != null && e.Movement!=0x53 && CarState.CarStop == newCanvas.carArray[e.CarId].getRealState())
+                {
+                    byte[] controlCommand = new byte[7] { (byte)0x68, (byte)0x53, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
+                    controlCommand[5] = (byte)e.CarId;
+                    controlCommand[6] = (byte)((0x55 + 0x01 + e.CarId) % 256);
+                    serialPort1.Write(controlCommand, 0, controlCommand.Length);//发命令停车
+                }
             }
+            else if (e.Movement == 0x53)
+            {
+                newCanvas.carArray[e.CarId].posCard = e.CardId;
+                Thread.Sleep(10);
+                if (e != null && e.Movement == 0x53 && CarState.CarStop != newCanvas.carArray[e.CarId].getRealState())
+                {
+                    byte[] controlCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
+                    controlCommand[5] = (byte)e.CarId;
+                    controlCommand[6] = (byte)((0x54 + 0x01 + e.CarId) % 256);//开车命令
+                    serialPort1.Write(controlCommand, 0, controlCommand.Length);
+                }
+            }
+            //switch(e.Movement){
+            //    case 7://卡位错误
+            //        if (e != null && ((e.CardId == 0) || (e.TargetCardId == 0) || (e.EndCardId == 0)))
+            //            break;
+            //        startStation = newCanvas.findStationByCardID(e.CardId);
+            //        targetStation = newCanvas.findStationByCardID(e.TargetCardId);
+            //        endStation = newCanvas.findStationByCardID(e.EndCardId);
+            //        if ((startStation == null) || (targetStation == null) || (endStation == null))
+            //        {
+            //            break;
+            //        }
+            //        newCanvas.carArray[e.CarId].posCard = e.CardId;
+            //        serialHander.accessRoadTable(e.CarId, startStation, targetStation, endStation, this.newCanvas.AdjList, this.serialPort1, this.newCanvas);
+            //        break;
+            //    case 5://运行状态（包括启动时刻）//第一次启动，只需发路由表，不用发启动命令
+            //        newCanvas.carArray[e.CarId].posCard = e.CardId;
+            //        if (e.CardId == e.TargetCardId)
+            //        {
+            //            newCanvas.carArray[e.CarId].WorkState = false;
+            //            return;
+            //        }
+            //        Thread.Sleep(10);
+            //        if (e != null && e.Movement == 0x05 && CarState.CarStop == newCanvas.carArray[e.CarId].getRealState())
+            //        {
+            //            byte[] controlCommand = new byte[7] { (byte)0x68, (byte)0x55, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
+            //            controlCommand[5] = (byte)e.CarId;
+            //            controlCommand[6] = (byte)((0x55 + 0x01 + e.CarId) % 256);
+            //            serialPort1.Write(controlCommand, 0, controlCommand.Length);//发命令停车
+            //        }
+            //        break;
+            //    case 4://工位停车（命令停车）
+            //        newCanvas.carArray[e.CarId].posCard = e.CardId;
+            //        if (e.CardId == e.TargetCardId)
+            //        {
+            //            newCanvas.carArray[e.CarId].WorkState = true;
+            //            return;
+            //        }
+            //        Thread.Sleep(10);
+            //        if (e!=null&&e.Movement == 0x04 && CarState.CarRun == newCanvas.carArray[e.CarId].getRealState())
+            //        {
+            //            byte[] controlCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
+            //            controlCommand[5] = (byte)e.CarId;
+            //            controlCommand[6] = (byte)((0x54 + 0x01 + e.CarId) % 256);//开车命令
+            //            serialPort1.Write(controlCommand, 0, controlCommand.Length);
+            //        }
+            //        break;
+            //    default:
+            //        newCanvas.carArray[e.CarId].posCard = e.CardId;
+            //        break;
+            //}
         }
         /// <summary>
         /// Clean up any resources being used.
@@ -390,7 +403,7 @@ namespace AGV
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1MinSize = 160;
-            this.splitContainer1.Size = new System.Drawing.Size(1264, 729);
+            this.splitContainer1.Size = new System.Drawing.Size(1264, 721);
             this.splitContainer1.SplitterDistance = 160;
             this.splitContainer1.TabIndex = 1;
             // 
@@ -507,7 +520,7 @@ namespace AGV
             this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1264, 729);
+            this.ClientSize = new System.Drawing.Size(1264, 721);
             this.Controls.Add(this.splitContainer1);
             this.Menu = this.mainMenu1;
             this.Name = "MainGUI";
@@ -664,7 +677,6 @@ namespace AGV
             }
         }
 
-
         public class RoadTableFrameHandler
         {
             private List<byte> serialBuf = new List<byte>();
@@ -685,19 +697,19 @@ namespace AGV
                         switch (list1[i].CarAction.Substring(list1[i].CarAction.Length - 1, 1))
                         {
                             case "L":
-                                command.Add((byte)01);
+                                command.Add((byte)(0x50));
                                 break;
                             case "R":
-                                command.Add((byte)02);
+                                command.Add((byte)(0x51));
                                 break;
                             case "S":
-                                command.Add((byte)03);
+                                command.Add((byte)(0x52));
                                 break;
                         }
                     }
                 }
                 command.Add((byte)canvas.StationDic[targetStation.Name].CardID);
-                command.Add((byte)04);
+                command.Add((byte)(0x53));
                 for (int i = 0; i < list2.Count; ++i)
                 {
                     if (list2[i].CarAction != null)
@@ -707,19 +719,19 @@ namespace AGV
                         switch (list2[i].CarAction.Substring(list2[i].CarAction.Length - 1, 1))
                         {
                             case "L":
-                                command.Add((byte)01);
+                                command.Add((byte)(0x50));
                                 break;
                             case "R":
-                                command.Add((byte)02);
+                                command.Add((byte)(0x51));
                                 break;
                             case "S":
-                                command.Add((byte)03);
+                                command.Add((byte)(0x52));
                                 break;
                         }
                     }
                 }
                 command.Add((byte)canvas.StationDic[startStation.Name].CardID);
-                command.Add((byte)04);
+                command.Add((byte)(0x53));
                 //for (int j = 0; j < command.Count; ++j)
                 //{
                 //    Console.Write(command[j] + " ");
@@ -788,6 +800,7 @@ namespace AGV
                         Console.Write(roadTable[j] + " ");
                     }
                     serialPort1.Write(roadTable, 0, roadTable.Length);
+                    byte[] startCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x02, (byte)0x00, (byte)0x00, (byte)0x06, (byte)0x5c };
                 }else if(command != null && 56 < command.Count && command.Count <= 84)
                 {
                     byte total = (byte)(command.Count >> 1);
@@ -870,19 +883,19 @@ namespace AGV
                         switch (list1[i].CarAction.Substring(list1[i].CarAction.Length - 1, 1))
                         {
                             case "L":
-                                command.Add((byte)01);
+                                command.Add((byte)(0x50));
                                 break;
                             case "R":
-                                command.Add((byte)02);
+                                command.Add((byte)(0x52));
                                 break;
                             case "S":
-                                command.Add((byte)03);
+                                command.Add((byte)(0x53));
                                 break;
                         }
                     }
                 }
                 command.Add((byte)canvas.StationDic[targetStation.Name].CardID);
-                command.Add((byte)04);
+                command.Add((byte)(0x53));
                 for (int i = 0; i < list2.Count; ++i)
                 {
                     if (list2[i].CarAction != null)
@@ -892,19 +905,19 @@ namespace AGV
                         switch (list2[i].CarAction.Substring(list2[i].CarAction.Length - 1, 1))
                         {
                             case "L":
-                                command.Add((byte)01);
+                                command.Add((byte)(0x50));
                                 break;
                             case "R":
-                                command.Add((byte)02);
+                                command.Add((byte)(0x51));
                                 break;
                             case "S":
-                                command.Add((byte)03);
+                                command.Add((byte)(0x52));
                                 break;
                         }
                     }
                 }
                 command.Add((byte)canvas.StationDic[endStation.Name].CardID);
-                command.Add((byte)04);
+                command.Add((byte)(0x53));
                 //for (int j = 0; j < command.Count; ++j)
                 //{
                 //    Console.Write(command[j] + " ");
@@ -973,6 +986,7 @@ namespace AGV
                         Console.Write(roadTable[j] + " ");
                     }
                     serialPort1.Write(roadTable, 0, roadTable.Length);
+                    
                 }
                 else if (command != null && 56 < command.Count && command.Count <= 84)
                 {

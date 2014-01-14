@@ -54,6 +54,7 @@ namespace AGV
         public delegate void CarPosEventHandler(object sender, CarEventArgs e);
         public event CarPosEventHandler carPosEvent;
         public Station lastStation = null;
+        private bool workState = false;
         public byte posCard;
         public void permitPass()
         {
@@ -68,6 +69,15 @@ namespace AGV
             {
                 realState = CarState.CarStop;
             }
+        }
+        public bool WorkState
+        {
+           get {return workState;}
+            set { workState = value; }
+        }
+        public CarState RealState
+        {
+            set { realState = value; }
         }
         public CarState getRealState()
         {

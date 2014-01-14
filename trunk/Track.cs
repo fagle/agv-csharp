@@ -1339,6 +1339,8 @@ namespace AGV
 
     public class CarStateReportEventArgs 
     {
+        private byte error;
+        private byte type;
         private byte carid;
         private byte cardid;
         private byte targetCardId;
@@ -1347,22 +1349,26 @@ namespace AGV
         private byte movement;
         private byte step;
         private byte taskLen;
-        public CarStateReportEventArgs(byte carid, byte cardid, byte targetCardId, byte endCardId, byte obstacle, 
-            byte movement, byte step, byte taskLen) 
+        public CarStateReportEventArgs(byte carid, byte cardid, byte type, byte movement, byte obstacle,
+            byte step,byte taskLen, byte error, byte targetCardId, byte endCardId) 
         {
             this.carid = carid;
             this.cardid = cardid;
+            this.type = type;
+            this.movement = movement;
             if (obstacle > 0)
                 this.obstacle = true;
             else
                 this.obstacle = false;
-            this.targetCardId = targetCardId;
-            this.endCardId = endCardId;
-            this.movement = movement;
             this.step = step;
             this.taskLen = taskLen;
+            this.error = error;
+            this.targetCardId = targetCardId;
+            this.endCardId = endCardId;     
         }
-
+        public byte Type {
+            get { return type; }        
+        }
         public byte CarId{
             get { return carid;}
         }
@@ -1410,7 +1416,7 @@ namespace AGV
 
     public class SerialHandler
     {
-        private List<byte> serialBuf = new List<byte>(20);
+        private List<byte> serialBuf = new List<byte>(100);
         private RemoteCallEventArgs callEventArgs = null;
         private CarStateReportEventArgs stateReportEventArgs = null;
         public delegate void CarSateReportEventHandler(object sender, CarStateReportEventArgs e);
@@ -1420,6 +1426,7 @@ namespace AGV
         public void handleOneByte(byte b)
         {
             serialBuf.Add(b);
+
             if (serialBuf[0] != 0x68)
                 serialBuf.RemoveAt(0);
             if (serialBuf.Count < 8)
@@ -1432,15 +1439,15 @@ namespace AGV
                 {
                     callEventArgs = new RemoteCallEventArgs(serialBuf[5], serialBuf[6]);
                 }
-            }            
+            }
             else if (serialBuf[1] == 0xE3)//状态上报
             {
-                if (serialBuf.Count < 14)
+                if (serialBuf.Count < 20)
                     return;
-                else if (serialBuf.Count == 14)
+                else if (serialBuf.Count == 20)
                 {
-                    stateReportEventArgs = new CarStateReportEventArgs(serialBuf[5],serialBuf[6],serialBuf[7],
-                        serialBuf[8],serialBuf[9],serialBuf[10],serialBuf[11],serialBuf[12]);
+                    stateReportEventArgs = new CarStateReportEventArgs(serialBuf[5], serialBuf[6], serialBuf[7],
+                        serialBuf[8], serialBuf[9], serialBuf[10], serialBuf[11], serialBuf[12],serialBuf[13], serialBuf[14]);
                 }
             }
 
@@ -1456,16 +1463,16 @@ namespace AGV
                     carStateReportEvent(this, stateReportEventArgs);
                     serialBuf.Clear();
                 }
-                else 
+                else
                     serialBuf.RemoveAt(0);
-                
+
             }
             catch (Exception x)
             {
                 Console.WriteLine(x.Message);
             }
 
-        }
+         }
     }
 
    

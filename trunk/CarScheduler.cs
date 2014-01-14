@@ -9,7 +9,7 @@ namespace AGV
     public class CarScheduler
     {
         private CarTask carTask;
-        private Queue<CarTask> [] carTaskQueues = new Queue<CarTask>[5];
+        private Queue<CarTask> [] carTaskQueues = new Queue<CarTask>[9];
         private byte callStyle = 0;
         private List<Car> carsRun = new List<Car>(20);
         private Track trackTogo = new Track();
@@ -17,7 +17,7 @@ namespace AGV
         private Queue<Car> redCarQueue = new Queue<Car>(20);
         private Queue<Car> pinkCarQueue = new Queue<Car>(20);
         private Queue<Car> goldCarQueue = new Queue<Car>(20);
-        private Queue<Car>[] carQueues = new Queue<Car>[5];       
+        private Queue<Car>[] carQueues = new Queue<Car>[9];       
         private Thread thread ;
         private bool onLine = false;
         private Station targetStation = null, gStartStation = null, rStartStation = null, pStartStation = null, goStartStation = null;
@@ -38,29 +38,29 @@ namespace AGV
             stationDic = sDic;
             trackDic = tDic;
             adjList = adj;
-            gStartStation = stationDic["F29"];
+            gStartStation = stationDic["F28"];
             stationList1 = new List<Station>(8);
-            stationList1.Add(stationDic["F29"]);
+            stationList1.Add(stationDic["F28"]);
 
-            rStartStation = stationDic["S2"];
+            rStartStation = stationDic["F29"];
             stationList2 = new List<Station>(8);
-            stationList2.Add(stationDic["S2"]);
+            stationList2.Add(stationDic["F29"]);
 
-            pStartStation = stationDic["S3"];
+            pStartStation = stationDic["F30"];
             stationList3 = new List<Station>(8);
-            stationList3.Add(stationDic["S3"]);
+            stationList3.Add(stationDic["F30"]);
 
-            goStartStation = stationDic["S10"];
+            goStartStation = stationDic["F31"];
             stationList4 = new List<Station>(8);
-            stationList4.Add(stationDic["S10"]);
-            carQueues[1] = greenCarQueue;
-            carQueues[2] = redCarQueue;
-            carQueues[3] = pinkCarQueue;
-            carQueues[4] = goldCarQueue;
-            carTaskQueues[1] = new Queue<CarTask>(10);
-            carTaskQueues[2] = new Queue<CarTask>(10);
-            carTaskQueues[3] = new Queue<CarTask>(10);
-            carTaskQueues[4] = new Queue<CarTask>(10);            
+            stationList4.Add(stationDic["F31"]);
+            carQueues[5] = greenCarQueue;
+            carQueues[6] = redCarQueue;
+            carQueues[7] = pinkCarQueue;
+            carQueues[8] = goldCarQueue;
+            carTaskQueues[5] = new Queue<CarTask>(10);
+            carTaskQueues[6] = new Queue<CarTask>(10);
+            carTaskQueues[7] = new Queue<CarTask>(10);
+            carTaskQueues[8] = new Queue<CarTask>(10);            
         }
 
         public Station GStartStation
@@ -122,17 +122,17 @@ namespace AGV
         {            
             switch (carType)
             {
-                case 1:
-                    carTask = new CarTask(stationDic["F29"], targetStation, stationDic["F29"], carType);                    
+                case 5:
+                    carTask = new CarTask(stationDic["F28"], targetStation, stationDic["F28"], carType);                    
                     break;
-                case 2:
-                    carTask = new CarTask(stationDic["S2"], targetStation, stationDic["S2"], carType);
+                case 6:
+                    carTask = new CarTask(stationDic["F29"], targetStation, stationDic["F29"], carType);
                     break;
-                case 3:
-                    carTask = new CarTask(stationDic["S3"], targetStation, stationDic["S3"], carType);
+                case 7:
+                    carTask = new CarTask(stationDic["F30"], targetStation, stationDic["F30"], carType);
                     break;
-                case 4:
-                    carTask = new CarTask(stationDic["S10"], targetStation, stationDic["S10"], carType);
+                case 8:
+                    carTask = new CarTask(stationDic["F31"], targetStation, stationDic["F31"], carType);
                     break;
             }
             if (carTask != null )
@@ -186,7 +186,7 @@ namespace AGV
             //serialHander.serialEvent += serialHander.accessRoadTable;
             while (onLine)
             {
-                for (int i = 1; i <= 4; i++)
+                for (int i = 5; i <= 8; i++)
                 {
                     if (carTaskQueues[i].Count > 0)
                     {
@@ -217,13 +217,13 @@ namespace AGV
             
             List<Track> list1 = adjList.FindWay(adjList.Find(carTask.StartStation), adjList.Find(carTask.TargetStation));
             List<Track> list2 = adjList.FindWay(adjList.Find(carTask.TargetStation), adjList.Find(carTask.EndStation));
-            for (i = 0; i < list1.Count; ++i)
-            {
-                if (list1[i].CarAction != null)
-                {
-                    string station = list1[i].CarAction.Substring(0, 1);
-                }
-            }
+            //for (i = 0; i < list1.Count; ++i)
+            //{
+            //    if (list1[i].CarAction != null)
+            //    {
+            //        string station = list1[i].CarAction.Substring(0, 1);
+            //    }
+            //}
             Car car = null;
             if (carQueue.Count > 0)
             {
@@ -233,7 +233,7 @@ namespace AGV
                 return;
             
             carTask.StartStation.OccupiedCar = null;
-            
+            //car.WorkState = true;
             for (i=0;i<list1.Count;i++)
             {
                 Track t = list1[i];
@@ -241,7 +241,7 @@ namespace AGV
                 {                    
                     mutexStationTarget.WaitOne();
                     
-                    if (stationDic[t.StartStation].CardID == car.posCard)
+                    if (stationDic[t.StartStation].CardID == car.posCard||0==i)
                     {
                         if (stationDic[t.EndStation].targeted == false)
                         {
@@ -265,8 +265,14 @@ namespace AGV
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
                 car.run(trackTogo);
                 
-            }                                 
-            Thread.Sleep(3000);                    
+            }
+            car.RealState = CarState.CarStop;
+            Thread.Sleep(200);
+            while (car.WorkState)
+            {
+                Thread.Sleep(200);
+            }
+                  
             for (i = 0; i < list2.Count; i++)
             {
                 Track t = list2[i];
@@ -315,6 +321,7 @@ namespace AGV
         private Station targetStation;
         private Station endStation;
         private byte carType;
+
         public CarTask(Station startStation, Station targetStation, Station endStation, byte carType)
         {
             this.startStation = startStation;
@@ -322,22 +329,27 @@ namespace AGV
             this.endStation = endStation;
             this.carType = carType;            
         }
+
         public Station StartStation
         {
             get{return startStation;}
         }
+
         public Station TargetStation
         {
             get { return targetStation; }
         }
+
         public Station EndStation
         {
             get { return endStation; }
         }
+
         public byte CarType
         {
             get { return carType; }
         }
+
         public override bool Equals(object obj)
         {
             CarTask task = (CarTask)obj;
