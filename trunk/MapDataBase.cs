@@ -32,6 +32,22 @@ namespace AGV
             dir += "\\Demo.db3";
             return new SQLiteDBHelper(dir);
         }
+
+        public List<CarInit> readCar()
+        {
+            List<CarInit> init = new List<CarInit>(1);
+            SQLiteDBHelper db = getDataBase();
+            string str = "select * from carInit";
+            using (SQLiteDataReader reader = db.ExecuteReader(str, null))
+            {
+                while (reader.Read())
+                {
+                    init.Add(new CarInit(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4)));
+                }
+            }
+            return init;
+        }
+
         public void addMapToDataBase()
         {/*
             string sql = "INSERT INTO mapTable(mapName,user,passwd,modifiedTime)values(@mapName,@user,@passwd,@modifiedTime)";

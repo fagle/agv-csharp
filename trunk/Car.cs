@@ -40,6 +40,24 @@ namespace AGV
         CarStop,CarRun
     }
 
+    public class CarInit
+    {
+        public string carName;
+        public string carNumber;
+        public string carStation;
+        public string carID;
+        public string carColor;
+
+        public CarInit(string s1, string s2, string s3, string s4, string s5)
+        {
+            carName = s1;
+            carNumber = s2;
+            carStation = s3;
+            carID = s4;
+            carColor = s5;
+        }
+    }
+
     public class Car
     {
         private string name;
