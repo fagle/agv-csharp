@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.IO.Ports;
 
 namespace AGV
 {    
     public class CarScheduler
     {
+        private Dictionary<byte, byte> mappingRoute = new Dictionary<byte, byte>(100);
+        private Dictionary<byte,byte> carIDMappingTasklen = new Dictionary<byte,byte>(100);
+        private SerialPort sp = new SerialPort();
         private CarTask carTask;
         private Queue<CarTask> [] carTaskQueues = new Queue<CarTask>[9];
         private byte callStyle = 0;
@@ -31,6 +35,16 @@ namespace AGV
         {
             set { trackTogo = value; }
             get { return trackTogo; }
+        }
+
+        public SerialPort SP {
+            get { return sp; }
+        }
+
+        public Dictionary<byte, byte> MappingRoute
+        {
+            set { mappingRoute = value; }
+            get { return mappingRoute; }
         }
 
         public CarScheduler(Dictionary<string, Station> sDic,Dictionary<string, Track>tDic, AdjacencyList adj) 
@@ -136,9 +150,22 @@ namespace AGV
                     break;
             }
             if (carTask != null )
-                if(carTaskQueues[carType].Count==0)
+                if (carTaskQueues[carType].Count == 0)
+                {
                     carTaskQueues[carType].Enqueue(carTask);
-                else if ( !carTaskQueues[carType].Contains(carTask) )
+                    if (carQueues[carTaskQueues[carType].First().CarType].Count > 0)
+                    {
+                        MainGUI.RoadTableFrameHandler serialHander = new MainGUI.RoadTableFrameHandler();
+                        if (carQueues[carTaskQueues[carType].First().CarType].First() != null)
+                        {
+                            byte taskLen = serialHander.planRoadTable(mappingRoute,carQueues[carTaskQueues[carType].First().CarType].First().CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
+                            //byte carID = carQueues[carTaskQueues[carType].First().CarType].First().CarID;
+                            //this.mappingRoute.Add(carQueues[carTaskQueues[carType].First().CarType].First().CarID,taskLen);
+                            //byte carID = carQueues[carTaskQueues[carType].First().CarType].Peek().CarID;
+                        }
+                    }
+                }
+                else if (!carTaskQueues[carType].Contains(carTask))
                 {
                     carTaskQueues[carType].Enqueue(carTask);
                 }
@@ -216,14 +243,8 @@ namespace AGV
             }
             
             List<Track> list1 = adjList.FindWay(adjList.Find(carTask.StartStation), adjList.Find(carTask.TargetStation));
-            List<Track> list2 = adjList.FindWay(adjList.Find(carTask.TargetStation), adjList.Find(carTask.EndStation));
-            //for (i = 0; i < list1.Count; ++i)
-            //{
-            //    if (list1[i].CarAction != null)
-            //    {
-            //        string station = list1[i].CarAction.Substring(0, 1);
-            //    }
-            //}
+            List<Track> list2 = adjList.FindWay(adjList.Find(carTask.TargetStation), adjList.Find(stationDic["F32"]));
+            List<Track> list3 = adjList.FindWay(adjList.Find(stationDic["F32"]), adjList.Find(carTask.EndStation));
             Car car = null;
             if (carQueue.Count > 0)
             {
@@ -233,12 +254,18 @@ namespace AGV
                 return;
             
             carTask.StartStation.OccupiedCar = null;
-            //car.WorkState = true;
+
+            while (car.WorkState)
+            {
+                Thread.Sleep(200);
+            }
+
             for (i=0;i<list1.Count;i++)
             {
                 Track t = list1[i];
                 while (true)
-                {                    
+                {
+                    Thread.Sleep(2000);
                     mutexStationTarget.WaitOne();
                     
                     if (stationDic[t.StartStation].CardID == car.posCard||0==i)
@@ -268,6 +295,7 @@ namespace AGV
             }
             car.RealState = CarState.CarStop;
             Thread.Sleep(200);
+            car.WorkState = true;
             while (car.WorkState)
             {
                 Thread.Sleep(200);
@@ -302,9 +330,49 @@ namespace AGV
                 trackTogo.clear();
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
                 car.run(trackTogo);                
+            }
+
+            car.RealState = CarState.CarStop;
+            Thread.Sleep(200);
+            car.WorkState = true;
+            while (car.WorkState)
+            {
+                Thread.Sleep(200);
+            }
+
+            for (i = 0; i < list3.Count; i++)
+            {
+                Track t = list3[i];
+                while (true)
+                {
+                    mutexStationTarget.WaitOne();
+                    if (stationDic[t.StartStation].CardID == car.posCard)
+                    {
+                        if (stationDic[t.EndStation].targeted == false)
+                        {
+                            stationDic[t.EndStation].targeted = true;
+                            car.permitPass();
+                            if (car.lastStation != null)
+                                car.lastStation.targeted = false;
+                            car.lastStation = stationDic[t.EndStation];
+                            mutexStationTarget.ReleaseMutex();
+                            break;
+                        }
+                        else
+                        {
+                            car.forbidPass();
+                        }
+                    }
+                    mutexStationTarget.ReleaseMutex();
+                    Thread.Sleep(200);
+                }
+                trackTogo.clear();
+                trackTogo.TrackPointList.AddRange(t.TrackPointList);
+                car.run(trackTogo);
             }            
             carTask.EndStation.OccupiedCar = car;
             carQueue.Enqueue(car);
+            mappingRoute.Remove(car.CarID);
         }  
         
         public void stop()

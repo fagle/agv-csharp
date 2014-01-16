@@ -234,7 +234,6 @@ namespace AGV
 
         private void btnClicked(object sender, EventArgs e)
         {
-            
             Button fromButton = (Button)sender;
             string name = fromButton.Name;
             scheduler.TargetStation = stationDic[name];

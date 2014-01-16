@@ -72,7 +72,7 @@ namespace AGV
         public delegate void CarPosEventHandler(object sender, CarEventArgs e);
         public event CarPosEventHandler carPosEvent;
         public Station lastStation = null;
-        private bool workState = false;
+        private bool workState = true;
         public byte posCard;
         public void permitPass()
         {
