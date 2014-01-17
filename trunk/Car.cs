@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO.Ports;
 
 namespace AGV
 {
@@ -75,18 +76,26 @@ namespace AGV
         public Station lastStation = null;
         private bool workState = true;
         public byte posCard;
-        public void permitPass()
+        public void permitPass(SerialPort com)
         {
             if (realState == CarState.CarStop)
             {
                 realState = CarState.CarRun;
+                byte[] command = new byte[7] { (byte)0x68, (byte)0x54, (byte)1, (byte)0, (byte)0, (byte)0, (byte)0 };
+                command[5] = this.carID;
+                command[6] = (byte)((85 + this.carID) % 256);
+                com.Write(command, 0, 7);//允许开车                
             }
         }
-        public void forbidPass()
+        public void forbidPass(SerialPort com)
         {
             if (realState == CarState.CarRun)
             {
                 realState = CarState.CarStop;
+                byte[] command = new byte[7] { (byte)0x68, (byte)0x55, (byte)1, (byte)0, (byte)0, (byte)0, (byte)0 };
+                command[5] = this.carID;
+                command[6] = (byte)((86 + this.carID) % 256);
+                com.Write(command, 0, 7);//禁止开车               
             }
         }
         public Station TargetStation

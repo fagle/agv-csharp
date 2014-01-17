@@ -275,7 +275,7 @@ namespace AGV
                         if (stationDic[t.EndStation].targeted == false)
                         {
                             stationDic[t.EndStation].targeted = true;
-                            car.permitPass();
+                            car.permitPass(sp);
                             if (car.lastStation != null)
                                 car.lastStation.targeted = false;
                             car.lastStation = stationDic[t.EndStation];
@@ -284,7 +284,7 @@ namespace AGV
                         }
                         else
                         {
-                            car.forbidPass();
+                            car.forbidPass(sp);
                         }
                     }                    
                     mutexStationTarget.ReleaseMutex();
@@ -314,7 +314,7 @@ namespace AGV
                         if (stationDic[t.EndStation].targeted == false)
                         {
                             stationDic[t.EndStation].targeted = true;
-                            car.permitPass();
+                            car.permitPass(sp);
                             if (car.lastStation != null)
                                 car.lastStation.targeted = false;
                             car.lastStation = stationDic[t.EndStation];
@@ -323,7 +323,7 @@ namespace AGV
                         }
                         else
                         {
-                            car.forbidPass();
+                            car.forbidPass(sp);
                         }
                     }
                     mutexStationTarget.ReleaseMutex();
