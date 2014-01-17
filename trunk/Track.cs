@@ -1433,7 +1433,7 @@ namespace AGV
                 return;
             callEventArgs = null;
             stateReportEventArgs = null;
-            if (serialBuf[1] == 0xE5)//呼叫器呼叫
+            if (serialBuf[1] == 0xE5 && serialBuf.Count == 8)//呼叫器呼叫
             {
                 if (serialBuf != null)
                 {

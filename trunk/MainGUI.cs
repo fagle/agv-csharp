@@ -122,6 +122,7 @@ namespace AGV
                     {
                         byte b = (byte)this.newCanvas.Scheduler.SP.ReadByte();
                         writeLine(b);
+                        Console.WriteLine("================");
                         Console.Write((char)b);
                         serialHander.handleOneByte(b);                        
                     }
@@ -202,7 +203,7 @@ namespace AGV
             {
                 if (e.CardId != 0 && e.TaskLen != 0)
                 {
-                    if (this.newCanvas.Scheduler.MappingRoute[e.CarId] == e.TaskLen)
+                    if (this.newCanvas.Scheduler.MappingRoute != null && this.newCanvas.Scheduler.MappingRoute.Count!=0&&this.newCanvas.Scheduler.MappingRoute[e.CarId] == e.TaskLen)
                     {
                         if (flag)
                         {
@@ -210,15 +211,16 @@ namespace AGV
                             command[5] = e.CarId;
                             command[6] = (byte)((85 + e.CarId) % 256);
                             this.newCanvas.Scheduler.SP.Write(command, 0, 7);//初始化开车
-                            flag = false;
+                            //flag = false;
                             newCanvas.carArray[e.CarId].WorkState = false;
+                            this.newCanvas.Scheduler.MappingRoute.Remove(e.CarId);
                             return;
                         }
                     }
-                    else
-                        return;
+                    //else
+                        //return;
                 }
-                if (e.TargetCardId == e.CardId && e.Movement != 0x53)
+                if (newCanvas.carArray[e.CarId].TargetStation.CardID == e.CardId && e.Movement != 0x53)
                 {
                     newCanvas.carArray[e.CarId].WorkState = false;
                     return;
@@ -254,8 +256,8 @@ namespace AGV
                 }
                 else if (e.Step == 0 && e.TaskLen != 0)
                 {
-                    byte[] startCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x02, (byte)0x00, (byte)0x00, (byte)0x06, (byte)0x5c };
-                    serialPort1.Write(startCommand, 0, startCommand.Length);
+                    //byte[] startCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x02, (byte)0x00, (byte)0x00, (byte)0x06, (byte)0x5c };
+                    //serialPort1.Write(startCommand, 0, startCommand.Length);
                 }
             }
             
@@ -764,7 +766,7 @@ namespace AGV
                 }
                 command.Add((byte)stationDic["F32"].CardID);
                 command.Add((byte)(0x53));
-                for (int i = 0; i < list3.Count; ++i)
+                for (int i = 1; i < list3.Count; ++i)
                 {
                     if (list3[i].CarAction != null)
                     {
@@ -801,10 +803,10 @@ namespace AGV
                     command.Insert(0, (byte)0x68);
                     byte[] roadTable = new byte[command.Count];
                     command.CopyTo(roadTable);
-                    for (int j = 0; j < roadTable.Length; ++j)
-                    {
-                        Console.Write(roadTable[j] + " ");
-                    }
+                    //for (int j = 0; j < roadTable.Length; ++j)
+                    //{
+                    //    Console.Write(roadTable[j] + " ");
+                    //}
                     sp.Write(roadTable, 0, roadTable.Length);
                     mappingRoute.Add(carID, CardCount);
                     return CardCount;
@@ -826,11 +828,11 @@ namespace AGV
                     byte[] roadTable = new byte[30];
                     command.CopyTo(0, roadTable, 0, 29);
                     roadTable[29] = csum;
-                    for (int j = 0; j < 30; ++j)
-                    {
-                        Console.Write(roadTable[j] + " ");
-                    }
-                    Console.WriteLine();
+                    //for (int j = 0; j < 30; ++j)
+                    //{
+                    //    Console.Write(roadTable[j] + " ");
+                    //}
+                    //Console.WriteLine();
                     sp.Write(roadTable, 0, 30);
                     Thread.Sleep(5000);
                     command.RemoveRange(0, 29);
@@ -847,10 +849,10 @@ namespace AGV
                     command.Insert(0, (byte)0x68);
                     roadTable = new byte[command.Count];
                     command.CopyTo(roadTable);
-                    for (int j = 0; j < roadTable.Length; ++j)
-                    {
-                        Console.Write(roadTable[j] + " ");
-                    }
+                    //for (int j = 0; j < roadTable.Length; ++j)
+                    //{
+                    //    Console.Write(roadTable[j] + " ");
+                    //}
                     sp.Write(roadTable, 0, roadTable.Length);
                     mappingRoute.Add(carID, total);
                     return total;

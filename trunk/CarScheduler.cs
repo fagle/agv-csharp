@@ -252,7 +252,8 @@ namespace AGV
             }
             else
                 return;
-            
+
+            car.TargetStation = carTask.TargetStation;
             carTask.StartStation.OccupiedCar = null;
 
             while (car.WorkState)
@@ -369,10 +370,14 @@ namespace AGV
                 trackTogo.clear();
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
                 car.run(trackTogo);
-            }            
+            }
+//            mappingRoute.Remove(car.CarID);
+            car.WorkState = true;
+            car.RealState = CarState.CarStop;
+            car.TargetStation = null;
             carTask.EndStation.OccupiedCar = car;
             carQueue.Enqueue(car);
-            mappingRoute.Remove(car.CarID);
+           
         }  
         
         public void stop()

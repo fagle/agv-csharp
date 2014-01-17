@@ -66,12 +66,12 @@ namespace AGV
 
         private Rectangle highlightedRegion = new Rectangle(0, 0, 0, 0);
 
-        private List<CarInit> inlist;
-        //private Car car1, car2, car3, car4, car5;
+        //private List<CarInit> inlist;
+        private Car car1, car2, car3, car4, car5;
         public Car[] carArray = new Car[9];
         private int canvasHeight = 600;
         private int canvasWidth = 1280;
-        public List<Car> carlist;
+        //public List<Car> carlist;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -116,71 +116,27 @@ namespace AGV
             mapDB.loadStationsFromDB(stationDic);
             mapDB.loadPathsFromDB(trackDic);
             adjList = new AdjacencyList(100,trackDic);
-            loadStations();           
-            
-            //readCar();
-            inlist = mapDB.readCar();
-            carlist = new List<Car>(1);
-            foreach (CarInit s in inlist)
-            {
-                switch (s.carColor)
-                {
-                    case "green":
-                        carColor = System.Drawing.Color.Green;
-                        break;
-                    case "red":
-                        carColor = System.Drawing.Color.Red;
-                        break;
-                    case "pink":
-                        carColor = System.Drawing.Color.Pink;
-                        break;
-                    case "gold":
-                        carColor = System.Drawing.Color.Gold;
-                        break;
-                }
-                carlist.Add(creatCar(s.carName, s.carNumber, s.carStation, carColor, Convert.ToByte(s.carID)));
-            }
-            for (int i = 0; i < carlist.Count; i++)
-            {
-                stationDic[inlist[i].carStation].OccupiedCar = carlist[i];
-            }
-//             car1 = creatCar("Car1", "1", "F28", System.Drawing.Color.Green, 5);
-//             car2 = creatCar("Car2", "2", "F29", System.Drawing.Color.Red, 6);
-//             car3 = creatCar("Car3", "3", "F30", System.Drawing.Color.Pink, 7);
-//             car4 = creatCar("Car4", "4", "F31", System.Drawing.Color.Gold, 8);
-            carArray[5] = carlist[0];//car1;
-            carArray[6] = carlist[1]; //car2;
-            carArray[7] = carlist[2]; //car3;
-            carArray[8] = carlist[3]; //car4;
+            loadStations();
 
-//             stationDic["F28"].OccupiedCar = car1;
-//             stationDic["F29"].OccupiedCar = car2;
-//             stationDic["F30"].OccupiedCar = car3;
-//             stationDic["F31"].OccupiedCar = car4;
-            scheduler = new CarScheduler(stationDic,trackDic,adjList);
-//             scheduler.addGreenCar(car1);
-//             scheduler.addRedCar(car2);
-//             scheduler.addPinkCar(car3);
-//             scheduler.addGoldCar(car4);
-            for (int i = 0; i < inlist.Count; i++)
-            {
-                switch (inlist[i].carColor)
-                {
-                    case "green":
-                        scheduler.addGreenCar(carlist[i]);
-                        break;
-                    case "red":
-                        scheduler.addRedCar(carlist[i]);
-                        break;
-                    case "pink":
-                        scheduler.addPinkCar(carlist[i]);
-                        break;
-                    case "gold":
-                        scheduler.addGoldCar(carlist[i]);
-                        break;
-                }
-            }
-            
+            car1 = creatCar("Car1", "1", "F28", System.Drawing.Color.Green, 5);
+            car2 = creatCar("Car2", "2", "F29", System.Drawing.Color.Red, 6);
+            car3 = creatCar("Car3", "3", "F30", System.Drawing.Color.Pink, 7);
+            car4 = creatCar("Car4", "4", "F31", System.Drawing.Color.Gold, 8);
+            carArray[5] = car1;
+            carArray[6] = car2;
+            carArray[7] = car3;
+            carArray[8] = car4;
+
+            stationDic["F28"].OccupiedCar = car1;
+            stationDic["F29"].OccupiedCar = car2;
+            stationDic["F30"].OccupiedCar = car3;
+            stationDic["F31"].OccupiedCar = car4;
+            scheduler = new CarScheduler(stationDic, trackDic, adjList);
+            scheduler.addGreenCar(car1);
+            scheduler.addRedCar(car2);
+            scheduler.addPinkCar(car3);
+            scheduler.addGoldCar(car4);
+
             scheduler.run();
 		}
 
@@ -1416,10 +1372,10 @@ namespace AGV
                     // ´¦Àí´úÂë
                     break;
                 case Keys.Up:
-                    carlist[0].Speed++;
+                    //carlist[0].Speed++;
                     break;
                 case Keys.Down:
-                    carlist[0].Speed--;
+                    //carlist[0].Speed--;
                     break;
                 case Keys.Shift | Keys.ShiftKey:
                     multipleSelect = true;

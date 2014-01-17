@@ -60,6 +60,7 @@ namespace AGV
 
     public class Car
     {
+        private Station targetStation;
         private string name;
         private int speed = 0;
         private int defaultSpeed = 90;
@@ -87,6 +88,11 @@ namespace AGV
             {
                 realState = CarState.CarStop;
             }
+        }
+        public Station TargetStation
+        {
+            set { targetStation = value; }
+            get { return targetStation; }
         }
         public bool WorkState
         {
