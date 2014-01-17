@@ -38,7 +38,7 @@ namespace AGV
 		private double scaleY = 1;
 		private double mainScale = 1;
         private double importScale = 0.04;
-        private bool editMode = true;
+        private bool editMode = false;
 
 		private Point aPoint;
 		//private bool sizeChanged = false;
@@ -67,8 +67,8 @@ namespace AGV
         private Rectangle highlightedRegion = new Rectangle(0, 0, 0, 0);
 
         //private List<CarInit> inlist;
-        private Car car1, car2, car3, car4, car5;
-        public Car[] carArray = new Car[9];
+        private Car car1, car2, car3, car4, car5,car201,car202;
+        public Car[] carArray = new Car[250];
         private int canvasHeight = 600;
         private int canvasWidth = 1280;
         //public List<Car> carlist;
@@ -118,22 +118,22 @@ namespace AGV
             adjList = new AdjacencyList(100,trackDic);
             loadStations();
 
-            car1 = creatCar("Car1", "1", "F28", System.Drawing.Color.Green, 5);
-            car2 = creatCar("Car2", "2", "F29", System.Drawing.Color.Red, 6);
+            car201 = creatCar("Car1", "1", "F28", System.Drawing.Color.Green, 201);
+            car202 = creatCar("Car2", "2", "F29", System.Drawing.Color.Red, 202);
             car3 = creatCar("Car3", "3", "F30", System.Drawing.Color.Pink, 7);
             car4 = creatCar("Car4", "4", "F31", System.Drawing.Color.Gold, 8);
-            carArray[5] = car1;
-            carArray[6] = car2;
+            carArray[201] = car201;
+            carArray[202] = car202;
             carArray[7] = car3;
             carArray[8] = car4;
 
-            stationDic["F28"].OccupiedCar = car1;
-            stationDic["F29"].OccupiedCar = car2;
+            stationDic["F28"].OccupiedCar = car201;
+            stationDic["F29"].OccupiedCar = car202;
             stationDic["F30"].OccupiedCar = car3;
             stationDic["F31"].OccupiedCar = car4;
             scheduler = new CarScheduler(stationDic, trackDic, adjList);
-            scheduler.addGreenCar(car1);
-            scheduler.addRedCar(car2);
+            scheduler.addGreenCar(car201);
+            scheduler.addRedCar(car202);
             scheduler.addPinkCar(car3);
             scheduler.addGoldCar(car4);
 

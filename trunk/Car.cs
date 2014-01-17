@@ -185,8 +185,8 @@ namespace AGV
                 setPosition(p);
                 if (this.speed == 0)
                     break;
-                else
-                    Thread.Sleep(1000 - 900 - this.speed);
+                else ;
+                    //Thread.Sleep(1000 - 900 - this.speed);
                 if (trackToGo.TrackPointList.Count == 0)
                     break;
             }

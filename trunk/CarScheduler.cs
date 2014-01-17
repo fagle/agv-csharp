@@ -82,6 +82,7 @@ namespace AGV
             get { return gStartStation; }
         }
 
+
         public Station RStartStation
         {
             get { return rStartStation; }
@@ -266,7 +267,7 @@ namespace AGV
                 Track t = list1[i];
                 while (true)
                 {
-                    Thread.Sleep(2000);
+                    //Thread.Sleep(2000);
                     mutexStationTarget.WaitOne();
                     
                     if (stationDic[t.StartStation].CardID == car.posCard||0==i)
