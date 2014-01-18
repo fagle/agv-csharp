@@ -286,7 +286,12 @@ namespace AGV
                         {
                             car.forbidPass(sp);
                         }
-                    }                    
+                    }
+                    else if (stationDic[t.EndStation].CardID == car.posCard)
+                    {
+                        mutexStationTarget.ReleaseMutex();
+                        break;
+                    }
                     mutexStationTarget.ReleaseMutex();
                     Thread.Sleep(200);
                 }
@@ -326,6 +331,11 @@ namespace AGV
                             car.forbidPass(sp);
                         }
                     }
+                    else if (stationDic[t.EndStation].CardID == car.posCard)
+                    {
+                        mutexStationTarget.ReleaseMutex();
+                        break;
+                    }
                     mutexStationTarget.ReleaseMutex();
                     Thread.Sleep(200);
                 }
@@ -364,6 +374,11 @@ namespace AGV
                         {
                             car.forbidPass(sp);
                         }
+                    }
+                    else if (stationDic[t.EndStation].CardID == car.posCard)
+                    {
+                        mutexStationTarget.ReleaseMutex();
+                        break;
                     }
                     mutexStationTarget.ReleaseMutex();
                     Thread.Sleep(200);
