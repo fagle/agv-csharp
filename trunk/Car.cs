@@ -76,6 +76,15 @@ namespace AGV
         public Station lastStation = null;
         private bool workState = true;
         public byte posCard;
+        public byte taskLen = 0;
+        public byte remoteTaskLen = 0;
+        public bool remoteReady()
+        {
+            if (taskLen == remoteTaskLen && remoteTaskLen != 0)
+                return true;
+            else
+                return false;
+        }
         public void permitPass(SerialPort com)
         {
             if (realState == CarState.CarStop)

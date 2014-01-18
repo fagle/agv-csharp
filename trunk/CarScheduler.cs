@@ -267,6 +267,11 @@ namespace AGV
                 Thread.Sleep(200);
             }
 
+            while (!car.remoteReady())
+            {
+                Thread.Sleep(200);
+            }
+
             for (i=0;i<list1.Count;i++)
             {
                 Track t = list1[i];
