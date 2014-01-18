@@ -9,7 +9,6 @@ namespace AGV
 {    
     public class CarScheduler
     {
-        private Dictionary<byte, byte> mappingRoute = new Dictionary<byte, byte>(100);
         private Dictionary<byte,byte> carIDMappingTasklen = new Dictionary<byte,byte>(100);
         private SerialPort sp = new SerialPort();
         private CarTask carTask;
@@ -39,13 +38,7 @@ namespace AGV
 
         public SerialPort SP {
             get { return sp; }
-        }
-
-        public Dictionary<byte, byte> MappingRoute
-        {
-            set { mappingRoute = value; }
-            get { return mappingRoute; }
-        }
+        }       
 
         public CarScheduler(Dictionary<string, Station> sDic,Dictionary<string, Track>tDic, AdjacencyList adj) 
         {
@@ -153,26 +146,30 @@ namespace AGV
             if (carTask != null)
             {
                 mutexCar.WaitOne();
-                if (carTaskQueues[carType].Count == 0)
+                if (!carTaskQueues[carType].Contains(carTask))
                 {
-                    carTaskQueues[carType].Enqueue(carTask);
-                    if (carQueues[carTaskQueues[carType].First().CarType].Count > 0)
-                    {
-                        MainGUI.RoadTableFrameHandler serialHander = new MainGUI.RoadTableFrameHandler();
-                        if (carQueues[carTaskQueues[carType].First().CarType].First() != null)
-                        {
-                            byte taskLen = serialHander.planRoadTable(mappingRoute, carQueues[carTaskQueues[carType].First().CarType].First().CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
-                            //byte carID = carQueues[carTaskQueues[carType].First().CarType].First().CarID;
-                            //this.mappingRoute.Add(carQueues[carTaskQueues[carType].First().CarType].First().CarID,taskLen);
-                            //byte carID = carQueues[carTaskQueues[carType].First().CarType].Peek().CarID;
-                        }
-                    }
-                }
-                else if (!carTaskQueues[carType].Contains(carTask))
-                {
-                    carTaskQueues[carType].Enqueue(carTask);
+                    carTaskQueues[carType].Enqueue(carTask);                    
                 }
                 mutexCar.ReleaseMutex();
+                //mutexCar.WaitOne();
+                //if (carTaskQueues[carType].Count == 0)
+                //{
+                //    carTaskQueues[carType].Enqueue(carTask);
+                //    if (carQueues[carTaskQueues[carType].First().CarType].Count > 0)
+                //    {
+                //        MainGUI.RoadTableFrameHandler serialHander = new MainGUI.RoadTableFrameHandler();
+                //        if (carQueues[carTaskQueues[carType].First().CarType].First() != null)
+                //        {
+                //            byte taskLen = serialHander.planRoadTable(mappingRoute, carQueues[carTaskQueues[carType].First().CarType].First().CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
+
+                //        }
+                //    }
+                //}
+                //else if (!carTaskQueues[carType].Contains(carTask))
+                //{
+                //    carTaskQueues[carType].Enqueue(carTask);
+                //}
+                //mutexCar.ReleaseMutex();
             }
         }
 
@@ -218,17 +215,23 @@ namespace AGV
             //serialHander.serialEvent += serialHander.accessRoadTable;
             while (onLine)
             {
-                for (int i = 5; i <= 8; i++)
+                try
                 {
-                    if (carTaskQueues[i].Count > 0)
+                    for (int i = 5; i <= 8; i++)
                     {
-                        if (carQueues[carTaskQueues[i].First().CarType].Count > 0)
+                        if (carTaskQueues[i].Count > 0)
                         {
-                            Thread t = new Thread(runCarThread);
-                            t.Start(carTaskQueues[i].Dequeue());
-                        }                        
-                    }                    
-                    Thread.Sleep(200);
+                            if (carQueues[carTaskQueues[i].First().CarType].Count > 0)
+                            {
+                                Thread t = new Thread(runCarThread);
+                                t.Start(carTaskQueues[i].Dequeue());
+                            }
+                        }
+                        Thread.Sleep(200);
+                    }
+                }
+                catch(Exception ex){
+                    Console.WriteLine(ex.Message);
                 }
             }
         }
@@ -250,6 +253,12 @@ namespace AGV
             List<Track> list1 = adjList.FindWay(adjList.Find(carTask.StartStation), adjList.Find(carTask.TargetStation));
             List<Track> list2 = adjList.FindWay(adjList.Find(carTask.TargetStation), adjList.Find(stationDic["F32"]));
             List<Track> list3 = adjList.FindWay(adjList.Find(stationDic["F32"]), adjList.Find(carTask.EndStation));
+            List<Station> mapping = new List<Station>();
+            for(int j=1;j<list1.Count;++j)
+            {
+                Track t = list1[j];
+                mapping.Add(stationDic[t.StartStation]);
+            }
             Car car = null;
             mutexCar.WaitOne();
             if (carQueue.Count > 0)
@@ -261,25 +270,24 @@ namespace AGV
             mutexCar.ReleaseMutex();
             car.TargetStation = carTask.TargetStation;
             carTask.StartStation.OccupiedCar = null;
-
-            while (car.WorkState)
-            {
-                Thread.Sleep(200);
-            }
-
+           
+            RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
+            car.taskLen = serialHander.planRoadTable(car.CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
             while (!car.remoteReady())
             {
                 Thread.Sleep(200);
             }
-
+            car.permitPass(sp);
             for (i=0;i<list1.Count;i++)
-            {
+            {      
                 Track t = list1[i];
+                //if (0==i&&mapping.IndexOf(stationDic[t.StartStation]) < mapping.IndexOf())
+                //{
+                //    continue;
+                //}
                 while (true)
                 {
-                    //Thread.Sleep(2000);
-                    mutexStationTarget.WaitOne();
-                    
+                    mutexStationTarget.WaitOne();      
                     if (stationDic[t.StartStation].CardID == car.posCard||0==i)
                     {
                         if (stationDic[t.EndStation].targeted == false)
@@ -308,7 +316,6 @@ namespace AGV
                 trackTogo.clear();
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
                 car.run(trackTogo);
-                
             }
             car.RealState = CarState.CarStop;
             Thread.Sleep(200);
@@ -402,6 +409,8 @@ namespace AGV
             car.RealState = CarState.CarStop;
             car.TargetStation = null;
             mutexCar.WaitOne();
+            car.remoteTaskLen = 0;
+            car.taskLen = 0;
             carTask.EndStation.OccupiedCar = car;
             carQueue.Enqueue(car);
             mutexCar.ReleaseMutex();
