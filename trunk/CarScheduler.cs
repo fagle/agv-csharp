@@ -275,10 +275,13 @@ namespace AGV
             mutexCar.ReleaseMutex();
             car.TargetStation = carTask.TargetStation;
             carTask.StartStation.OccupiedCar = null;
-           
+            while (car.status != 0x53)
+            {
+                Thread.Sleep(200);
+            }
             RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
             car.taskLen = serialHander.planRoadTable(car.CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
-            while (!car.remoteReady() || car.status == 0x53)
+            while (!car.remoteReady())
             {
                 Thread.Sleep(200);
             }
