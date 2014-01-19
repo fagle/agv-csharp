@@ -76,6 +76,7 @@ namespace AGV
         public Station lastStation = null;
         private bool workState = true;
         public byte posCard;
+        public byte status = 0;
         public byte taskLen = 0;
         public byte remoteTaskLen = 0;
         public bool remoteReady()
@@ -196,7 +197,7 @@ namespace AGV
             if (trackToGo.TrackPointList.Count == 0)
                 return;
 
-            for (int i=0;i<trackToGo.TrackPointList.Count;i++)
+            for (int i=0;i<trackToGo.TrackPointList.Count;i=i+10)
             {
                 Point p = trackToGo.TrackPointList[i];
                 

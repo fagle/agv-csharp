@@ -96,8 +96,7 @@ namespace AGV
             }
             else
             {
-                //textBox1.Text += "\r\n" + text;
-                textBox1.Text += " " + text;
+                textBox1.Text += "\r\n" + text;               
                 //textBox1.Text +=  text;
                 textBox1.Select(textBox1.Text.Length, 0);
                 textBox1.ScrollToCaret();
@@ -121,7 +120,7 @@ namespace AGV
                     try
                     {
                         byte b = (byte)this.newCanvas.Scheduler.SP.ReadByte();
-                        writeLine( Convert.ToString(b,16) );
+                        //writeLine( Convert.ToString(b,16) );
                         Console.WriteLine("================");
                         Console.Write((char)b);
                         serialHander.handleOneByte(b);                        
@@ -148,6 +147,7 @@ namespace AGV
             string s = (e.Station_ID).ToString();
             if (e.Call_type < 5 && e.Call_type>8)
                 return;
+            writeLine("remote call type "+e.Call_type+" station "+ e.Station_ID);
             switch (e.Call_type)
             {
                 case 5:
@@ -194,54 +194,20 @@ namespace AGV
         }
 
         public void agvCarStateReport(object sender, CarStateReportEventArgs e) 
-        {
-            RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
-            Station startStation = null;
-            Station targetStation = null;
-            Station endStation = null;
+        {                        
             if (e != null)
             {
-                newCanvas.carArray[e.CarId].posCard = e.CardId;
-                newCanvas.carArray[e.CarId].remoteTaskLen = e.TaskLen;
-                if (newCanvas.carArray[e.CarId].TargetStation.CardID == e.CardId && e.Movement != 0x53)
+                try
                 {
-                    newCanvas.carArray[e.CarId].WorkState = false;
-                    return;
-                }
-                if (0x0c == e.CardId && e.Movement != 0x53)
-                {
-                    newCanvas.carArray[e.CarId].WorkState = false;
-                    return;
-                }
-                if ((e.CardId != 0) && (e.Movement == 0x50 || e.Movement == 0x51 || e.Movement == 0x52 || e.Movement == 0x54))
-                {
+                    writeLine("id " + e.CarId + " state " + e.Movement + " card " + e.CardId + " count " + e.TaskLen + " type " + e.Type);
                     newCanvas.carArray[e.CarId].posCard = e.CardId;
-                    Thread.Sleep(10);
-                    if (e != null && e.Movement != 0x53 && CarState.CarStop == newCanvas.carArray[e.CarId].getRealState())
-                    {
-                        byte[] controlCommand = new byte[7] { (byte)0x68, (byte)0x53, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
-                        controlCommand[5] = (byte)e.CarId;
-                        controlCommand[6] = (byte)((0x55 + 0x01 + e.CarId) % 256);
-                        serialPort1.Write(controlCommand, 0, controlCommand.Length);//发命令停车
-                    }
+                    newCanvas.carArray[e.CarId].remoteTaskLen = e.TaskLen;
+                    newCanvas.carArray[e.CarId].status = e.Movement;                    
                 }
-                else if (e.CardId != 0 && e.Movement == 0x53)
+                catch (Exception ex) 
                 {
-                    newCanvas.carArray[e.CarId].posCard = e.CardId;
-                    Thread.Sleep(10);
-                    if (e != null && e.Movement == 0x53 && CarState.CarStop != newCanvas.carArray[e.CarId].getRealState())
-                    {
-                        byte[] controlCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00 };
-                        controlCommand[5] = (byte)e.CarId;
-                        controlCommand[6] = (byte)((0x54 + 0x01 + e.CarId) % 256);//开车命令
-                        serialPort1.Write(controlCommand, 0, controlCommand.Length);
-                    }
-                }
-                else if (e.Step == 0 && e.TaskLen != 0)
-                {
-                    //byte[] startCommand = new byte[7] { (byte)0x68, (byte)0x54, (byte)0x02, (byte)0x00, (byte)0x00, (byte)0x06, (byte)0x5c };
-                    //serialPort1.Write(startCommand, 0, startCommand.Length);
-                }
+                    Console.WriteLine(ex.Message);
+                }     
             }
             
             //switch(e.Movement){

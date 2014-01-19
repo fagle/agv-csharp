@@ -142,6 +142,8 @@ namespace AGV
                 case 8:
                     carTask = new CarTask(stationDic["F31"], targetStation, stationDic["F31"], carType);
                     break;
+                default:
+                    return;
             }
             if (carTask != null)
             {
@@ -253,11 +255,14 @@ namespace AGV
             List<Track> list1 = adjList.FindWay(adjList.Find(carTask.StartStation), adjList.Find(carTask.TargetStation));
             List<Track> list2 = adjList.FindWay(adjList.Find(carTask.TargetStation), adjList.Find(stationDic["F32"]));
             List<Track> list3 = adjList.FindWay(adjList.Find(stationDic["F32"]), adjList.Find(carTask.EndStation));
-            List<Station> mapping = new List<Station>();
-            for(int j=1;j<list1.Count;++j)
+            List<Track> list = new List<Track>(50);
+            list.AddRange(list1);
+            list.AddRange(list2);
+            list.AddRange(list3);
+            List<byte> cardList = new List<byte>(50);
+            foreach(Track t in list)
             {
-                Track t = list1[j];
-                mapping.Add(stationDic[t.StartStation]);
+                cardList.Add(stationDic[ t.EndStation ].CardID);
             }
             Car car = null;
             mutexCar.WaitOne();
@@ -278,18 +283,25 @@ namespace AGV
                 Thread.Sleep(200);
             }
             car.permitPass(sp);
-            for (i=0;i<list1.Count;i++)
+            for (i=0;i<list.Count;i++)
             {      
-                Track t = list1[i];
-                //if (0==i&&mapping.IndexOf(stationDic[t.StartStation]) < mapping.IndexOf())
-                //{
-                //    continue;
-                //}
+                Track t = list[i];
+                
                 while (true)
                 {
-                    mutexStationTarget.WaitOne();      
-                    if (stationDic[t.StartStation].CardID == car.posCard||0==i)
+                    mutexStationTarget.WaitOne();
+                    if (stationDic[t.StartStation].CardID == car.posCard || 0 == i || (cardList.IndexOf(car.posCard) >= i && cardList.IndexOf(car.posCard) <= i+4))
                     {
+                        if (t.StartStation == car.TargetStation.name || t.StartStation == "F32") 
+                        { 
+                            if(car.posCard==car.TargetStation.CardID || car.posCard == stationDic["F32"].CardID)
+                            {
+                                while(car.status == 0x53)
+                                {
+                                    Thread.Sleep(200);
+                                }
+                            }
+                        }
                         if (stationDic[t.EndStation].targeted == false)
                         {
                             stationDic[t.EndStation].targeted = true;
@@ -305,107 +317,16 @@ namespace AGV
                             car.forbidPass(sp);
                         }
                     }
-                    else if (stationDic[t.EndStation].CardID == car.posCard)
-                    {
-                        mutexStationTarget.ReleaseMutex();
-                        break;
-                    }
+                    
                     mutexStationTarget.ReleaseMutex();
                     Thread.Sleep(200);
                 }
                 trackTogo.clear();
                 trackTogo.TrackPointList.AddRange(t.TrackPointList);
                 car.run(trackTogo);
+                
             }
-            car.RealState = CarState.CarStop;
-            Thread.Sleep(200);
-            car.WorkState = true;
-            while (car.WorkState)
-            {
-                Thread.Sleep(200);
-            }
-                  
-            for (i = 0; i < list2.Count; i++)
-            {
-                Track t = list2[i];
-                while (true)
-                {
-                    mutexStationTarget.WaitOne();
-                    if (stationDic[t.StartStation].CardID == car.posCard)
-                    {
-                        if (stationDic[t.EndStation].targeted == false)
-                        {
-                            stationDic[t.EndStation].targeted = true;
-                            car.permitPass(sp);
-                            if (car.lastStation != null)
-                                car.lastStation.targeted = false;
-                            car.lastStation = stationDic[t.EndStation];
-                            mutexStationTarget.ReleaseMutex();
-                            break;
-                        }
-                        else
-                        {
-                            car.forbidPass(sp);
-                        }
-                    }
-                    else if (stationDic[t.EndStation].CardID == car.posCard)
-                    {
-                        mutexStationTarget.ReleaseMutex();
-                        break;
-                    }
-                    mutexStationTarget.ReleaseMutex();
-                    Thread.Sleep(200);
-                }
-                trackTogo.clear();
-                trackTogo.TrackPointList.AddRange(t.TrackPointList);
-                car.run(trackTogo);                
-            }
-
-            car.RealState = CarState.CarStop;
-            Thread.Sleep(200);
-            car.WorkState = true;
-            while (car.WorkState)
-            {
-                Thread.Sleep(200);
-            }
-
-            for (i = 0; i < list3.Count; i++)
-            {
-                Track t = list3[i];
-                while (true)
-                {
-                    mutexStationTarget.WaitOne();
-                    if (stationDic[t.StartStation].CardID == car.posCard)
-                    {
-                        if (stationDic[t.EndStation].targeted == false)
-                        {
-                            stationDic[t.EndStation].targeted = true;
-                            car.permitPass(sp);
-                            if (car.lastStation != null)
-                                car.lastStation.targeted = false;
-                            car.lastStation = stationDic[t.EndStation];
-                            mutexStationTarget.ReleaseMutex();
-                            break;
-                        }
-                        else
-                        {
-                            car.forbidPass(sp);
-                        }
-                    }
-                    else if (stationDic[t.EndStation].CardID == car.posCard)
-                    {
-                        mutexStationTarget.ReleaseMutex();
-                        break;
-                    }
-                    mutexStationTarget.ReleaseMutex();
-                    Thread.Sleep(200);
-                }
-                trackTogo.clear();
-                trackTogo.TrackPointList.AddRange(t.TrackPointList);
-                car.run(trackTogo);
-            }
-//            mappingRoute.Remove(car.CarID);
-            car.WorkState = true;
+                       
             car.RealState = CarState.CarStop;
             car.TargetStation = null;
             mutexCar.WaitOne();

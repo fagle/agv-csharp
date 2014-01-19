@@ -1290,7 +1290,7 @@ namespace AGV
         public int Y;
         public int BtnXoffset;
         public int BtnYoffset;
-        public int cardID;
+        public byte cardID;
         public bool targeted = false;
         public Point Location 
         {
@@ -1299,7 +1299,7 @@ namespace AGV
         public Station()
         {            
         }
-        public Station(string name, int X, int Y, int btnX, int btnY,int cardID,int stationID)
+        public Station(string name, int X, int Y, int btnX, int btnY,byte cardID,int stationID)
         {
             this.name = name;
             this.X = X;
@@ -1319,7 +1319,7 @@ namespace AGV
         public string Next;
         public Car OccupiedCar = null;
         //public bool canStop;
-        public int CardID
+        public byte CardID
         {
             get { return cardID; }
         }

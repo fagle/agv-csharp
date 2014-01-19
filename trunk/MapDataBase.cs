@@ -285,7 +285,7 @@ namespace AGV
                     {
                         //Console.WriteLine("indexNo:{0},shape:{1}", /*reader.GetInt64(0)*/1, reader.GetString(1));
                         Station s =  new Station( reader.GetString(0), reader.GetInt32(1),
-                            reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4), reader.GetInt32(6), reader.GetInt32(7));//select语句的顺序
+                            reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4), reader.GetByte(6), reader.GetInt32(7));//select语句的顺序
                         stationDic.Add(reader.GetString(0),s);
                         if (!reader.IsDBNull(5))
                             s.Next = reader.GetString(5);
