@@ -281,9 +281,11 @@ namespace AGV
             }
             RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
             car.taskLen = serialHander.planRoadTable(car.CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
+            Thread.Sleep(1000);
             while (!car.remoteReady())
             {
-                Thread.Sleep(200);
+                serialHander.planRoadTable(car.CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
+                Thread.Sleep(1000);
             }
             car.permitPass(sp);
             for (i=0;i<list.Count;i++)
