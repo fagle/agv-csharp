@@ -240,6 +240,7 @@ namespace AGV
         
         private void runCarThread(object o)
         {
+            int reSend = 3;
             CarTask carTask = (CarTask)o;
             Track trackTogo = new Track();
             int i;
@@ -281,11 +282,19 @@ namespace AGV
             }
             RoadTableFrameHandler serialHander = new RoadTableFrameHandler();
             car.taskLen = serialHander.planRoadTable(car.CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
-            Thread.Sleep(1000);
+            Thread.Sleep(5000);
             while (!car.remoteReady())
             {
                 serialHander.planRoadTable(car.CarID, carTask.StartStation, carTask.TargetStation, carTask.EndStation, this.adjList, this.sp, stationDic);
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
+                --reSend;
+                if (reSend == 0)
+                {
+                    sp.Close();
+                    Thread.Sleep(1000);
+                    sp.Open();
+                    reSend = 3;
+                }
             }
             car.permitPass(sp);
             for (i=0;i<list.Count;i++)

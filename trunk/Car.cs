@@ -14,10 +14,12 @@ namespace AGV
         private string carName;
         private Point position;
         private Label bindingLabel;
+
         public string CarName
         {
             get { return carName; }
         }
+
         public Point Position
         {
             get { return position; }
@@ -184,7 +186,7 @@ namespace AGV
             set { position = value; }
         }
 
-        public void setPosition(Point p)
+        public void setPosition(Point p)//触发开车事件
         {
             position = new Point(p.X-8, -p.Y+8);
             if (carPosEvent != null)

@@ -757,6 +757,7 @@ namespace AGV
                 command.Insert(0, (byte)0x68);
                 byte[] roadTable = new byte[command.Count];
                 command.CopyTo(roadTable);
+             
                 //for (int j = 0; j < roadTable.Length; ++j)
                 //{
                 //    Console.Write(roadTable[j] + " ");
@@ -781,15 +782,17 @@ namespace AGV
                 command.Insert(0, (byte)0x68);
                 byte[] roadTable = new byte[30];
                 command.CopyTo(0, roadTable, 0, 29);
-                roadTable[29] = csum;
+                roadTable[29] = (byte)(csum);
+               
                 //for (int j = 0; j < 30; ++j)
                 //{
                 //    Console.Write(roadTable[j] + " ");
                 //}
                 //Console.WriteLine();
-                //roadTable[12] = (byte)0x53;
-                //roadTable[20] = (byte)0x53;
-                //roadTable[26] = (byte)0x53;
+                //roadTable[12] = (byte)0x50;
+                //roadTable[18] = (byte)0x50;
+                //roadTable[26] = (byte)0x50;
+                //roadTable[28] = (byte)0x50;
                 sp.Write(roadTable, 0, 30);
                 Thread.Sleep(5000);
                 command.RemoveRange(0, 29);

@@ -448,7 +448,7 @@ namespace AGV
             }
             else
             {
-               lastPosX = label.Location.X;
+                lastPosX = label.Location.X;
                 label.Location = new Point(x, y);
                 //label.Refresh();
                 if (carFocus != null)
@@ -1587,23 +1587,5 @@ namespace AGV
         */
 	}
 
-    //public class NButton : Button
-    //{
-    //    public delegate void EventHandler(int callStyle);
-    //    public event EventHandler Click;
-    //    protected override void OnClick()
-    //    {
-    //        base.OnClick();
-
-    //    }
-    //}
-
-    //public class ClickEventArgs : EventArgs
-    //{
-    //    private int callStyle;
-    //    public ClickEventArgs(int callStyle)
-    //    {
-    //        this.callStyle = callStyle;
-    //    }
-    //}
+    
 }
